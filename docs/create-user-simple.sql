@@ -10,4 +10,4 @@ ORDER BY ordinal_position;
 -- This bypasses the dashboard issues
 
 -- Alternative: Use the auth.signup() function if available
--- SELECT * FROM auth.signup('admin@sngnews.com', '123admin');
+-- SELECT * FROM auth.signup('admin@thirdeyenews.com', '123admin');

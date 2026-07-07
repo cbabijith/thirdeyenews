@@ -12,10 +12,10 @@ export function Footer() {
         {/* Brand + Description */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <img src="/whitelogoidlnewslargesvg.svg" alt="IDL News" className="h-8 w-auto" />
+            <img src="/whitelogothirdeyenewslargesvg.svg" alt="ThirdEye News" className="h-8 w-auto" />
           </div>
           <p className="text-white/60 text-[13px] leading-relaxed">
-            സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ. കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ അതിവേഗം ലഭിക്കാൻ IDL NEWS.
+            സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ. കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ അതിവേഗം ലഭിക്കാൻ ThirdEye News.
           </p>
           
           {/* Contact Details */}
@@ -100,7 +100,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col gap-2">
           <p className="text-white/40 text-[11px]">
-            © 2024 IDL വാർത്തകൾ. All rights reserved.
+            © 2024 ThirdEye വാർത്തകൾ. All rights reserved.
           </p>
           <p className="text-white/30 text-[10px]">
             Made by <a href="https://abijithcb.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">abijithcb.com</a>

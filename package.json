@@ -1,8 +1,8 @@
 {
-  "name": "idlnews-monorepo",
+  "name": "thirdeyenews-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Monorepo for IDL News - User/Admin Websites and Apps",
+  "description": "Monorepo for ThirdEye News - User/Admin Websites and Apps",
   "workspaces": [
     "packages/*",
     "apps/user-website",

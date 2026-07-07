@@ -1,4 +1,4 @@
--- SNG News Database Schema for Supabase
+-- ThirdEye News Database Schema for Supabase
 -- This schema supports the news application with categories, rich media content, and role-based access control
 
 -- Enable UUID extension

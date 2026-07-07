@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import supabase from '@idlnews/shared-supabase'
+import supabase from '@thirdeyenews/shared-supabase'
 
 interface Ad {
   id: string

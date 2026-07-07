@@ -1,46 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { newsService, categoryService } from '@/services'
-import { profileRepository } from '@/repositories'
+import { useDashboard } from '@/hooks/useDashboard'
 import { DashboardStats } from './DashboardStats'
 import { useThemeStore } from '@/store/themeStore'
 
 export function Dashboard() {
   const { colors } = useThemeStore()
-  const [stats, setStats] = useState({
-    totalNews: 0,
-    totalStaff: 0,
-    totalUsers: 0,
-    totalCategories: 0,
-  })
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const [newsResult, categoriesResult, staffResult, usersResult] = await Promise.all([
-          newsService.getPublishedNews(),
-          categoryService.getAllCategories(),
-          profileRepository.getByRole('staff'),
-          profileRepository.getByRole('user'),
-        ])
-
-        setStats({
-          totalNews: newsResult.data?.length || 0,
-          totalStaff: staffResult.data?.length || 0,
-          totalUsers: usersResult.data?.length || 0,
-          totalCategories: categoriesResult.data?.length || 0,
-        })
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchStats()
-  }, [])
+  const { stats, loading } = useDashboard()
 
   if (loading) {
     return (

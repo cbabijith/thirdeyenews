@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Geist } from 'next/font/google'
+import { Inter, Geist, PT_Serif } from 'next/font/google'
 import './globals.css'
 import { cn } from "@/lib/utils";
 
@@ -7,9 +7,11 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ['latin'] })
 
+const ptSerif = PT_Serif({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-serif' })
+
 export const metadata: Metadata = {
-  title: 'SNG News - Admin Website',
-  description: 'SNG News Admin Portal',
+  title: 'ThirdEye News - Admin Website',
+  description: 'ThirdEye News Admin Portal',
 }
 
 export default function RootLayout({
@@ -18,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", geist.variable, ptSerif.variable)}>
       <body className={inter.className}>{children}</body>
     </html>
   )

@@ -1,5 +1,2 @@
-export { adRepository, AdRepository } from './ad.repository'
-export { categoryRepository, CategoryRepository } from './category.repository'
-export { newsRepository, NewsRepository } from './news.repository'
-export { profileRepository, ProfileRepository } from './profile.repository'
-export { subcategoryRepository, SubcategoryRepository } from './subcategory.repository'
+export { adsRepository } from './ads.repository'
+export { profilesRepository } from './profiles.repository'

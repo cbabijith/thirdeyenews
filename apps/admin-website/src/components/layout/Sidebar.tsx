@@ -33,12 +33,8 @@ export function Sidebar() {
         {/* Header / Logo */}
         <div className={`p-4 border-b border-gray-100 flex items-center ${sidebarOpen ? 'justify-between' : 'justify-center'}`}>
           {sidebarOpen ? (
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="IDL News" className="h-20 w-auto object-contain" />
-              <div>
-                <h2 className={`text-sm font-bold ${colors.text} tracking-tight leading-none`}>IDL News</h2>
-                <p className={`text-[10px] ${colors.textSecondary} mt-0.5`}>Admin Panel</p>
-              </div>
+            <div className="flex items-center">
+              <img src="/logo.svg" alt="ThirdEye News" className="h-10 w-auto object-contain" />
             </div>
           ) : (
             <button
@@ -46,7 +42,7 @@ export function Sidebar() {
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-all active:scale-95 cursor-pointer"
               title="Expand sidebar"
             >
-              <img src="/logo.png" alt="IDL News" className="h-20 w-20 object-contain" />
+              <img src="/logo.svg" alt="ThirdEye News" className="h-10 w-10 object-contain" />
             </button>
           )}
           

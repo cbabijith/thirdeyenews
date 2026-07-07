@@ -9,7 +9,7 @@ const s3Client = new S3Client({
   },
 })
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'idlnews'
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'thirdeyenews'
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://pub-7a1a77e5d8f3444d931ce51a542a8b7d.r2.dev'
 
 export async function uploadImage(file: File, path: string): Promise<string> {

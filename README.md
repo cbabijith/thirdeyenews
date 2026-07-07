@@ -1,11 +1,11 @@
-# SNG News Monorepo
+# ThirdEye News Monorepo
 
-A monorepo containing user/admin websites (Next.js) and user/admin apps (Flutter) with Supabase integration. This project serves as the digital platform for the Sree Narayana Guru Research Center, dedicated to preserving and sharing the teachings, philosophy, and legacy of Sree Narayana Guru (1856-1928), a renowned Indian philosopher, spiritual leader, and social reformer who fought against caste discrimination and promoted social equality in Kerala.
+A monorepo containing user/admin websites (Next.js) and user/admin apps (Flutter) with Supabase integration.
 
 ## Project Structure
 
 ```
-sngnews/
+thirdeyenews/
 ├── apps/
 │   ├── user-website/          # Next.js 16.2.6 - User-facing website
 │   ├── admin-website/          # Next.js 16.2.6 - Admin dashboard

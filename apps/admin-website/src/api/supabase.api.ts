@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/client'
-import { adRepository, categoryRepository, newsRepository } from '@/repositories'
 import { uploadImageAction, deleteImageAction } from '@/app/actions/upload'
 
 // This layer provides a unified API interface for external calls
 // Currently it wraps the repository layer, but can be extended for external APIs
 
-const supabase = createClient()
+function getClient() {
+  return createClient()
+}
 
 async function compressImage(file: File, maxKB: number = 50): Promise<File> {
   // If the file is already under 50KB or is not an image, skip compression
@@ -75,16 +76,16 @@ export const supabaseApi = {
   // Auth
   auth: {
     signIn: async (email: string, password: string) => {
-      return supabase.auth.signInWithPassword({ email, password })
+      return getClient().auth.signInWithPassword({ email, password })
     },
     signOut: async () => {
-      return supabase.auth.signOut()
+      return getClient().auth.signOut()
     },
     signUp: async (email: string, password: string) => {
-      return supabase.auth.signUp({ email, password })
+      return getClient().auth.signUp({ email, password })
     },
     getUser: async () => {
-      return supabase.auth.getUser()
+      return getClient().auth.getUser()
     },
   },
 
@@ -107,8 +108,4 @@ export const supabaseApi = {
     },
   },
 
-  // Database (delegates to repositories)
-  ads: adRepository,
-  categories: categoryRepository,
-  news: newsRepository,
 }

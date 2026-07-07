@@ -1,4 +1,4 @@
-export { adService, AdService } from './ad.service'
-export { categoryService, CategoryService } from './category.service'
-export { newsService, NewsService } from './news.service'
-export { subcategoryService, SubcategoryService } from './subcategory.service'
+export { adsService } from './ads.service'
+export { profilesService } from './profiles.service'
+export { storageService } from './storage.service'
+export { dashboardService, type DashboardStats } from './dashboard.service'

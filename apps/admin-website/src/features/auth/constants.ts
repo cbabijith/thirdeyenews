@@ -1,0 +1,18 @@
+export const LOGIN_TEXT = {
+  pageTitle: 'ThirdEye News',
+  pageSubtitle: 'Sign in to your admin dashboard',
+  brandHeadline: 'Inform the world, one story at a time.',
+  brandSubtext: 'Admin access is restricted to authorized editorial and operations staff only.',
+  securityBadge: 'Secured admin portal',
+  adminLabel: 'ADMIN PANEL',
+  emailLabel: 'Email address',
+  emailPlaceholder: 'you@example.com',
+  passwordLabel: 'Password',
+  passwordPlaceholder: 'Enter your password',
+  signInButton: 'Sign in',
+  signingInText: 'Signing in...',
+  signUpButton: 'Sign up',
+  signingUpText: 'Signing up...',
+  errorTitle: 'Error',
+  footerText: '© 2025 ThirdEye News. All rights reserved.',
+} as const

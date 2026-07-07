@@ -7,10 +7,14 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@idlnews/shared-supabase": "workspace:*",
+    "@thirdeyenews/shared-supabase": "workspace:*",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/typography": "^0.5.19",
@@ -30,7 +34,9 @@
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^3.4.1",
     "tw-animate-css": "^1.4.0",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.13",
+    "drizzle-orm": "^0.44.1",
+    "postgres": "^3.4.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
@@ -38,6 +44,7 @@
     "@types/react-dom": "^18.2.18",
     "eslint": "^8.56.0",
     "eslint-config-next": "16.2.6",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "drizzle-kit": "^0.31.1"
   }
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useThemeStore } from '@/store/themeStore'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import supabase from '@idlnews/shared-supabase'
+import supabase from '@thirdeyenews/shared-supabase'
 
 interface Category {
   id: string
@@ -19,16 +19,21 @@ interface NewsItem {
 
 interface HeaderProps {
   pinnedNews?: NewsItem[]
+  categories?: Category[]
 }
 
-export function Header({ pinnedNews = [] }: HeaderProps) {
+export function Header({ pinnedNews = [], categories: propCategories = [] }: HeaderProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
   const [showComingSoon, setShowComingSoon] = useState(false)
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<Category[]>(propCategories)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
+    if (propCategories.length > 0) {
+      setCategories(propCategories)
+      return
+    }
     async function fetchCategories() {
       try {
         const { data, error } = await supabase
@@ -42,7 +47,7 @@ export function Header({ pinnedNews = [] }: HeaderProps) {
       }
     }
     fetchCategories()
-  }, [])
+  }, [propCategories])
 
   const handleComingSoon = () => {
     setShowComingSoon(true)
@@ -52,33 +57,39 @@ export function Header({ pinnedNews = [] }: HeaderProps) {
     setShowComingSoon(false)
   }
 
+  const [darkMode, setDarkMode] = useState(false)
+
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-primary border-b border-blue-200 flex items-center justify-between px-4 md:px-8 h-16 w-full shadow-sm`}>
+      <header className={`sticky top-0 z-50 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 h-16 w-full shadow-sm`}>
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Menu"
-          className="text-white hover:opacity-80 transition-all cursor-pointer active:scale-95"
+          className="text-gray-800 hover:opacity-80 transition-all cursor-pointer active:scale-95"
         >
-          <span className="material-symbols-outlined text-2xl">menu</span>
+          <span className="material-symbols-outlined text-2xl font-bold">menu</span>
         </button>
         <Link href="/" className="hover:opacity-90 transition-opacity">
-          <img src="/whitelogoidlnewslargesvg.svg" alt="IDL News" className="h-24 w-auto object-contain" />
+          <img src="/logo.png" alt="ThirdEye News Live" className="h-10 w-auto object-contain" />
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle Capsule */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="w-12 h-6 flex items-center bg-gray-900 rounded-full p-0.5 cursor-pointer relative transition-colors duration-200"
+            aria-label="Toggle theme"
+          >
+            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md transform transition-transform duration-200 translate-x-6">
+              <span className="material-symbols-outlined text-[12px] text-gray-900 font-bold">dark_mode</span>
+            </div>
+          </button>
+
           <button
             onClick={() => router.push('/search')}
             aria-label="Search"
-            className="text-white hover:opacity-80 transition-all cursor-pointer active:scale-95"
+            className="text-gray-800 hover:opacity-80 transition-all cursor-pointer active:scale-95"
           >
-            <span className="material-symbols-outlined text-2xl">search</span>
-          </button>
-          <button
-            onClick={handleComingSoon}
-            aria-label="Profile"
-            className="text-white hover:opacity-80 transition-all cursor-pointer active:scale-95 hidden md:block"
-          >
-            <span className="material-symbols-outlined text-2xl">account_circle</span>
+            <span className="material-symbols-outlined text-2xl font-bold">search</span>
           </button>
         </div>
       </header>
@@ -142,7 +153,7 @@ export function Header({ pinnedNews = [] }: HeaderProps) {
             
             {/* Sidebar Footer */}
             <div className="p-4 border-t border-gray-100 bg-gray-50 text-center">
-              <p className="text-[10px] text-gray-400">© 2026 IDL News</p>
+              <p className="text-[10px] text-gray-400">© 2026 ThirdEye News</p>
             </div>
           </div>
         </div>

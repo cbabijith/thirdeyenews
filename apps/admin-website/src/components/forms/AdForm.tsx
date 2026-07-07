@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Ad, AdPosition } from '@/types'
-import { supabaseApi } from '@/api/supabase.api'
+import { useStorage } from '@/hooks/useStorage'
 import { useThemeStore } from '@/store/themeStore'
 
 interface AdFormProps {
@@ -25,7 +25,7 @@ const POSITIONS: { value: AdPosition; label: string }[] = [
 
 export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) {
   const { colors } = useThemeStore()
-  const [uploading, setUploading] = useState(false)
+  const { uploading, uploadImage, deleteImage } = useStorage()
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -54,45 +54,19 @@ export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) 
     const file = e.target.files?.[0]
     if (!file) return
 
-    setUploading(true)
-    try {
-      if (formData.image_url) {
-        try {
-          const url = new URL(formData.image_url)
-          const pathParts = url.pathname.split('/')
-          const fileName = pathParts[pathParts.length - 1]
-          await supabaseApi.storage.deleteImage(fileName)
-        } catch (error) {
-          console.error('Error deleting old image:', error)
-        }
-      }
+    if (formData.image_url) {
+      await deleteImage(formData.image_url)
+    }
 
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `ads/${fileName}`
-
-      const result = await supabaseApi.storage.uploadImage(file, filePath)
-      if (result.error) throw new Error(result.error)
-
-      setFormData({ ...formData, image_url: result.data })
-    } catch (error) {
-      console.error('Error uploading image:', error)
-      alert('Error uploading image')
-    } finally {
-      setUploading(false)
+    const result = await uploadImage(file, 'ads')
+    if (result) {
+      setFormData({ ...formData, image_url: result })
     }
   }
 
   const handleRemoveImage = async () => {
     if (formData.image_url) {
-      try {
-        const url = new URL(formData.image_url)
-        const pathParts = url.pathname.split('/')
-        const fileName = pathParts[pathParts.length - 1]
-        await supabaseApi.storage.deleteImage(fileName)
-      } catch (error) {
-        console.error('Error deleting image from storage:', error)
-      }
+      await deleteImage(formData.image_url)
     }
     setFormData({ ...formData, image_url: '' })
   }
