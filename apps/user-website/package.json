@@ -10,10 +10,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@idlnews/shared-supabase": "workspace:*",
     "@supabase/supabase-js": "^2.39.7",
     "@tailwindcss/typography": "^0.5.19",
+    "@thirdeyenews/shared-supabase": "workspace:*",
     "autoprefixer": "^10.4.17",
+    "isomorphic-dompurify": "^3.18.0",
     "next": "16.2.6",
     "postcss": "^8.4.33",
     "react": "^18.2.0",

@@ -1,22 +1,10 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { uploadImage, deleteImage } from './storage';
+import { createClient } from '@supabase/supabase-js'
+import { uploadImage, deleteImage } from './storage'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
 
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  global: {
-    headers: { 'x-client-info': 'idlnews-web' },
-  },
-});
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export const createSupabaseClient = (url: string, key: string): SupabaseClient => {
-  return createClient(url, key);
-};
-
-export { uploadImage, deleteImage };
-export default supabase;
+export default supabase
+export { uploadImage, deleteImage }

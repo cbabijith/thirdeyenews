@@ -28,11 +28,7 @@ interface NewsItem {
 
 async function getNews(id: string): Promise<NewsItem | null> {
   try {
-    const { createSupabaseClient } = await import('@idlnews/shared-supabase')
-    const supabase = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    )
+    const supabase = (await import('@thirdeyenews/shared-supabase')).default
     
     const { data, error } = await supabase
       .from('news')
@@ -54,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!news) {
     return {
-      title: 'News Not Found - IDL വാർത്തകൾ',
+      title: 'News Not Found - ThirdEye വാർത്തകൾ',
       description: 'The requested news article could not be found.',
     }
   }
@@ -63,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const imageUrl = news.image_url || ''
 
   return {
-    title: `${news.title} - IDL വാർത്തകൾ`,
+    title: `${news.title} - ThirdEye വാർത്തകൾ`,
     description: description,
     openGraph: {
       title: news.title,
@@ -78,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ] : [],
       type: 'article',
       publishedTime: news.published_at,
-      siteName: 'IDL വാർത്തകൾ',
+      siteName: 'ThirdEye വാർത്തകൾ',
     },
     twitter: {
       card: 'summary_large_image',

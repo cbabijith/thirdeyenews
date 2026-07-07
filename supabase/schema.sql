@@ -1,4 +1,4 @@
--- Full Database Schema for IDL News
+-- Full Database Schema for ThirdEye News
 -- Consolidated from all migrations
 -- IMPORTANT: Keep this file in sync with migrations in the migrations/ folder
 -- When adding new migrations, update this file to reflect the changes
@@ -101,6 +101,9 @@ CREATE INDEX idx_news_is_published ON news(is_published);
 CREATE INDEX idx_news_published_at ON news(published_at DESC);
 CREATE INDEX idx_news_is_pinned ON news(is_pinned);
 CREATE INDEX idx_news_view_count ON news(view_count DESC);
+-- Composite indexes for common query patterns
+CREATE INDEX idx_news_published_pinned_date ON news(is_published, is_pinned, published_at DESC);
+CREATE INDEX idx_news_published_view_count ON news(is_published, view_count DESC);
 CREATE INDEX idx_comments_news_id ON comments(news_id);
 CREATE INDEX idx_comments_user_id ON comments(user_id);
 CREATE INDEX idx_likes_news_id ON likes(news_id);
