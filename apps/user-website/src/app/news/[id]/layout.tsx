@@ -1,14 +1,5 @@
 import { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import { api } from '@/lib/api'
-import '../../globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-inter',
-  display: 'swap',
-})
 
 interface NewsItem {
   id: string
