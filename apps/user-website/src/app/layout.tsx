@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   title: 'ThirdEye News - User Website',
   description: 'ThirdEye News User Portal',
   icons: {
-    icon: '/logo.svg',
-    apple: '/logo.svg',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
 }
 

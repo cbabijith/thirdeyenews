@@ -8,18 +8,28 @@ export const revalidate = 60
 export const dynamic = 'force-dynamic'
 
 async function fetchHomeData() {
-  const [categories, pinnedNews, trendingNews, recentNews] = await Promise.all([
-    api.getCategories(),
-    api.getPinnedNews(undefined, 5),
-    api.getTrendingNews(5),
-    api.getRecentNews(undefined, 10, 0),
-  ])
+  try {
+    const [categories, pinnedNews, trendingNews, recentNews] = await Promise.all([
+      api.getCategories(),
+      api.getPinnedNews(undefined, 5),
+      api.getTrendingNews(5),
+      api.getRecentNews(undefined, 10, 0),
+    ])
 
-  return {
-    categories: categories as Category[],
-    pinnedNews: pinnedNews as NewsItem[],
-    trendingNews: trendingNews as NewsItem[],
-    recentNews: recentNews as NewsItem[],
+    return {
+      categories: categories as Category[],
+      pinnedNews: pinnedNews as NewsItem[],
+      trendingNews: trendingNews as NewsItem[],
+      recentNews: recentNews as NewsItem[],
+    }
+  } catch (err) {
+    console.error('Failed to fetch home data:', err)
+    return {
+      categories: [] as Category[],
+      pinnedNews: [] as NewsItem[],
+      trendingNews: [] as NewsItem[],
+      recentNews: [] as NewsItem[],
+    }
   }
 }
 

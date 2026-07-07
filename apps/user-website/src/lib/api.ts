@@ -1,5 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
-const API_TOKEN = process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
+const API_BASE_URL = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
+const API_TOKEN = process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
 
 function getBaseUrl(): string {
   if (typeof window !== 'undefined') {
