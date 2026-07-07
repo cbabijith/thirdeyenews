@@ -262,13 +262,13 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         {relatedNews.length > 0 && (
           <section className="w-full pt-4">
             <h3 className="text-on-surface text-[14px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-1 h-4 bg-button rounded-full"></span>
+              <span className="w-1 h-4 bg-primary rounded-full"></span>
               ബന്ധപ്പെട്ട വാർത്തകൾ
             </h3>
             <div className="flex flex-col">
               {relatedNews.map((item, index) => (
                 <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                  <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-outline-variant' : ''}`}>
+                  <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative w-14 h-14 flex-shrink-0">
                         <Image
@@ -281,7 +281,7 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
                       </div>
                     )}
                     <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
-                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-button transition-colors">
+                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
                       {item.published_at && (

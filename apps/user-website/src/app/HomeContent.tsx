@@ -211,7 +211,7 @@ export function HomeContent({
         <p className="text-on-surface-variant max-w-md text-sm">{error}</p>
         <button
           onClick={() => setRetryTrigger(prev => prev + 1)}
-          className="px-5 py-2.5 bg-button text-on-primary rounded-lg font-medium hover:bg-button-hover transition-all text-sm"
+          className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-button-hover transition-all text-sm"
         >
           Retry
         </button>
@@ -225,6 +225,15 @@ export function HomeContent({
   const getAuthorName = (item: NewsItem) => item.profiles?.full_name || item.profiles?.email || 'ThirdEye News'
   const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
+  const getTimeAgo = (date: string) => {
+    const diff = Date.now() - new Date(date).getTime()
+    const hours = Math.floor(diff / (1000 * 60 * 60))
+    if (hours < 1) return 'ഇപ്പോൾ'
+    if (hours < 24) return `${hours} മണിക്കൂർ മുൻപ്`
+    const days = Math.floor(hours / 24)
+    return `${days} ദിവസം മുൻപ്`
+  }
+
   return (
     <div className={`min-h-screen ${colors.background}`}>
       <Header pinnedNews={pinnedNews} categories={categories} />
@@ -233,13 +242,13 @@ export function HomeContent({
 
       {/* Mobile Layout */}
       <main className="md:hidden">
-        {/* Featured News - Hero Card */}
+        {/* Hero Story Card - Featured/Pinned News */}
         {featuredNews && (
-          <section className="px-4 pt-4">
-            <Link href={`/news/${featuredNews.id}`} className="block group">
+          <section className="relative overflow-hidden" style={{ height: 280 }}>
+            <Link href={`/news/${featuredNews.id}`} className="block w-full h-full">
               {featuredNews.image_url ? (
-                <div className="relative rounded-xl overflow-hidden">
-                  <div className="relative w-full aspect-[16/10]">
+                <>
+                  <div className="relative w-full h-full">
                     <Image
                       src={featuredNews.image_url}
                       alt={featuredNews.title}
@@ -249,36 +258,51 @@ export function HomeContent({
                       className="object-cover"
                     />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.1) 100%)',
+                    }}
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm">
+                      TOP STORY
+                    </span>
+                  </div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">
-                    {featuredNews.categories && (
-                      <span className="inline-block bg-secondary text-white text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded mb-2">
-                        {featuredNews.categories.name}
-                      </span>
-                    )}
-                    <h2 className="text-white text-[20px] font-bold leading-snug line-clamp-3">
+                    <h2 className="text-white font-bold leading-snug mb-2" style={{ fontSize: 22 }}>
                       {featuredNews.title}
                     </h2>
-                    {featuredNews.published_at && (
-                      <p className="text-white/70 text-[11px] mt-1.5">
-                        {formatDate(featuredNews.published_at)} • {getAuthorName(featuredNews)}
-                      </p>
-                    )}
+                    <div className="flex items-center justify-between">
+                      <span className="text-white text-xs opacity-80">
+                        {featuredNews.published_at && formatDate(featuredNews.published_at)}
+                        {featuredNews.published_at && ' | '}
+                        {featuredNews.published_at && new Date(featuredNews.published_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      {pinnedNews.length > 1 && (
+                        <div className="flex gap-1">
+                          {pinnedNews.map((_, idx) => (
+                            <div
+                              key={idx}
+                              className={`w-2 h-2 rounded-full ${idx === currentSlide ? 'bg-primary' : 'bg-white opacity-50'}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </>
               ) : (
-                <div className="bg-surface-container rounded-xl p-4">
-                  {featuredNews.categories && (
-                    <span className="inline-block bg-secondary text-white text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded mb-2">
-                      {featuredNews.categories.name}
-                    </span>
-                  )}
-                  <h2 className="text-on-surface text-[20px] font-bold leading-snug">
+                <div className="bg-surface-container h-full p-4 flex flex-col justify-center">
+                  <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm self-start mb-2">
+                    TOP STORY
+                  </span>
+                  <h2 className="text-on-surface font-bold leading-snug" style={{ fontSize: 22 }}>
                     {featuredNews.title}
                   </h2>
                   {featuredNews.published_at && (
-                    <p className="text-on-surface-variant text-[11px] mt-1.5">
-                      {formatDate(featuredNews.published_at)} • {getAuthorName(featuredNews)}
+                    <p className="text-on-surface-variant text-xs mt-2">
+                      {formatDate(featuredNews.published_at)}
                     </p>
                   )}
                 </div>
@@ -287,70 +311,95 @@ export function HomeContent({
           </section>
         )}
 
-        {/* Secondary Pinned News - Horizontal scroll */}
-        {pinnedNews.length > 1 && (
-          <section className="pt-5">
-            <div className="flex items-center justify-between px-4 mb-2.5">
-              <h3 className="text-on-surface text-[14px] font-bold flex items-center gap-2">
-                <span className="w-1 h-4 bg-secondary rounded-full"></span>
-                തിരഞ്ഞെടുത്ത വാർത്തകൾ
+        {/* Latest News - Horizontal Scroll Cards (പ്രതൃക്ഷ വാർത്തകൾ) */}
+        {latestNews.length > 0 && (
+          <section>
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+              <h3 className="text-on-surface font-bold text-base">
+                പ്രതൃക്ഷ വാർത്തകൾ
               </h3>
-              <span className="text-on-surface-variant text-[10px] flex items-center gap-0.5">
+              <span className="text-primary text-sm font-medium flex items-center gap-1">
+                എല്ലാം കാണുക
                 <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               </span>
             </div>
-            <div className="flex gap-2.5 overflow-x-auto no-scrollbar px-4 pb-2 scroll-smooth">
-              {pinnedNews.slice(1).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="flex-shrink-0 w-[160px] group">
-                  <div className="relative rounded-xl overflow-hidden bg-surface-container">
+            <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth">
+              {latestNews.slice(0, 10).map((item) => (
+                <Link key={item.id} href={`/news/${item.id}`} className="flex flex-col" style={{ width: 115 }}>
+                  <div className="rounded-md overflow-hidden" style={{ height: 75 }}>
                     {item.image_url ? (
-                      <>
-                        <div className="relative w-full h-[100px]">
-                          <Image src={item.image_url} alt={item.title} fill sizes="160px" className="object-cover" />
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                        {item.youtube_link && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-3xl drop-shadow-lg">play_circle</span>
-                          </div>
-                        )}
-                        <div className="absolute bottom-0 left-0 right-0 p-2">
-                          {item.categories && (
-                            <span className="text-white/90 text-[9px] font-semibold uppercase tracking-wide block mb-0.5">
-                              {item.categories.name}
-                            </span>
-                          )}
-                          <h4 className="text-white text-[12px] font-medium line-clamp-2 leading-snug">
-                            {item.title}
-                          </h4>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="p-3 min-h-[100px] flex flex-col justify-between">
-                        {item.categories && (
-                          <span className="text-button text-[9px] font-semibold uppercase tracking-wide">
-                            {item.categories.name}
-                          </span>
-                        )}
-                        <h4 className="text-on-surface text-[12px] font-medium line-clamp-3 leading-snug group-hover:text-button transition-colors">
-                          {item.title}
-                        </h4>
-                        {item.published_at && (
-                          <span className="text-on-surface-variant text-[9px]">
-                            {formatDate(item.published_at)}
-                          </span>
-                        )}
+                      <div className="relative w-full h-full">
+                        <Image src={item.image_url} alt={item.title} fill sizes="115px" className="object-cover" />
                       </div>
+                    ) : (
+                      <div className="w-full h-full bg-surface-container" />
                     )}
                   </div>
-                  {item.image_url && item.published_at && (
-                    <span className="text-on-surface-variant text-[9px] mt-1 block px-0.5">
-                      {formatDate(item.published_at)}
-                    </span>
-                  )}
+                  <div className="pt-2">
+                    {item.categories && (
+                      <span className="bg-primary text-on-primary text-xs font-bold px-2 py-0.5 rounded-sm">
+                        {item.categories.name}
+                      </span>
+                    )}
+                    <p className="text-on-surface text-xs mt-1 leading-snug line-clamp-3">
+                      {item.title}
+                    </p>
+                    {item.published_at && (
+                      <p className="text-on-surface-variant text-xs mt-1">
+                        {new Date(item.published_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
+                  </div>
                 </Link>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Trending Section (ട്രെൻഡിംഗ്) */}
+        {trendingNews.length > 0 && (
+          <section className="px-4">
+            <div className="pt-2 pb-1 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-on-surface">trending_up</span>
+                <h3 className="text-on-surface font-bold text-base">
+                  ട്രെൻഡിംഗ്
+                </h3>
+              </div>
+              <span className="text-primary text-sm font-medium flex items-center gap-1">
+                എല്ലാം കാണുക
+                <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+              </span>
+            </div>
+            {trendingNews.slice(0, 5).map((item, index) => (
+              <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <div className="flex items-center gap-3 py-3 border-b border-border">
+                  <div className="bg-primary text-on-primary font-bold text-sm w-7 h-7 rounded-sm flex items-center justify-center shrink-0">
+                    {index + 1}
+                  </div>
+                  <div className="rounded-md overflow-hidden shrink-0" style={{ width: 64, height: 52 }}>
+                    {item.image_url ? (
+                      <div className="relative w-full h-full">
+                        <Image src={item.image_url} alt={item.title} fill sizes="64px" className="object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-full h-full bg-surface-container" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-on-surface text-sm leading-snug line-clamp-2">
+                      {item.title}
+                    </p>
+                    {item.published_at && (
+                      <p className="text-on-surface-variant text-xs mt-1">
+                        {getTimeAgo(item.published_at)}
+                      </p>
+                    )}
+                  </div>
+                  <span className="material-symbols-outlined text-[16px] text-primary shrink-0">trending_up</span>
+                </div>
+              </Link>
+            ))}
           </section>
         )}
 
@@ -361,15 +410,15 @@ export function HomeContent({
 
         {/* Latest News List */}
         <section className="px-4 pb-8">
-          <h3 className="text-on-surface text-[16px] font-bold mb-4 flex items-center gap-2">
-            <span className="w-1 h-5 bg-button rounded-full"></span>
+          <h3 className="text-on-surface font-bold text-base mb-4 flex items-center gap-2">
+            <span className="w-1 h-5 bg-primary rounded-full"></span>
             ഏറ്റവും പുതിയ വാർത്തകൾ
           </h3>
           <div className="flex flex-col">
             {latestNews.length > 0 ? (
               latestNews.map((item, index) => (
                 <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                  <div className={`flex gap-3 py-3 ${index !== latestNews.length - 1 ? 'border-b border-outline-variant' : ''}`}>
+                  <div className={`flex gap-3 py-3 ${index !== latestNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative flex-shrink-0 w-[72px] h-[72px]">
                         <Image
@@ -377,10 +426,10 @@ export function HomeContent({
                           alt={item.title}
                           fill
                           sizes="72px"
-                          className="object-cover rounded-lg"
+                          className="object-cover rounded-md"
                         />
                         {item.youtube_link && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
                             <span className="material-symbols-outlined text-white text-2xl">play_circle</span>
                           </div>
                         )}
@@ -388,11 +437,11 @@ export function HomeContent({
                     )}
                     <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
                       {item.categories && (
-                        <span className="text-secondary text-[10px] font-semibold uppercase tracking-wide">
+                        <span className="text-primary text-[10px] font-bold uppercase tracking-wide">
                           {item.categories.name}
                         </span>
                       )}
-                      <h4 className="text-[14px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-button transition-colors">
+                      <h4 className="text-[14px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
                       {item.published_at && (
@@ -413,7 +462,7 @@ export function HomeContent({
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="w-full py-3 mt-4 bg-surface-container text-on-surface rounded-lg font-medium text-sm hover:bg-surface-container-high transition-colors disabled:opacity-50"
+              className="w-full py-3 mt-4 bg-surface-container text-on-surface rounded-md font-medium text-sm hover:bg-surface-container-high transition-colors disabled:opacity-50"
             >
               {loadingMore ? 'ലോഡിംഗ്...' : 'കൂടുതൽ വാർത്തകൾ കാണാൻ'}
             </button>
@@ -427,7 +476,7 @@ export function HomeContent({
           {/* Left Column - Latest News (3 cols) */}
           <div className="col-span-3">
             <h3 className="text-on-surface text-[16px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-1 h-5 bg-button rounded-full"></span>
+              <span className="w-1 h-5 bg-primary rounded-full"></span>
               ഏറ്റവും പുതിയ വാർത്തകൾ
             </h3>
             <div className="flex flex-col gap-2">
@@ -435,11 +484,11 @@ export function HomeContent({
                 <Link key={item.id} href={`/news/${item.id}`} className="block group">
                   <div className="p-3 rounded-lg hover:bg-surface-container transition-colors">
                     {item.categories && (
-                      <span className="text-button text-[10px] font-semibold uppercase tracking-wide">
+                      <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
                         {item.categories.name}
                       </span>
                     )}
-                    <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-button transition-colors">
+                    <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-primary transition-colors">
                       {item.title}
                     </h4>
                     {item.published_at && (
@@ -531,11 +580,11 @@ export function HomeContent({
                     )}
                     <div className="p-3">
                       {item.categories && (
-                        <span className="text-button text-[10px] font-semibold uppercase tracking-wide">
+                        <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
                           {item.categories.name}
                         </span>
                       )}
-                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-button transition-colors">
+                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
                       {item.published_at && (

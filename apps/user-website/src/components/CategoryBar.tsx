@@ -18,16 +18,16 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
   const { colors } = useThemeStore()
 
   return (
-    <nav className="bg-white border-b border-gray-250 sticky top-16 z-30">
-      <div className="max-w-[1200px] mx-auto flex items-center justify-between px-2 py-1.5">
+    <nav className="bg-background border-b border-border sticky top-14 z-30">
+      <div className="flex items-center gap-1 px-3 py-2">
         {/* Horizontal Category Items Scroll Container */}
-        <div className="flex-1 flex gap-2 overflow-x-auto no-scrollbar py-1 px-2 scroll-smooth">
+        <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth">
           <button
             onClick={() => onCategorySelect(null)}
-            className={`px-4 py-1.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap ${
+            className={`px-3 py-1 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
               selectedCategory === null
-                ? 'bg-red-600 text-white'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'bg-primary text-on-primary'
+                : 'text-on-surface hover:bg-surface-container'
             }`}
           >
             ഹോം
@@ -37,10 +37,10 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
               <button
                 key={category.id}
                 onClick={() => onCategorySelect(category.id)}
-                className={`px-4 py-1.5 rounded-lg text-[14px] font-bold transition-all whitespace-nowrap ${
+                className={`px-3 py-1 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
                   selectedCategory === category.id
-                    ? 'bg-red-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary text-on-primary'
+                    : 'text-on-surface hover:bg-surface-container'
                 }`}
               >
                 {category.name}
@@ -50,11 +50,11 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
         </div>
 
         {/* Plus Button Icon at the far right */}
-        <button 
-          aria-label="Add Category"
-          className="flex items-center justify-center p-2 text-gray-800 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+        <button
+          aria-label="More Categories"
+          className="flex items-center justify-center text-on-surface hover:opacity-70 transition-opacity flex-shrink-0 ml-1"
         >
-          <span className="material-symbols-outlined text-2xl font-bold">add</span>
+          <span className="material-symbols-outlined text-[18px]">add</span>
         </button>
       </div>
     </nav>

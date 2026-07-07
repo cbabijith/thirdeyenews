@@ -1,17 +1,12 @@
 import { Metadata } from 'next'
-import { Archivo_Narrow, Be_Vietnam_Pro } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import '../../globals.css'
 
-const archivoNarrow = Archivo_Narrow({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-archivo-narrow',
-})
-
-const beVietnamPro = Be_Vietnam_Pro({
+const inter = Inter({
   subsets: ['latin'],
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: '--font-be-vietnam-pro',
+  variable: '--font-inter',
+  display: 'swap',
 })
 
 interface NewsItem {

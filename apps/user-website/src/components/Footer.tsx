@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1a2e] w-full mt-auto pb-20 md:pb-0">
+    <footer className="bg-secondary w-full mt-auto pb-20 md:pb-0">
       {/* Top accent bar */}
       <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary" />
 

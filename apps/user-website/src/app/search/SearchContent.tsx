@@ -178,7 +178,7 @@ export function SearchContent() {
                   <p className="text-error mb-2 text-sm">{error}</p>
                   <button 
                     onClick={() => setRetryTrigger(prev => prev + 1)}
-                    className="px-4 py-1.5 bg-button text-on-primary rounded-lg text-xs font-medium hover:opacity-90 transition-all shadow-sm"
+                    className="px-4 py-1.5 bg-primary text-on-primary rounded-lg text-xs font-medium hover:opacity-90 transition-all shadow-sm"
                   >
                     Retry
                   </button>
@@ -218,7 +218,7 @@ export function SearchContent() {
                           )}
                           <div className="flex flex-col justify-between flex-1 min-w-0">
                             {item.categories && (
-                              <span className="text-button font-label-caps text-label-caps text-xs">
+                              <span className="text-primary font-label-caps text-label-caps text-xs">
                                 {item.categories.name}
                               </span>
                             )}
@@ -240,7 +240,7 @@ export function SearchContent() {
                     {results.length > 5 && (
                       <button
                         onClick={() => setShowDropdown(false)}
-                        className="text-center py-2 text-button text-xs font-medium hover:opacity-80"
+                        className="text-center py-2 text-primary text-xs font-medium hover:opacity-80"
                       >
                         View all {results.length} results below
                       </button>
@@ -268,7 +268,7 @@ export function SearchContent() {
                   )}
                   <div className="flex flex-col justify-between flex-1 min-w-0">
                     {item.categories && (
-                      <span className="text-button font-label-caps text-label-caps text-xs">
+                      <span className="text-primary font-label-caps text-label-caps text-xs">
                         {item.categories.name}
                       </span>
                     )}

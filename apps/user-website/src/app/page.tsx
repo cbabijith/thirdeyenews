@@ -46,7 +46,7 @@ export default async function Home() {
     <Suspense fallback={
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="h-10 bg-surface-container border-b border-outline-variant" />
+        <div className="h-10 bg-surface-container border-b border-border" />
         <div className="flex gap-2 px-4 py-3 overflow-hidden">
           {[1,2,3,4,5].map(i => <ShimmerBox key={i} className="h-8 w-24 rounded-full flex-shrink-0" />)}
         </div>

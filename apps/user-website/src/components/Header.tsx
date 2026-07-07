@@ -61,35 +61,46 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
 
   return (
     <>
-      <header className={`sticky top-0 z-50 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 h-16 w-full shadow-sm`}>
+      <header className="sticky top-0 z-50 bg-background border-b border-border flex items-center justify-between px-4 md:px-6 h-14 w-full">
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Menu"
-          className="text-gray-800 hover:opacity-80 transition-all cursor-pointer active:scale-95"
+          className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95"
         >
-          <span className="material-symbols-outlined text-2xl font-bold">menu</span>
+          <span className="material-symbols-outlined text-[22px]">menu</span>
         </button>
-        <Link href="/" className="hover:opacity-90 transition-opacity">
-          <img src="/logo.png" alt="ThirdEye News Live" className="h-10 w-auto object-contain" />
+
+        {/* Red Logo Badge */}
+        <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-1">
+          <div className="bg-primary rounded-sm px-2 py-1 flex items-center gap-1">
+            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+              <span className="material-symbols-outlined text-[13px] text-primary">visibility</span>
+            </div>
+            <span className="text-on-primary font-bold text-sm leading-tight">
+              KERALA<br />
+              <span className="text-xs">NEWS LIVE</span>
+            </span>
+          </div>
         </Link>
+
         <div className="flex items-center gap-3">
           {/* Theme Toggle Capsule */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="w-12 h-6 flex items-center bg-gray-900 rounded-full p-0.5 cursor-pointer relative transition-colors duration-200"
+            className="w-9 h-5 bg-secondary rounded-xl flex items-center px-1 cursor-pointer relative transition-colors duration-200"
             aria-label="Toggle theme"
           >
-            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md transform transition-transform duration-200 translate-x-6">
-              <span className="material-symbols-outlined text-[12px] text-gray-900 font-bold">dark_mode</span>
+            <div className="w-4 h-4 bg-white rounded-full ml-auto flex items-center justify-center transition-transform duration-200">
+              <span className="material-symbols-outlined text-[10px] text-secondary">dark_mode</span>
             </div>
           </button>
 
           <button
             onClick={() => router.push('/search')}
             aria-label="Search"
-            className="text-gray-800 hover:opacity-80 transition-all cursor-pointer active:scale-95"
+            className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95"
           >
-            <span className="material-symbols-outlined text-2xl font-bold">search</span>
+            <span className="material-symbols-outlined text-[20px]">search</span>
           </button>
         </div>
       </header>
@@ -105,14 +116,14 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
             className="w-72 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-left duration-300"
           >
             {/* Sidebar Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50">
+            <div className="flex items-center justify-between p-4 border-b border-border bg-surface-container">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">folder</span>
-                <span className="font-bold text-gray-800 text-base">Categories</span>
+                <span className="font-bold text-on-surface text-base">Categories</span>
               </div>
               <button 
                 onClick={() => setSidebarOpen(false)}
-                className="text-gray-500 hover:text-gray-800 p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+                className="text-on-surface-variant hover:text-on-surface p-1.5 rounded-full hover:bg-surface-container-high transition-colors"
                 aria-label="Close menu"
               >
                 <span className="material-symbols-outlined text-2xl">close</span>
@@ -128,9 +139,9 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
                       router.push('/')
                       setSidebarOpen(false)
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-left text-sm font-medium text-on-surface hover:bg-surface-container transition-colors"
                   >
-                    <span className="material-symbols-outlined text-gray-400 text-lg">home</span>
+                    <span className="material-symbols-outlined text-on-surface-variant text-lg">home</span>
                     All News
                   </button>
                 </li>
@@ -141,9 +152,9 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
                         router.push(`/?category=${cat.id}`)
                         setSidebarOpen(false)
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-left text-sm font-medium text-on-surface hover:bg-surface-container transition-colors"
                     >
-                      <span className="material-symbols-outlined text-gray-400 text-lg">chevron_right</span>
+                      <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
                       {cat.name}
                     </button>
                   </li>
@@ -152,8 +163,8 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
             </div>
             
             {/* Sidebar Footer */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 text-center">
-              <p className="text-[10px] text-gray-400">© 2026 ThirdEye News</p>
+            <div className="p-4 border-t border-border bg-surface-container text-center">
+              <p className="text-[10px] text-on-surface-variant">© 2026 ThirdEye News</p>
             </div>
           </div>
         </div>
