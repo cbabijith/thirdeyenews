@@ -217,7 +217,7 @@ export function NewsForm({
             <input
               type="checkbox"
               checked={formData.is_published || false}
-              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked, published_at: e.target.checked ? new Date().toISOString() : '' })}
               className="h-4 w-4 text-button border-gray-300 rounded focus:ring-button cursor-pointer"
             />
             <span className={`ml-2 text-sm font-medium ${colors.text}`}>Publish Immediately</span>
@@ -233,20 +233,6 @@ export function NewsForm({
             <span className={`ml-2 text-sm font-medium ${colors.text}`}>📌 Pin to Home (Featured)</span>
           </label>
         </div>
-        {formData.is_published && (
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${colors.text}`}>Publish Date & Time (Rearrange/Backdate/Schedule)</label>
-            <input
-              type="datetime-local"
-              value={formData.published_at ? new Date(new Date(formData.published_at).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ''}
-              onChange={(e) => setFormData({ ...formData, published_at: e.target.value ? new Date(e.target.value).toISOString() : '' })}
-              className={`w-full p-3 ${colors.border} rounded-lg ${colors.text} bg-transparent`}
-            />
-            <p className={`text-xs ${colors.textSecondary} mt-1`}>
-              Note: Changing this date changes the article's order/position on both the admin panel and the user website.
-            </p>
-          </div>
-        )}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="submit"
