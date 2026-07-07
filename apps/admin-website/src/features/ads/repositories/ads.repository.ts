@@ -1,7 +1,7 @@
 import { eq, asc, and, count } from 'drizzle-orm'
 import { db } from '@/db'
 import { ads } from '@/db/schema'
-import { Ad, AdPosition } from '@/types'
+import { Ad, AdPosition } from '../types'
 
 export const adsRepository = {
   async findAll(): Promise<Ad[]> {

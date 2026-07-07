@@ -31,7 +31,7 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery)
-    }, 400)
+    }, 250)
     return () => clearTimeout(timer)
   }, [searchQuery])
 
@@ -147,6 +147,11 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
   )
 
   const togglePublish = useCallback(async (news: News) => {
+    setNewsItems((prev) =>
+      prev.map((item) =>
+        item.id === news.id ? { ...item, is_published: !item.is_published } : item,
+      ),
+    )
     const res = await fetch(`/api/news/${news.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -154,17 +159,19 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
     })
     const json = await res.json()
     if (json.error) {
+      setNewsItems((prev) =>
+        prev.map((item) =>
+          item.id === news.id ? { ...item, is_published: news.is_published } : item,
+        ),
+      )
       alert(json.error)
-      return
     }
-    setNewsItems((prev) =>
-      prev.map((item) =>
-        item.id === news.id ? { ...item, is_published: !item.is_published } : item,
-      ),
-    )
   }, [])
 
   const togglePin = useCallback(async (news: News) => {
+    setNewsItems((prev) =>
+      prev.map((item) => (item.id === news.id ? { ...item, is_pinned: !item.is_pinned } : item)),
+    )
     const res = await fetch(`/api/news/${news.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -175,12 +182,11 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
     })
     const json = await res.json()
     if (json.error) {
+      setNewsItems((prev) =>
+        prev.map((item) => (item.id === news.id ? { ...item, is_pinned: news.is_pinned } : item)),
+      )
       alert(json.error)
-      return
     }
-    setNewsItems((prev) =>
-      prev.map((item) => (item.id === news.id ? { ...item, is_pinned: !item.is_pinned } : item)),
-    )
   }, [])
 
   const createNews = useCallback(

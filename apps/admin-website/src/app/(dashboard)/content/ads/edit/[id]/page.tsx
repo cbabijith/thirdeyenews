@@ -1,7 +1,6 @@
-import { adsService } from '@/services/ads.service'
+import { adsService, Ad } from '@/features/ads'
 import { notFound } from 'next/navigation'
 import { EditAdClient } from './EditAdClient'
-import { Ad } from '@/types'
 
 export const revalidate = 0
 

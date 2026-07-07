@@ -5,10 +5,11 @@ import type { DashboardStats } from '@/services/dashboard.service'
 
 export function useDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
-    totalNews: 0,
-    totalStaff: 0,
-    totalUsers: 0,
+    publishedCount: 0,
+    draftCount: 0,
+    totalViews: 0,
     totalCategories: 0,
+    topViewed: [],
   })
   const [loading, setLoading] = useState(true)
 

@@ -162,15 +162,15 @@ export function useCategories() {
 
   const deleteCategory = useCallback(
     async (id: string) => {
-      if (!confirm('Are you sure you want to delete this category?')) return
+      setCategories((prev) => prev.filter((c) => c.id !== id))
+      setSubcategories((prev) => prev.filter((s) => s.category_id !== id))
       const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
       const json = await res.json()
       if (json.error) {
         alert(json.error)
-        return
+        fetchCategories()
+        fetchSubcategories()
       }
-      setCategories((prev) => prev.filter((c) => c.id !== id))
-      setSubcategories((prev) => prev.filter((s) => s.category_id !== id))
     },
     [],
   )
@@ -194,14 +194,13 @@ export function useCategories() {
   }, [])
 
   const deleteSubcategory = useCallback(async (id: string) => {
-    if (!confirm('Are you sure you want to delete this subcategory?')) return
+    setSubcategories((prev) => prev.filter((s) => s.id !== id))
     const res = await fetch(`/api/subcategories/${id}`, { method: 'DELETE' })
     const json = await res.json()
     if (json.error) {
       alert(json.error)
-      return
+      fetchSubcategories()
     }
-    setSubcategories((prev) => prev.filter((s) => s.id !== id))
   }, [])
 
   const toggleCategoryExpand = useCallback((categoryId: string) => {

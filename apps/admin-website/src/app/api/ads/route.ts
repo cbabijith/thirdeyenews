@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adsService } from '@/services/ads.service'
+import { adsService } from '@/features/ads'
 
 export async function GET() {
   const result = await adsService.getAllAds()

@@ -1,13 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { createAdAction } from '@/app/actions/ads'
-import { AdForm } from '@/components/forms/AdForm'
-import { useThemeStore } from '@/store/themeStore'
+import { AdForm } from '@/features/ads/components/AdForm'
+import type { AdPosition } from '@/features/ads/types'
 
 export function NewAdClient() {
   const router = useRouter()
-  const { colors } = useThemeStore()
 
   const handleSubmit = async (formData: {
     title: string
@@ -17,20 +15,23 @@ export function NewAdClient() {
     display_order: number
     is_active: boolean
   }) => {
-    const result = await createAdAction({
-      title: formData.title,
-      image_url: formData.image_url,
-      link_url: formData.link_url || null,
-      position: formData.position,
-      display_order: formData.display_order,
-      is_active: formData.is_active,
+    const res = await fetch('/api/ads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: formData.title,
+        image_url: formData.image_url,
+        link_url: formData.link_url || null,
+        position: formData.position,
+        display_order: formData.display_order,
+        is_active: formData.is_active,
+      }),
     })
-
-    if (result.error) {
-      alert(result.error)
+    const json = await res.json()
+    if (json.error) {
+      alert(json.error)
       return
     }
-
     router.push('/content/ads')
     router.refresh()
   }
@@ -39,24 +40,5 @@ export function NewAdClient() {
     router.push('/content/ads')
   }
 
-  return (
-    <div>
-      <div className="mb-6 flex items-center gap-3">
-        <button
-          onClick={handleCancel}
-          className={`p-2 rounded-lg border ${colors.border} ${colors.text} hover:bg-gray-100 transition-all flex items-center justify-center`}
-          title="Go Back"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-          </svg>
-        </button>
-        <h1 className={`text-3xl font-bold ${colors.text}`}>Add New Ad</h1>
-      </div>
-      <AdForm
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-    </div>
-  )
+  return <AdForm onSubmit={handleSubmit} onCancel={handleCancel} />
 }

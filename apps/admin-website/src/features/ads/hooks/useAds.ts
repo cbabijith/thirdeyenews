@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Ad } from '@/types'
-import { deleteImageAction } from '@/app/actions/upload'
+import { Ad } from '../types'
+import { storageService } from '@/services/storage.service'
 
 export function useAds() {
   const [ads, setAds] = useState<Ad[]>([])
@@ -28,6 +28,11 @@ export function useAds() {
   }, [fetchAds])
 
   const toggleActive = useCallback(async (ad: Ad) => {
+    setAds((prev) =>
+      prev.map((item) =>
+        item.id === ad.id ? { ...item, is_active: !item.is_active } : item,
+      ),
+    )
     const res = await fetch(`/api/ads/${ad.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -36,20 +41,20 @@ export function useAds() {
     const json = await res.json()
     if (json.error) {
       alert(json.error)
-      return
+      setAds((prev) =>
+        prev.map((item) =>
+          item.id === ad.id ? { ...item, is_active: ad.is_active } : item,
+        ),
+      )
     }
-    setAds((prev) =>
-      prev.map((item) =>
-        item.id === ad.id ? { ...item, is_active: !item.is_active } : item,
-      ),
-    )
   }, [])
 
   const deleteAd = useCallback(async (id: string) => {
     const ad = ads.find((item) => item.id === id)
+    setAds((prev) => prev.filter((item) => item.id !== id))
     if (ad?.image_url) {
       try {
-        await deleteImageAction(ad.image_url)
+        await storageService.deleteImage(ad.image_url)
       } catch (error) {
         console.error('Error deleting ad image:', error)
       }
@@ -58,10 +63,9 @@ export function useAds() {
     const json = await res.json()
     if (json.error) {
       alert(json.error)
-      return
+      fetchAds()
     }
-    setAds((prev) => prev.filter((item) => item.id !== id))
-  }, [ads])
+  }, [ads, fetchAds])
 
   return {
     ads,

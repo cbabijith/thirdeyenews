@@ -1,4 +1,4 @@
-import { AdsClient } from './AdsClient'
+import { AdsClient } from '@/features/ads/components/AdsClient'
 
 export const dynamic = 'force-dynamic'
 

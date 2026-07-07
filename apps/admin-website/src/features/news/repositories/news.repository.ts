@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, or, ilike, count } from 'drizzle-orm'
+import { eq, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { news } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
@@ -169,5 +169,38 @@ export const newsRepository = {
       .where(eq(news.id, id))
       .returning()
     return result as unknown as News | null
+  },
+
+  async findTopViewed(limit: number = 5): Promise<News[]> {
+    const result = await db.query.news.findMany({
+      where: eq(news.is_published, true),
+      with: { categories: true, profiles: true },
+      orderBy: [desc(news.view_count)],
+      limit,
+    })
+    return result as unknown as News[]
+  },
+
+  async getTotalViews(): Promise<number> {
+    const [result] = await db
+      .select({ total: sql<number>`coalesce(sum(${news.view_count}), 0)` })
+      .from(news)
+    return result?.total || 0
+  },
+
+  async countPublished(): Promise<number> {
+    const [result] = await db
+      .select({ value: count() })
+      .from(news)
+      .where(eq(news.is_published, true))
+    return result?.value || 0
+  },
+
+  async countDrafts(): Promise<number> {
+    const [result] = await db
+      .select({ value: count() })
+      .from(news)
+      .where(eq(news.is_published, false))
+    return result?.value || 0
   },
 }

@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import type { Category } from '@/features/category/types'
+import { useState, useEffect, useRef } from 'react'
+import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useStorage } from '@/hooks/useStorage'
-import { useThemeStore } from '@/store/themeStore'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
+import { ArrowLeft, ImagePlus, X, Link as LinkIcon, Pin, Globe, FileText, Sparkles, ChevronDown } from 'lucide-react'
 
 interface NewsFormProps {
   categories: Category[]
+  subcategories?: Subcategory[]
   initialData?: News | null
   onSubmit: (data: {
     category_id: string
@@ -26,14 +27,16 @@ interface NewsFormProps {
 
 export function NewsForm({
   categories,
+  subcategories = [],
   initialData = null,
   onSubmit,
   onCancel
 }: NewsFormProps) {
-  const { colors } = useThemeStore()
   const { uploading, uploadImage, deleteImage } = useStorage()
   const [submitting, setSubmitting] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [draftSaved, setDraftSaved] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     category_id: '',
@@ -46,6 +49,10 @@ export function NewsForm({
     is_pinned: false,
     published_at: ''
   })
+
+  const filteredSubcategories = subcategories.filter(
+    (sub) => sub.category_id === formData.category_id
+  )
 
   useEffect(() => {
     if (initialData) {
@@ -66,6 +73,9 @@ export function NewsForm({
   useEffect(() => {
     if (!initialData) {
       localStorage.setItem('news-draft', JSON.stringify(formData))
+      setDraftSaved(true)
+      const t = setTimeout(() => setDraftSaved(false), 2000)
+      return () => clearTimeout(t)
     }
   }, [formData, initialData])
 
@@ -140,137 +150,280 @@ export function NewsForm({
     onCancel()
   }
 
+  const updateField = (field: string, value: any, extraField?: string, extraValue?: any) => {
+    setFormData(prev => ({ ...prev, [field]: value, ...(extraField ? { [extraField]: extraValue } : {}) }))
+  }
+
   return (
-    <div className={`${colors.card} p-4 sm:p-6 rounded-lg shadow mb-8`}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${colors.text}`}>Category</label>
-          <select
-            value={formData.category_id || ''}
-            onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-            className={`w-full p-3 ${colors.border} rounded-lg ${colors.text} bg-transparent`}
-          >
-            <option value="">Select a category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${colors.text}`}>Title</label>
-          <input
-            type="text"
-            value={formData.title || ''}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-            className={`w-full p-3 ${colors.border} rounded-lg ${colors.text} bg-transparent`}
-            placeholder="News title"
-          />
-        </div>
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${colors.text}`}>Content</label>
-          <RichTextEditor
-            content={formData.content || ''}
-            onChange={(content) => setFormData({ ...formData, content })}
-          />
-        </div>
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${colors.text}`}>Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className={`w-full p-3 ${colors.border} rounded-lg ${colors.text}`}
-            disabled={uploading}
-          />
-          {uploading && <p className={`text-sm ${colors.textSecondary} mt-1`}>Uploading...</p>}
-          {formData.image_url && (
-            <div className="mt-2 relative inline-block max-w-full">
-              <img
-                src={formData.image_url}
-                alt="Preview"
-                className="max-w-full sm:max-w-xs rounded-lg object-contain"
-              />
+    <div className="max-w-[1400px] mx-auto">
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Main editor area */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+              {/* Title */}
+              <div className="px-6 pt-6 pb-2">
+                <input
+                  type="text"
+                  value={formData.title || ''}
+                  onChange={(e) => updateField('title', e.target.value)}
+                  required
+                  className="w-full text-3xl font-bold text-gray-900 bg-transparent border-none outline-none placeholder:text-gray-300"
+                  placeholder="Untitled"
+                />
+              </div>
+
+              {/* Content editor */}
+              <div className="px-6 pb-6">
+                <RichTextEditor
+                  content={formData.content || ''}
+                  onChange={(content) => updateField('content', content)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
+            {/* Publish card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                Publish Settings
+              </h3>
+
+              {/* Publish toggle */}
               <button
                 type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-opacity"
-                title="Remove image"
+                onClick={() => updateField('is_published', !formData.is_published, 'published_at', formData.is_published ? '' : new Date().toISOString())}
+                className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                  formData.is_published
+                    ? 'border-green-300 bg-green-50'
+                    : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                }`}
               >
-                ✕
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    formData.is_published ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium text-gray-900">Publish</div>
+                    <div className="text-xs text-gray-500">{formData.is_published ? 'Live & visible' : 'Saved as draft'}</div>
+                  </div>
+                </div>
+                <div className={`w-10 h-5 rounded-full transition-all relative ${
+                  formData.is_published ? 'bg-green-500' : 'bg-gray-300'
+                }`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                    formData.is_published ? 'left-5' : 'left-0.5'
+                  }`} />
+                </div>
+              </button>
+
+              {/* Pin toggle */}
+              <button
+                type="button"
+                onClick={() => updateField('is_pinned', !formData.is_pinned)}
+                className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                  formData.is_pinned
+                    ? 'border-indigo-300 bg-indigo-50'
+                    : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    formData.is_pinned ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-400'
+                  }`}>
+                    <Pin className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium text-gray-900">Pin to Home</div>
+                    <div className="text-xs text-gray-500">{formData.is_pinned ? 'Featured on homepage' : 'Show in regular feed'}</div>
+                  </div>
+                </div>
+                <div className={`w-10 h-5 rounded-full transition-all relative ${
+                  formData.is_pinned ? 'bg-indigo-500' : 'bg-gray-300'
+                }`}>
+                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${
+                    formData.is_pinned ? 'left-5' : 'left-0.5'
+                  }`} />
+                </div>
               </button>
             </div>
-          )}
-        </div>
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${colors.text}`}>YouTube Link</label>
-          <input
-            type="url"
-            value={formData.youtube_link || ''}
-            onChange={(e) => setFormData({ ...formData, youtube_link: e.target.value })}
-            className={`w-full p-3 ${colors.border} rounded-lg ${colors.text} bg-transparent`}
-            placeholder="https://youtube.com/watch?v=..."
-          />
-        </div>
-        <div className="flex flex-col sm:flex-row gap-4 py-2">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_published || false}
-              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked, published_at: e.target.checked ? new Date().toISOString() : '' })}
-              className="h-4 w-4 text-button border-gray-300 rounded focus:ring-button cursor-pointer"
-            />
-            <span className={`ml-2 text-sm font-medium ${colors.text}`}>Publish Immediately</span>
-          </label>
 
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_pinned || false}
-              onChange={(e) => setFormData({ ...formData, is_pinned: e.target.checked })}
-              className="h-4 w-4 text-button border-gray-300 rounded focus:ring-button cursor-pointer"
-            />
-            <span className={`ml-2 text-sm font-medium ${colors.text}`}>📌 Pin to Home (Featured)</span>
-          </label>
+            {/* Category card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5" />
+                Organization
+              </h3>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Category</label>
+                <div className="relative">
+                  <select
+                    value={formData.category_id || ''}
+                    onChange={(e) => updateField('category_id', e.target.value, 'subcategory_id', '')}
+                    className="w-full appearance-none px-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400 cursor-pointer pr-9"
+                  >
+                    <option value="">Select category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {filteredSubcategories.length > 0 && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1.5">Subcategory</label>
+                  <div className="relative">
+                    <select
+                      value={formData.subcategory_id || ''}
+                      onChange={(e) => updateField('subcategory_id', e.target.value)}
+                      className="w-full appearance-none px-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400 cursor-pointer pr-9"
+                    >
+                      <option value="">Select subcategory</option>
+                      {filteredSubcategories.map((sub) => (
+                        <option key={sub.id} value={sub.id}>{sub.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Media card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <ImagePlus className="w-3.5 h-3.5" />
+                Media
+              </h3>
+
+              {/* Image upload */}
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                {formData.image_url ? (
+                  <div className="relative group rounded-lg overflow-hidden border border-gray-200">
+                    <img
+                      src={formData.image_url}
+                      alt="Preview"
+                      className="w-full h-40 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full h-32 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 hover:border-gray-300 hover:bg-gray-50 transition-all disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <>
+                        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                        <span className="text-xs font-medium">Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ImagePlus className="w-7 h-7" />
+                        <span className="text-xs font-medium">Click to upload image</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {/* YouTube link */}
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">YouTube Link</label>
+                <div className="relative">
+                  <LinkIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="url"
+                    value={formData.youtube_link || ''}
+                    onChange={(e) => updateField('youtube_link', e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400"
+                    placeholder="https://youtube.com/watch?v=..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+
+        {/* Sticky action bar */}
+        <div className="sticky bottom-0 mt-6 -mx-4 px-4 py-3 bg-white/80 backdrop-blur-md border-t border-gray-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Cancel
+            </button>
+            {draftSaved && !initialData && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+                Draft saved
+              </span>
+            )}
+          </div>
           <button
             type="submit"
-            className="w-full sm:w-auto px-6 py-3 bg-button text-white rounded-lg hover:opacity-90 font-medium text-center transition-all disabled:opacity-50"
+            className="px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             disabled={uploading || submitting}
           >
-            {submitting ? 'Saving...' : (initialData ? 'Update' : 'Create')}
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="w-full sm:w-auto px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-medium text-center transition-all disabled:opacity-50"
-            disabled={submitting}
-          >
-            Cancel
+            {submitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              initialData ? 'Save Changes' : 'Publish News'
+            )}
           </button>
         </div>
       </form>
 
       {showCancelConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className={`${colors.card} p-6 rounded-lg shadow-lg max-w-md w-full mx-auto`}>
-            <h3 className={`text-xl font-semibold mb-4 ${colors.text}`}>Cancel News Creation?</h3>
-            <p className={`${colors.text} mb-6 text-sm`}>
-              Are you sure you want to cancel? This will clear all your changes and discard the form.
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Discard changes?</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Your draft and all changes will be permanently lost.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-end">
+            <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowCancelConfirm(false)}
-                className="w-full sm:w-auto px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-medium transition-all"
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
               >
                 Keep Editing
               </button>
               <button
                 onClick={confirmCancel}
-                className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all"
               >
-                Cancel & Discard
+                Discard
               </button>
             </div>
           </div>

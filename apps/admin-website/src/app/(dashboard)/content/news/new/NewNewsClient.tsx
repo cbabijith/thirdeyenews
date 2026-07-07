@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { Category, Subcategory, News } from '@/types'
 import { NewsForm } from '@/features/news'
-import { useThemeStore } from '@/store/themeStore'
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 
 interface NewNewsClientProps {
   categories: Category[]
@@ -12,7 +13,6 @@ interface NewNewsClientProps {
 
 export function NewNewsClient({ categories, subcategories }: NewNewsClientProps) {
   const router = useRouter()
-  const { colors } = useThemeStore()
 
   const handleSubmit = async (formData: any) => {
     const res = await fetch('/api/news', {
@@ -49,21 +49,18 @@ export function NewNewsClient({ categories, subcategories }: NewNewsClientProps)
   }
 
   return (
-    <div>
-      <div className="mb-6 flex items-center gap-3">
-        <button
-          onClick={handleCancel}
-          className={`p-2 rounded-lg border ${colors.border} ${colors.text} hover:bg-gray-100 transition-all flex items-center justify-center`}
-          title="Go Back"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-          </svg>
-        </button>
-        <h1 className={`text-3xl font-bold ${colors.text}`}>Add New News</h1>
+    <div className="px-4 sm:px-6 py-6">
+      <div className="mb-6">
+        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
+          <Link href="/content/news" className="hover:text-gray-600 transition-colors">News</Link>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="text-gray-900 font-medium">New Article</span>
+        </nav>
+        <h1 className="text-2xl font-bold text-gray-900">Create News Article</h1>
       </div>
       <NewsForm
         categories={categories}
+        subcategories={subcategories}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />

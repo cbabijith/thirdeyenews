@@ -1,44 +1,60 @@
-import { uploadImage as r2Upload, deleteImage as r2Delete } from '@thirdeyenews/shared-supabase'
-
 export const storageService = {
   async uploadImage(file: File, path: string): Promise<{ data: string | null; error: string | null }> {
     try {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = path ? `${path}/${fileName}` : `news/${fileName}`
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('folder', path)
 
-      const publicUrl = await r2Upload(file, filePath)
-      return { data: publicUrl, error: null }
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const json = await res.json()
+
+      if (json.error) {
+        return { data: null, error: json.error }
+      }
+      return { data: json.data, error: null }
     } catch (error) {
-      console.error('Error uploading image to R2:', error)
+      console.error('Error uploading image:', error)
       return { data: null, error: (error as Error).message }
     }
   },
 
   async deleteImage(url: string): Promise<{ success: boolean; error: string | null }> {
     try {
-      const urlObj = new URL(url)
-      const pathParts = urlObj.pathname.split('/')
-      const newsIdx = pathParts.indexOf('news')
-      let key = pathParts[pathParts.length - 1]
-      if (newsIdx !== -1) {
-        key = pathParts.slice(newsIdx).join('/')
-      }
+      const res = await fetch('/api/delete-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const json = await res.json()
 
-      await r2Delete(key)
+      if (json.error) {
+        return { success: false, error: json.error }
+      }
       return { success: true, error: null }
     } catch (error) {
-      console.error('Error deleting image from R2:', error)
+      console.error('Error deleting image:', error)
       return { success: false, error: (error as Error).message }
     }
   },
 
   async deleteImageByFilename(filename: string): Promise<{ success: boolean; error: string | null }> {
     try {
-      await r2Delete(`news/${filename}`)
+      const res = await fetch('/api/delete-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: `https://pub-7a1a77e5d8f3444d931ce51a542a8b7d.r2.dev/news/${filename}` }),
+      })
+      const json = await res.json()
+
+      if (json.error) {
+        return { success: false, error: json.error }
+      }
       return { success: true, error: null }
     } catch (error) {
-      console.error('Error deleting image from R2:', error)
+      console.error('Error deleting image:', error)
       return { success: false, error: (error as Error).message }
     }
   },

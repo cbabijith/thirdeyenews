@@ -1,5 +1,6 @@
-import { adsRepository } from '@/repositories/ads.repository'
-import { Ad, AdPosition, ApiResponse } from '@/types'
+import { adsRepository } from '../repositories/ads.repository'
+import { Ad, AdPosition } from '../types'
+import { ApiResponse } from '@/types'
 
 export const adsService = {
   async getAllAds(): Promise<ApiResponse<Ad[]>> {
