@@ -13,12 +13,22 @@ export function useAds() {
     setLoading(true)
     try {
       const res = await fetch('/api/ads')
+      if (!res.ok) {
+        console.error('Error fetching ads:', res.status)
+        setAds([])
+        setLoading(false)
+        return
+      }
       const json = await res.json()
       if (json.data) {
         setAds(json.data)
+      } else if (json.error) {
+        console.error('Error fetching ads:', json.error)
+        setAds([])
       }
     } catch (error) {
       console.error('Error fetching ads:', error)
+      setAds([])
     }
     setLoading(false)
   }, [])
