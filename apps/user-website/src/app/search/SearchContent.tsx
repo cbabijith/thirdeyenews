@@ -241,7 +241,7 @@ export function SearchContent() {
                     <div className="flex items-center gap-2 text-on-surface-variant text-xs">
                       {item.published_at && (
                         <span>
-                          {new Date(item.published_at).getFullYear()} {formatShortDate(item.published_at)}
+                          {formatShortDate(item.published_at)}
                         </span>
                       )}
                       {item.profiles?.full_name && (

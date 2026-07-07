@@ -326,7 +326,7 @@ export function HomeContent({
                       {item.title}
                     </p>
                     {item.published_at && (
-                      <p className="text-on-surface-variant text-xs mt-1">
+                      <p className="text-on-surface-variant text-xs mt-1" suppressHydrationWarning>
                         {getTimeAgo(item.published_at)}
                       </p>
                     )}

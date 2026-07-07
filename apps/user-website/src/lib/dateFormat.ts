@@ -14,32 +14,40 @@ const englishLongMonths = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
 
+const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000
+
+function toIST(date: Date): Date {
+  return new Date(date.getTime() + IST_OFFSET_MS)
+}
+
 export function formatMalayalamDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return `${d.getFullYear()} ${malayalamMonths[d.getMonth()]} ${d.getDate()}`
+  const d = toIST(new Date(dateStr))
+  return `${d.getUTCFullYear()} ${malayalamMonths[d.getUTCMonth()]} ${d.getUTCDate()}`
 }
 
 export function formatShortDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return `${englishShortMonths[d.getMonth()]} ${d.getDate()}`
+  const d = toIST(new Date(dateStr))
+  return `${englishShortMonths[d.getUTCMonth()]} ${d.getUTCDate()}`
 }
 
 export function formatLongDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return `${englishLongMonths[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`
+  const d = toIST(new Date(dateStr))
+  return `${englishLongMonths[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
 }
 
 export function formatTime(dateStr: string): string {
-  const d = new Date(dateStr)
-  let hours = d.getHours()
-  const minutes = d.getMinutes().toString().padStart(2, '0')
+  const d = toIST(new Date(dateStr))
+  let hours = d.getUTCHours()
+  const minutes = d.getUTCMinutes().toString().padStart(2, '0')
   const ampm = hours >= 12 ? 'PM' : 'AM'
   hours = hours % 12 || 12
   return `${hours}:${minutes} ${ampm}`
 }
 
 export function getTimeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime()
+  const now = toIST(new Date())
+  const then = toIST(new Date(dateStr))
+  const diff = now.getTime() - then.getTime()
   const hours = Math.floor(diff / (1000 * 60 * 60))
   if (hours < 1) return 'ഇപ്പോൾ'
   if (hours < 24) return `${hours} മണിക്കൂർ മുൻപ്`
