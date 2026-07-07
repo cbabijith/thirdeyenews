@@ -5,7 +5,7 @@ import { Category } from '../types'
 
 export const categoriesRepository = {
   async findAll(): Promise<Category[]> {
-    const result = await db.select().from(categories).orderBy(asc(categories.name))
+    const result = await db.select().from(categories).orderBy(asc(categories.priority))
     return result as unknown as Category[]
   },
 
@@ -21,6 +21,7 @@ export const categoriesRepository = {
         name: data.name,
         slug: data.slug,
         description: data.description || null,
+        priority: 0,
       })
       .returning()
     return result as unknown as Category
@@ -31,9 +32,18 @@ export const categoriesRepository = {
     if (updates.name !== undefined) updateData.name = updates.name
     if (updates.slug !== undefined) updateData.slug = updates.slug
     if (updates.description !== undefined) updateData.description = updates.description
+    if (updates.priority !== undefined) updateData.priority = updates.priority
 
     const [result] = await db.update(categories).set(updateData).where(eq(categories.id, id)).returning()
     return result as unknown as Category | null
+  },
+
+  async updatePriorities(updates: { id: string; priority: number }[]): Promise<void> {
+    await db.transaction(async (tx) => {
+      for (const update of updates) {
+        await tx.update(categories).set({ priority: update.priority }).where(eq(categories.id, update.id))
+      }
+    })
   },
 
   async delete(id: string): Promise<void> {

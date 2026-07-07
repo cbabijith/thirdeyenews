@@ -3,6 +3,80 @@
 @tailwind utilities;
 
 @layer base {
+  .dark {
+    --tw-bg-background: #121212;
+  }
+
+  .dark body {
+    @apply bg-[#121212] text-[#e0e0e0];
+  }
+
+  .dark .bg-background {
+    background-color: #121212 !important;
+  }
+
+  .dark .bg-surface {
+    background-color: #1e1e1e !important;
+  }
+
+  .dark .bg-surface-container {
+    background-color: #2a2a2a !important;
+  }
+
+  .dark .bg-surface-container-high {
+    background-color: #363636 !important;
+  }
+
+  .dark .bg-surface-container-low {
+    background-color: #1a1a1a !important;
+  }
+
+  .dark .bg-surface-container-lowest {
+    background-color: #0f0f0f !important;
+  }
+
+  .dark .text-on-surface {
+    color: #e0e0e0 !important;
+  }
+
+  .dark .text-on-surface-variant {
+    color: #a0a0a0 !important;
+  }
+
+  .dark .border-border {
+    border-color: #333333 !important;
+  }
+
+  .dark .border-outline {
+    border-color: #444444 !important;
+  }
+
+  .dark .border-outline-variant {
+    border-color: #2e2e2e !important;
+  }
+
+  .dark .bg-primary {
+    background-color: #ff4444 !important;
+  }
+
+  .dark .text-primary {
+    color: #ff4444 !important;
+  }
+
+  .dark .bg-secondary {
+    background-color: #2a2a2a !important;
+  }
+
+  .dark .bg-button {
+    background-color: #ff4444 !important;
+  }
+
+  .dark .hover\:bg-button-hover:hover {
+    background-color: #cc3333 !important;
+  }
+}
+
+@layer base {
   body {
     @apply bg-background text-on-surface antialiased;
     min-height: max(884px, 100dvh);

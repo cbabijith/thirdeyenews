@@ -12,7 +12,7 @@ export function Footer() {
         {/* Brand + Description */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
-            <img src="/whitelogothirdeyenewslargesvg.svg" alt="ThirdEye News" className="h-8 w-auto" />
+            <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto" />
           </div>
           <p className="text-white/60 text-[13px] leading-relaxed">
             സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ. കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ അതിവേഗം ലഭിക്കാൻ ThirdEye News.

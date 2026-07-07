@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { api } from '@/lib/api'
 import '../../globals.css'
 
 const inter = Inter({
@@ -12,10 +13,10 @@ const inter = Inter({
 interface NewsItem {
   id: string
   title: string
-  content: string
-  description?: string
-  image_url?: string
-  published_at?: string
+  content?: string | null
+  description?: string | null
+  image_url?: string | null
+  published_at?: string | null
   categories?: {
     name: string
   }
@@ -23,17 +24,9 @@ interface NewsItem {
 
 async function getNews(id: string): Promise<NewsItem | null> {
   try {
-    const supabase = (await import('@thirdeyenews/shared-supabase')).default
-    
-    const { data, error } = await supabase
-      .from('news')
-      .select('*, categories(name)')
-      .eq('id', id)
-      .eq('is_published', true)
-      .single()
-
-    if (error) return null
-    return data as NewsItem
+    const data = await api.getNewsById(id)
+    if (!data) return null
+    return data as unknown as NewsItem
   } catch {
     return null
   }
@@ -68,7 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         }
       ] : [],
       type: 'article',
-      publishedTime: news.published_at,
+      publishedTime: news.published_at || undefined,
       siteName: 'ThirdEye വാർത്തകൾ',
     },
     twitter: {

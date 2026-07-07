@@ -2,15 +2,15 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client
 
 const s3Client = new S3Client({
   region: 'auto',
-  endpoint: process.env.R2_ENDPOINT || 'https://aac3ff53cff9e3877e8b3098f772b81a.r2.cloudflarestorage.com',
+  endpoint: process.env.R2_ENDPOINT || '',
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID || 'd1827d2575691cf2df76f6631610374c',
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '8984d2615a3a2072c3f9074af81df3cd0b631d45dacb8cab1c0c7d2cc1a0fcad',
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
   },
 })
 
-const BUCKET_NAME = process.env.R2_BUCKET_NAME || 'thirdeyenews'
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://pub-7a1a77e5d8f3444d931ce51a542a8b7d.r2.dev'
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || ''
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || ''
 
 export async function uploadImage(file: File, path: string): Promise<string> {
   const arrayBuffer = await file.arrayBuffer()

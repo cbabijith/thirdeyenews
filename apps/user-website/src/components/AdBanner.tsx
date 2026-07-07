@@ -1,17 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import supabase from '@thirdeyenews/shared-supabase'
-
-interface Ad {
-  id: string
-  title: string
-  image_url: string
-  link_url: string | null
-  position: string
-  is_active: boolean
-  display_order: number
-}
+import { api, Ad } from '@/lib/api'
 
 interface AdBannerProps {
   maxAds?: number
@@ -25,16 +15,8 @@ export function AdBanner({ maxAds = 3, className = '' }: AdBannerProps) {
   useEffect(() => {
     async function fetchAds() {
       try {
-        const { data, error } = await supabase
-          .from('ads')
-          .select('*')
-          .eq('position', 'main_banner')
-          .eq('is_active', true)
-          .order('display_order', { ascending: true })
-          .limit(maxAds)
-
-        if (error) throw error
-        setAds(data as unknown as Ad[] || [])
+        const data = await api.getAds('main_banner', maxAds)
+        setAds(data)
       } catch (err) {
         console.error('Failed to load ads:', err)
       } finally {

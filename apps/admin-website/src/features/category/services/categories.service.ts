@@ -67,4 +67,13 @@ export const categoriesService = {
       return false
     }
   },
+
+  async updateCategoryPriorities(updates: { id: string; priority: number }[]): Promise<ApiResponse<void>> {
+    try {
+      await categoriesRepository.updatePriorities(updates)
+      return { data: null, error: null }
+    } catch (error) {
+      return { data: null, error: error instanceof Error ? error.message : 'Failed to update category priorities' }
+    }
+  },
 }

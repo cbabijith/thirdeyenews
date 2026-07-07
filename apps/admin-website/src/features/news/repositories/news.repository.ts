@@ -50,6 +50,7 @@ export const newsRepository = {
 
   async findPublishedWithRelations(limit: number, offset: number): Promise<News[]> {
     const result = await db.query.news.findMany({
+      where: eq(news.is_published, true),
       with: { categories: true, profiles: true },
       orderBy: [desc(news.published_at), desc(news.created_at)],
       limit,
@@ -64,13 +65,14 @@ export const newsRepository = {
   },
 
   async search(params: NewsSearchParams): Promise<NewsSearchResult> {
+    const escapeLike = (str: string) => str.replace(/[%_\\]/g, '\\$&')
     const whereConditions = and(
       params.categoryId ? eq(news.category_id, params.categoryId) : undefined,
       params.searchQuery
         ? or(
-            ilike(news.title, `%${params.searchQuery.trim()}%`),
-            ilike(news.description, `%${params.searchQuery.trim()}%`),
-            ilike(news.content, `%${params.searchQuery.trim()}%`),
+            ilike(news.title, `%${escapeLike(params.searchQuery.trim())}%`),
+            ilike(news.description, `%${escapeLike(params.searchQuery.trim())}%`),
+            ilike(news.content, `%${escapeLike(params.searchQuery.trim())}%`),
           )
         : undefined,
     )
@@ -202,5 +204,72 @@ export const newsRepository = {
       .from(news)
       .where(eq(news.is_published, false))
     return result?.value || 0
+  },
+
+  async findPinnedPublished(categoryId?: string, limit: number = 5): Promise<News[]> {
+    const whereConditions = categoryId
+      ? and(eq(news.is_published, true), eq(news.is_pinned, true), eq(news.category_id, categoryId))
+      : and(eq(news.is_published, true), eq(news.is_pinned, true))
+    const result = await db.query.news.findMany({
+      where: whereConditions,
+      with: { categories: true, profiles: true },
+      orderBy: desc(news.published_at),
+      limit,
+    })
+    return result as unknown as News[]
+  },
+
+  async findRecentPublished(categoryId?: string, limit: number = 10, offset: number = 0): Promise<News[]> {
+    const whereConditions = categoryId
+      ? and(eq(news.is_published, true), eq(news.is_pinned, false), eq(news.category_id, categoryId))
+      : and(eq(news.is_published, true), eq(news.is_pinned, false))
+    const result = await db.query.news.findMany({
+      where: whereConditions,
+      with: { categories: true, profiles: true },
+      orderBy: [desc(news.published_at), desc(news.created_at)],
+      limit,
+      offset,
+    })
+    return result as unknown as News[]
+  },
+
+  async findRelatedPublished(newsId: string, categoryId?: string | null, limit: number = 4): Promise<News[]> {
+    const whereConditions = categoryId
+      ? and(eq(news.is_published, true), sql`${news.id} != ${newsId}`, eq(news.category_id, categoryId))
+      : and(eq(news.is_published, true), sql`${news.id} != ${newsId}`)
+    const result = await db.query.news.findMany({
+      where: whereConditions,
+      with: { categories: true },
+      orderBy: desc(news.published_at),
+      limit,
+    })
+    return result as unknown as News[]
+  },
+
+  async searchPublished(query: string, limit: number = 10, offset: number = 0): Promise<News[]> {
+    const escapeLike = (str: string) => str.replace(/[%_\\]/g, '\\$&')
+    const whereConditions = and(
+      eq(news.is_published, true),
+      or(
+        ilike(news.title, `%${escapeLike(query.trim())}%`),
+        ilike(news.description, `%${escapeLike(query.trim())}%`),
+        ilike(news.content, `%${escapeLike(query.trim())}%`),
+      )
+    )
+    const result = await db.query.news.findMany({
+      where: whereConditions,
+      with: { categories: true, profiles: true },
+      orderBy: desc(news.published_at),
+      limit,
+      offset,
+    })
+    return result as unknown as News[]
+  },
+
+  async incrementViewCount(id: string): Promise<void> {
+    await db
+      .update(news)
+      .set({ view_count: sql`${news.view_count} + 1` })
+      .where(eq(news.id, id))
   },
 }

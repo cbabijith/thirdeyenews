@@ -8,6 +8,13 @@
       "when": 1783186368480,
       "tag": "0000_nifty_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1783443526997,
+      "tag": "0001_loud_husk",
+      "breakpoints": true
     }
   ]
 }

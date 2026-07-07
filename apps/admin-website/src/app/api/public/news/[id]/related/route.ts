@@ -1,0 +1,25 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyBearerToken } from '@/lib/verifyBearerToken'
+import { newsRepository } from '@/features/news/repositories/news.repository'
+
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = verifyBearerToken(req)
+  if (authError) return authError
+
+  try {
+    const { id } = await params
+    const { searchParams } = new URL(req.url)
+    const limit = parseInt(searchParams.get('limit') || '4', 10)
+
+    const newsItem = await newsRepository.findById(id, false)
+    const categoryId = newsItem?.category_id || null
+
+    const related = await newsRepository.findRelatedPublished(id, categoryId, limit)
+    return NextResponse.json({ data: related })
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to fetch related news' },
+      { status: 500 }
+    )
+  }
+}

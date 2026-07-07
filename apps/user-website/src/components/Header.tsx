@@ -4,12 +4,18 @@ import { useState, useEffect } from 'react'
 import { useThemeStore } from '@/store/themeStore'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import supabase from '@thirdeyenews/shared-supabase'
+import { api, Category } from '@/lib/api'
 
-interface Category {
-  id: string
-  name: string
-  slug: string
+type ThemeMode = 'light' | 'dark'
+
+function applyTheme(mode: ThemeMode) {
+  if (typeof document === 'undefined') return
+  const root = document.documentElement
+  if (mode === 'dark') {
+    root.classList.add('dark')
+  } else {
+    root.classList.remove('dark')
+  }
 }
 
 interface NewsItem {
@@ -25,9 +31,25 @@ interface HeaderProps {
 export function Header({ pinnedNews = [], categories: propCategories = [] }: HeaderProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
-  const [showComingSoon, setShowComingSoon] = useState(false)
   const [categories, setCategories] = useState<Category[]>(propCategories)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const [darkMode, setDarkMode] = useState<ThemeMode>('light')
+
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') as ThemeMode | null : null
+    if (stored) {
+      setDarkMode(stored)
+      applyTheme(stored)
+    }
+  }, [])
+
+  const toggleDarkMode = () => {
+    const next = darkMode === 'light' ? 'dark' : 'light'
+    setDarkMode(next)
+    applyTheme(next)
+    if (typeof window !== 'undefined') localStorage.setItem('theme', next)
+  }
 
   useEffect(() => {
     if (propCategories.length > 0) {
@@ -36,28 +58,14 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
     }
     async function fetchCategories() {
       try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('id, name, slug')
-          .order('name')
-        if (error) throw error
-        setCategories(data || [])
+        const data = await api.getCategories()
+        setCategories(data)
       } catch (err) {
         console.error('Error fetching categories for header:', err)
       }
     }
     fetchCategories()
   }, [propCategories])
-
-  const handleComingSoon = () => {
-    setShowComingSoon(true)
-  }
-
-  const handleCloseComingSoon = () => {
-    setShowComingSoon(false)
-  }
-
-  const [darkMode, setDarkMode] = useState(false)
 
   return (
     <>
@@ -70,28 +78,20 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
           <span className="material-symbols-outlined text-[22px]">menu</span>
         </button>
 
-        {/* Red Logo Badge */}
-        <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-1">
-          <div className="bg-primary rounded-sm px-2 py-1 flex items-center gap-1">
-            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-              <span className="material-symbols-outlined text-[13px] text-primary">visibility</span>
-            </div>
-            <span className="text-on-primary font-bold text-sm leading-tight">
-              KERALA<br />
-              <span className="text-xs">NEWS LIVE</span>
-            </span>
-          </div>
+        {/* Logo */}
+        <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
+          <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto" />
         </Link>
 
         <div className="flex items-center gap-3">
           {/* Theme Toggle Capsule */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
+            onClick={toggleDarkMode}
             className="w-9 h-5 bg-secondary rounded-xl flex items-center px-1 cursor-pointer relative transition-colors duration-200"
             aria-label="Toggle theme"
           >
-            <div className="w-4 h-4 bg-white rounded-full ml-auto flex items-center justify-center transition-transform duration-200">
-              <span className="material-symbols-outlined text-[10px] text-secondary">dark_mode</span>
+            <div className={`w-4 h-4 bg-white rounded-full flex items-center justify-center transition-transform duration-200 ${darkMode === 'dark' ? 'ml-auto' : 'mr-auto'}`}>
+              <span className="material-symbols-outlined text-[10px] text-secondary">{darkMode === 'dark' ? 'light_mode' : 'dark_mode'}</span>
             </div>
           </button>
 
@@ -113,7 +113,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="w-72 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-left duration-300"
+            className="w-72 max-w-[85vw] h-full bg-background shadow-2xl flex flex-col animate-in slide-in-from-left duration-300"
           >
             {/* Sidebar Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-surface-container">
@@ -170,19 +170,6 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
         </div>
       )}
 
-      {showComingSoon && (
-        <div 
-          onClick={handleCloseComingSoon}
-          className="fixed inset-0 flex items-center justify-center z-[60] bg-black/50 cursor-pointer"
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className={`${colors.surface} p-6 rounded-lg shadow-lg`}
-          >
-            <p className="text-on-surface font-label-category text-label-category">Coming Soon</p>
-          </div>
-        </div>
-      )}
     </>
   )
 }

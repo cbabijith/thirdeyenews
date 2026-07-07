@@ -1,41 +1,25 @@
 import { Suspense } from 'react'
-import supabase from '@thirdeyenews/shared-supabase'
+import { api, Category, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShimmerBox } from '@/components/Shimmer'
 import { HomeContent } from './HomeContent'
 
 export const revalidate = 60
-
-interface Category {
-  id: string
-  name: string
-  slug: string
-}
-
-interface NewsItem {
-  id: string
-  title: string
-  image_url?: string
-  youtube_link?: string
-  published_at?: string
-  is_pinned?: boolean
-  categories?: { name: string; slug: string }
-  profiles?: { full_name?: string; email?: string }
-}
+export const dynamic = 'force-dynamic'
 
 async function fetchHomeData() {
-  const [categoriesRes, pinnedRes, trendingRes, recentRes] = await Promise.all([
-    supabase.from('categories').select('id, name, slug').order('name'),
-    supabase.from('news').select('id, title, image_url, youtube_link, published_at, is_pinned, categories(name, slug), profiles(full_name, email)').eq('is_published', true).eq('is_pinned', true).order('published_at', { ascending: false }).limit(5),
-    supabase.from('news').select('id, title, image_url, youtube_link, published_at, is_pinned, categories(name, slug), profiles(full_name, email)').eq('is_published', true).order('view_count', { ascending: false, nullsFirst: false }).limit(5),
-    supabase.from('news').select('id, title, image_url, youtube_link, published_at, is_pinned, categories(name, slug), profiles(full_name, email)').eq('is_published', true).eq('is_pinned', false).order('published_at', { ascending: false }).limit(10),
+  const [categories, pinnedNews, trendingNews, recentNews] = await Promise.all([
+    api.getCategories(),
+    api.getPinnedNews(undefined, 5),
+    api.getTrendingNews(5),
+    api.getRecentNews(undefined, 10, 0),
   ])
 
   return {
-    categories: (categoriesRes.data || []) as Category[],
-    pinnedNews: (pinnedRes.data || []) as unknown as NewsItem[],
-    trendingNews: (trendingRes.data || []) as unknown as NewsItem[],
-    recentNews: (recentRes.data || []) as unknown as NewsItem[],
+    categories: categories as Category[],
+    pinnedNews: pinnedNews as NewsItem[],
+    trendingNews: trendingNews as NewsItem[],
+    recentNews: recentNews as NewsItem[],
   }
 }
 

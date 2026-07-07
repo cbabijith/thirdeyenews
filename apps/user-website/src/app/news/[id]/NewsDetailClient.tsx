@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import supabase from '@thirdeyenews/shared-supabase'
+import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { BottomNavBar } from '@/components/BottomNavBar'
 import { ShareButton } from '@/components/ShareButton'
@@ -14,30 +14,11 @@ import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
 import DOMPurify from 'isomorphic-dompurify'
 
-interface NewsItem {
-  id: string
-  title: string
-  content: string
-  description?: string
-  image_url?: string
-  youtube_link?: string
-  published_at?: string
-  is_pinned?: boolean
-  view_count?: number
-  categories?: {
-    name: string
-    slug: string
-  }
-  profiles?: {
-    full_name?: string
-  }
-}
-
 interface RelatedNews {
   id: string
   title: string
-  image_url?: string
-  published_at?: string
+  image_url?: string | null
+  published_at?: string | null
   categories?: {
     name: string
   }
@@ -65,16 +46,14 @@ const getYouTubeEmbedUrl = (url: string) => {
 export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
-  const [news, setNews] = useState<NewsItem>(initialNews)
+  const news = initialNews
   const [relatedNews] = useState<RelatedNews[]>(initialRelated)
   const viewCountedRef = useRef(false)
 
   useEffect(() => {
     if (!viewCountedRef.current) {
       viewCountedRef.current = true
-      supabase.rpc('increment_news_view', { news_id: initialNews.id }).then(({ error }) => {
-        if (error) console.error('Failed to increment view:', error)
-      })
+      api.incrementView(initialNews.id)
     }
   }, [initialNews.id])
 

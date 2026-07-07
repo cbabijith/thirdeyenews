@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import supabase from '@thirdeyenews/shared-supabase'
+import { api, Category, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { BreakingNewsTicker } from '@/components/BreakingNewsTicker'
 import { CategoryBar } from '@/components/CategoryBar'
@@ -14,31 +14,6 @@ import { AdBanner } from '@/components/AdBanner'
 import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
-
-interface Category {
-  id: string
-  name: string
-  slug: string
-}
-
-interface NewsItem {
-  id: string
-  title: string
-  content?: string
-  image_url?: string
-  youtube_link?: string
-  published_at?: string
-  is_pinned?: boolean
-  created_by?: string
-  categories?: {
-    name: string
-    slug: string
-  }
-  profiles?: {
-    full_name?: string
-    email?: string
-  }
-}
 
 interface HomeContentProps {
   initialCategories: Category[]
@@ -103,34 +78,14 @@ export function HomeContent({
       setLoading(true)
       setError(null)
       try {
-        let query = supabase
-          .from('news')
-          .select('id, title, image_url, youtube_link, published_at, is_pinned, categories(name, slug), profiles(full_name, email)')
-          .eq('is_published', true)
-          .order('published_at', { ascending: false })
-          .limit(PAGE_SIZE)
+        const [pinnedData, recentData] = await Promise.all([
+          withTimeout(api.getPinnedNews(selectedCategory || undefined, 5), 8000),
+          withTimeout(api.getRecentNews(selectedCategory || undefined, PAGE_SIZE, 0), 8000),
+        ])
 
-        if (selectedCategory) {
-          query = query.eq('category_id', selectedCategory)
-        }
-
-        const { data, error } = await withTimeout(
-          Promise.resolve(query),
-          5000
-        ) as { data: NewsItem[] | null; error: any }
-
-        if (error) throw error
-
-        const newsData = (data || []) as unknown as NewsItem[]
-
-        if (selectedCategory) {
-          setRecentNews(newsData.filter(item => !item.is_pinned))
-          setPinnedNews(newsData.filter(item => item.is_pinned))
-        } else {
-          setPinnedNews(newsData.filter(item => item.is_pinned))
-          setRecentNews(newsData.filter(item => !item.is_pinned).slice(0, PAGE_SIZE))
-        }
-        setHasMore(newsData.length === PAGE_SIZE)
+        setPinnedNews(pinnedData)
+        setRecentNews(recentData)
+        setHasMore(recentData.length === PAGE_SIZE)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
@@ -146,23 +101,11 @@ export function HomeContent({
     setLoadingMore(true)
     try {
       const offset = recentNews.length
-      let query = supabase
-        .from('news')
-        .select('id, title, image_url, youtube_link, published_at, is_pinned, categories(name, slug), profiles(full_name, email)')
-        .eq('is_published', true)
-        .eq('is_pinned', false)
-        .order('published_at', { ascending: false })
-        .range(offset, offset + PAGE_SIZE - 1)
+      const newsData = await withTimeout(
+        api.getRecentNews(selectedCategory || undefined, PAGE_SIZE, offset),
+        8000
+      )
 
-      if (selectedCategory) {
-        query = query.eq('category_id', selectedCategory)
-      }
-
-      const { data, error } = await withTimeout(Promise.resolve(query), 5000) as { data: NewsItem[] | null; error: any }
-
-      if (error) throw error
-
-      const newsData = (data || []) as unknown as NewsItem[]
       setRecentNews(prev => [...prev, ...newsData])
       setHasMore(newsData.length === PAGE_SIZE)
     } catch (err) {
@@ -219,7 +162,7 @@ export function HomeContent({
     )
   }
 
-  const featuredNews = pinnedNews.length > 0 ? pinnedNews[0] : null
+  const featuredNews = pinnedNews.length > 0 ? pinnedNews[currentSlide % pinnedNews.length] : null
   const latestNews = recentNews
 
   const getAuthorName = (item: NewsItem) => item.profiles?.full_name || item.profiles?.email || 'ThirdEye News'
@@ -245,7 +188,7 @@ export function HomeContent({
         {/* Hero Story Card - Featured/Pinned News */}
         {featuredNews && (
           <section className="relative overflow-hidden" style={{ height: 280 }}>
-            <Link href={`/news/${featuredNews.id}`} className="block w-full h-full">
+            <Link key={featuredNews.id} href={`/news/${featuredNews.id}`} className="block w-full h-full">
               {featuredNews.image_url ? (
                 <>
                   <div className="relative w-full h-full">

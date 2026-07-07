@@ -172,13 +172,14 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
     setNewsItems((prev) =>
       prev.map((item) => (item.id === news.id ? { ...item, is_pinned: !item.is_pinned } : item)),
     )
+    const updates: Record<string, unknown> = { is_pinned: !news.is_pinned }
+    if (!news.is_pinned && !news.published_at) {
+      updates.published_at = new Date().toISOString()
+    }
     const res = await fetch(`/api/news/${news.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        is_pinned: !news.is_pinned,
-        published_at: !news.is_pinned ? new Date().toISOString() : undefined,
-      }),
+      body: JSON.stringify(updates),
     })
     const json = await res.json()
     if (json.error) {

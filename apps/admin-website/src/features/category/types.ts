@@ -3,6 +3,7 @@ export interface Category {
   name: string
   slug: string
   description: string | null
+  priority: number
   created_at: string
   updated_at: string
 }

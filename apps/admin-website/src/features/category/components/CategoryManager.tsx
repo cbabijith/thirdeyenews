@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { useCategories } from '../hooks/useCategories'
-import { Plus, Pencil, Trash2, Folder, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, Folder, X, GripVertical } from 'lucide-react'
 
 export function CategoryManager() {
   const {
@@ -17,6 +18,7 @@ export function CategoryManager() {
     handleCategoryNameChange,
     openAddCategoryForm,
     cancelCategoryForm,
+    reorderCategories,
   } = useCategories()
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
@@ -25,6 +27,17 @@ export function CategoryManager() {
     if (!deleteTarget) return
     await deleteCategory(deleteTarget.id)
     setDeleteTarget(null)
+  }
+
+  const handleDragEnd = async (result: any) => {
+    if (!result.destination) return
+
+    const fromIndex = result.source.index
+    const toIndex = result.destination.index
+
+    if (fromIndex !== toIndex) {
+      await reorderCategories(fromIndex, toIndex)
+    }
   }
 
   if (loading) {
@@ -96,43 +109,66 @@ export function CategoryManager() {
       )}
 
       {/* List */}
-      <div className="space-y-2">
-        {categories.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-400 text-sm">No categories yet</p>
-          </div>
-        ) : (
-          categories.map((category) => (
-            <div key={category.id} className="bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
-              <div className="flex items-center gap-3 p-3">
-                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0">
-                  <Folder className="w-4 h-4" />
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="categories">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+              {categories.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-gray-400 text-sm">No categories yet</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-gray-900 truncate">{category.name}</h3>
-                  <p className="text-xs text-gray-400 mt-0.5">/{category.slug}</p>
-                </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <button
-                    onClick={() => editCategory(category)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                    title="Edit"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteTarget({ id: category.id, name: category.name })}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+              ) : (
+                categories.map((category, index) => (
+                  <Draggable key={category.id} draggableId={category.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`bg-white rounded-lg border transition-all ${
+                          snapshot.isDragging ? 'border-gray-400 shadow-lg' : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 p-3">
+                          <div
+                            {...provided.dragHandleProps}
+                            className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0 cursor-grab hover:text-gray-600 hover:bg-gray-200 transition-colors"
+                          >
+                            <GripVertical className="w-4 h-4" />
+                          </div>
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 flex-shrink-0">
+                            <Folder className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-medium text-gray-900 truncate">{category.name}</h3>
+                            <p className="text-xs text-gray-400 mt-0.5">/{category.slug}</p>
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button
+                              onClick={() => editCategory(category)}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                              title="Edit"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget({ id: category.id, name: category.name })}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              )}
+              {provided.placeholder}
             </div>
-          ))
-        )}
-      </div>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* Delete confirmation */}
       {deleteTarget && (

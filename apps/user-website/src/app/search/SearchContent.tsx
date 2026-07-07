@@ -4,25 +4,10 @@ import { useEffect, useState, Suspense, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import supabase from '@thirdeyenews/shared-supabase'
+import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { BottomNavBar } from '@/components/BottomNavBar'
 import { useThemeStore } from '@/store/themeStore'
-
-interface NewsItem {
-  id: string
-  title: string
-  content: string
-  image_url?: string
-  published_at?: string
-  categories?: {
-    name: string
-    slug: string
-  }
-  profiles?: {
-    full_name?: string
-  }
-}
 
 const PAGE_SIZE = 10
 
@@ -72,21 +57,11 @@ export function SearchContent() {
       setError(null)
       setShowDropdown(true)
       try {
-        const { data, error } = await withTimeout(
-          Promise.resolve(
-            supabase
-              .from('news')
-              .select('id, title, content, image_url, published_at, categories(name, slug), profiles(full_name)')
-              .eq('is_published', true)
-              .or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`)
-              .order('published_at', { ascending: false })
-              .range(0, PAGE_SIZE - 1)
-          ),
+        const newsData = await withTimeout(
+          api.searchNews(searchQuery.trim(), PAGE_SIZE, 0),
           8000
         )
 
-        if (error) throw error
-        const newsData = (data || []) as unknown as NewsItem[]
         setResults(newsData)
         setHasMore(newsData.length === PAGE_SIZE)
       } catch (err) {
@@ -106,21 +81,11 @@ export function SearchContent() {
     setLoadingMore(true)
     try {
       const offset = results.length
-      const { data, error } = await withTimeout(
-        Promise.resolve(
-          supabase
-            .from('news')
-            .select('id, title, content, image_url, published_at, categories(name, slug), profiles(full_name)')
-            .eq('is_published', true)
-            .or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`)
-            .order('published_at', { ascending: false })
-            .range(offset, offset + PAGE_SIZE - 1)
-        ),
+      const newsData = await withTimeout(
+        api.searchNews(searchQuery.trim(), PAGE_SIZE, offset),
         8000
       )
 
-      if (error) throw error
-      const newsData = (data || []) as unknown as NewsItem[]
       setResults(prev => [...prev, ...newsData])
       setHasMore(newsData.length === PAGE_SIZE)
     } catch (err) {
@@ -308,7 +273,7 @@ export function SearchContent() {
 
       <footer className="bg-inverse-surface text-primary-fixed font-body-md text-body-md w-full mt-auto flex flex-col items-center gap-stack-md p-stack-md text-center pb-24 md:pb-stack-md">
         <div className="font-headline-md text-headline-md text-primary-fixed">
-          ThirdEye News
+          <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto mx-auto" />
         </div>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           <a className="text-inverse-on-surface opacity-80 hover:text-secondary-fixed transition-colors cursor-pointer" href="#">

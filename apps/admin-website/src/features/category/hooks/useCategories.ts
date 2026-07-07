@@ -244,6 +244,35 @@ export function useCategories() {
     setSubcategoryFormData({ name: '', slug: '', description: '' })
   }
 
+  const reorderCategories = async (fromIndex: number, toIndex: number) => {
+    const newCategories = [...categories]
+    const [movedCategory] = newCategories.splice(fromIndex, 1)
+    newCategories.splice(toIndex, 0, movedCategory)
+
+    const updates = newCategories.map((category, index) => ({
+      id: category.id,
+      priority: index,
+    }))
+
+    setCategories(newCategories)
+
+    try {
+      const res = await fetch('/api/categories/priorities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates }),
+      })
+      const json = await res.json()
+      if (json.error) {
+        alert(json.error)
+        fetchCategories()
+      }
+    } catch (error) {
+      alert('Failed to update category order')
+      fetchCategories()
+    }
+  }
+
   return {
     categories,
     subcategories,
@@ -271,5 +300,6 @@ export function useCategories() {
     openAddCategoryForm,
     cancelCategoryForm,
     cancelSubcategoryForm,
+    reorderCategories,
   }
 }
