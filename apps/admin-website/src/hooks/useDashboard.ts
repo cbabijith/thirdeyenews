@@ -18,14 +18,19 @@ export function useDashboard() {
       setLoading(true)
       try {
         const res = await fetch('/api/dashboard')
+        if (!res.ok) {
+          console.error('Error fetching dashboard stats:', res.status)
+          return
+        }
         const json = await res.json()
         if (json.data) {
           setStats(json.data)
         }
       } catch (error) {
         console.error('Error fetching dashboard stats:', error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchStats()
   }, [])

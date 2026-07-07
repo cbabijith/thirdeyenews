@@ -21,19 +21,35 @@ export function useCategories() {
   })
 
   const fetchCategories = useCallback(async () => {
-    const res = await fetch('/api/categories')
-    const json = await res.json()
-    if (json.data) {
-      setCategories(json.data)
+    try {
+      const res = await fetch('/api/categories')
+      if (!res.ok) {
+        console.error('Error fetching categories:', res.status)
+        setCategories([])
+        return
+      }
+      const json = await res.json()
+      if (json.data) {
+        setCategories(json.data)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      setCategories([])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
   const fetchSubcategories = useCallback(async () => {
-    const res = await fetch('/api/subcategories')
-    const json = await res.json()
-    if (json.data) {
-      setSubcategories(json.data)
+    try {
+      const res = await fetch('/api/subcategories')
+      if (!res.ok) return
+      const json = await res.json()
+      if (json.data) {
+        setSubcategories(json.data)
+      }
+    } catch (error) {
+      console.error('Error fetching subcategories:', error)
     }
   }, [])
 

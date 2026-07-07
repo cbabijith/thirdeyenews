@@ -39,22 +39,35 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
     let active = true
     async function doSearch() {
       setLoading(true)
-      const params = new URLSearchParams({
-        search: debouncedSearchQuery,
-        ...(filterCategory && { categoryId: filterCategory }),
-        sortBy,
-        limit: '10',
-        offset: '0',
-      })
-      const res = await fetch(`/api/news?${params}`)
-      const json = await res.json()
-      if (active) {
-        if (json.data) {
-          setNewsItems(json.data)
-          setCount(json.count)
-          setHasMore(json.data.length < json.count)
+      try {
+        const params = new URLSearchParams({
+          search: debouncedSearchQuery,
+          ...(filterCategory && { categoryId: filterCategory }),
+          sortBy,
+          limit: '10',
+          offset: '0',
+        })
+        const res = await fetch(`/api/news?${params}`)
+        if (!res.ok) {
+          console.error('Error fetching news:', res.status)
+          setNewsItems([])
+          setCount(0)
+          setHasMore(false)
+          return
         }
-        setLoading(false)
+        const json = await res.json()
+        if (active) {
+          if (json.data) {
+            setNewsItems(json.data)
+            setCount(json.count)
+            setHasMore(json.data.length < json.count)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching news:', error)
+        setNewsItems([])
+      } finally {
+        if (active) setLoading(false)
       }
     }
     doSearch()
@@ -66,25 +79,31 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return
     setLoadingMore(true)
-    const params = new URLSearchParams({
-      search: debouncedSearchQuery,
-      ...(filterCategory && { categoryId: filterCategory }),
-      sortBy,
-      limit: '10',
-      offset: newsItems.length.toString(),
-    })
-    const res = await fetch(`/api/news?${params}`)
-    const json = await res.json()
-    if (json.data) {
-      setNewsItems((prev) => {
-        const existingIds = new Set(prev.map((item) => item.id))
-        const newItems = json.data.filter((item: News) => !existingIds.has(item.id))
-        return [...prev, ...newItems]
+    try {
+      const params = new URLSearchParams({
+        search: debouncedSearchQuery,
+        ...(filterCategory && { categoryId: filterCategory }),
+        sortBy,
+        limit: '10',
+        offset: newsItems.length.toString(),
       })
-      setCount(json.count)
-      setHasMore(newsItems.length + json.data.length < json.count)
+      const res = await fetch(`/api/news?${params}`)
+      if (!res.ok) return
+      const json = await res.json()
+      if (json.data) {
+        setNewsItems((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id))
+          const newItems = json.data.filter((item: News) => !existingIds.has(item.id))
+          return [...prev, ...newItems]
+        })
+        setCount(json.count)
+        setHasMore(newsItems.length + json.data.length < json.count)
+      }
+    } catch (error) {
+      console.error('Error loading more news:', error)
+    } finally {
+      setLoadingMore(false)
     }
-    setLoadingMore(false)
   }, [debouncedSearchQuery, filterCategory, sortBy, newsItems.length, hasMore, loadingMore])
 
   useEffect(() => {
@@ -108,20 +127,25 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
   }, [hasMore, loadingMore, loading, loadMore])
 
   const refreshNews = useCallback(async () => {
-    const currentLimit = Math.max(10, newsItems.length)
-    const params = new URLSearchParams({
-      search: debouncedSearchQuery,
-      ...(filterCategory && { categoryId: filterCategory }),
-      sortBy,
-      limit: currentLimit.toString(),
-      offset: '0',
-    })
-    const res = await fetch(`/api/news?${params}`)
-    const json = await res.json()
-    if (json.data) {
-      setNewsItems(json.data)
-      setCount(json.count)
-      setHasMore(json.data.length < json.count)
+    try {
+      const currentLimit = Math.max(10, newsItems.length)
+      const params = new URLSearchParams({
+        search: debouncedSearchQuery,
+        ...(filterCategory && { categoryId: filterCategory }),
+        sortBy,
+        limit: currentLimit.toString(),
+        offset: '0',
+      })
+      const res = await fetch(`/api/news?${params}`)
+      if (!res.ok) return
+      const json = await res.json()
+      if (json.data) {
+        setNewsItems(json.data)
+        setCount(json.count)
+        setHasMore(json.data.length < json.count)
+      }
+    } catch (error) {
+      console.error('Error refreshing news:', error)
     }
   }, [debouncedSearchQuery, filterCategory, sortBy, newsItems.length])
 
