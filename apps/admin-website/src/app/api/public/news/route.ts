@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyBearerToken } from '@/lib/verifyBearerToken'
+import { verifyBearerToken, corsHeaders } from '@/lib/verifyBearerToken'
 import { newsRepository } from '@/features/news/repositories/news.repository'
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders })
+}
 
 export async function GET(req: NextRequest) {
   const authError = verifyBearerToken(req)
@@ -16,25 +20,25 @@ export async function GET(req: NextRequest) {
 
     if (q) {
       const results = await newsRepository.searchPublished(q, limit, offset)
-      return NextResponse.json({ data: results })
+      return NextResponse.json({ data: results }, { headers: corsHeaders })
     }
 
     if (type === 'pinned') {
       const data = await newsRepository.findPinnedPublished(category, limit)
-      return NextResponse.json({ data })
+      return NextResponse.json({ data }, { headers: corsHeaders })
     }
 
     if (type === 'trending') {
       const data = await newsRepository.findTopViewed(limit)
-      return NextResponse.json({ data })
+      return NextResponse.json({ data }, { headers: corsHeaders })
     }
 
     const data = await newsRepository.findRecentPublished(category, limit, offset)
-    return NextResponse.json({ data })
+    return NextResponse.json({ data }, { headers: corsHeaders })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch news' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }

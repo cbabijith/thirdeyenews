@@ -24,7 +24,7 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
         <div className="flex-1 flex gap-1 overflow-x-auto no-scrollbar scroll-smooth">
           <button
             onClick={() => onCategorySelect(null)}
-            className={`px-3 py-1 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
+            className={`px-3.5 py-1.5 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
               selectedCategory === null
                 ? 'bg-primary text-on-primary'
                 : 'text-on-surface hover:bg-surface-container'
@@ -37,7 +37,7 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
               <button
                 key={category.id}
                 onClick={() => onCategorySelect(category.id)}
-                className={`px-3 py-1 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
+                className={`px-3.5 py-1.5 rounded-sm text-sm font-medium whitespace-nowrap transition-all ${
                   selectedCategory === category.id
                     ? 'bg-primary text-on-primary'
                     : 'text-on-surface hover:bg-surface-container'

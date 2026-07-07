@@ -73,7 +73,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Menu"
-          className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95"
+          className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center"
         >
           <span className="material-symbols-outlined text-[22px]">menu</span>
         </button>
@@ -98,7 +98,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
           <button
             onClick={() => router.push('/search')}
             aria-label="Search"
-            className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95"
+            className="text-on-surface hover:opacity-80 transition-all cursor-pointer active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <span className="material-symbols-outlined text-[20px]">search</span>
           </button>

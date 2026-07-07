@@ -79,15 +79,19 @@
 @layer base {
   body {
     @apply bg-background text-on-surface antialiased;
-    min-height: max(884px, 100dvh);
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
   
   /* HTML content styling */
   article {
     @apply text-on-surface-variant;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.85;
     letter-spacing: 0.01em;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   article strong, article b {
@@ -144,7 +148,7 @@
   }
 
   article img {
-    @apply rounded-lg my-4 w-full;
+    @apply rounded-lg my-4 w-full h-auto;
   }
 
   article figure {
@@ -157,6 +161,9 @@
 
   article table {
     @apply w-full my-4 border-collapse text-sm;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   article th, article td {
@@ -240,5 +247,29 @@
   @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
+  }
+
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-bottom-nav {
+    padding-bottom: calc(52px + env(safe-area-inset-bottom));
+  }
+
+  .safe-bottom-nav-ad {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
   }
 }

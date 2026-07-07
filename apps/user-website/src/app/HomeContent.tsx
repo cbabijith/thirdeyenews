@@ -8,12 +8,12 @@ import { api, Category, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { BreakingNewsTicker } from '@/components/BreakingNewsTicker'
 import { CategoryBar } from '@/components/CategoryBar'
-import { BottomNavBar } from '@/components/BottomNavBar'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { AdBanner } from '@/components/AdBanner'
 import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
+import { formatShortDate as fmtShort, formatTime, getTimeAgo as timeAgo } from '@/lib/dateFormat'
 
 interface HomeContentProps {
   initialCategories: Category[]
@@ -142,7 +142,6 @@ export function HomeContent({
             ))}
           </div>
         </main>
-        <BottomNavBar />
       </div>
     )
   }
@@ -166,16 +165,9 @@ export function HomeContent({
   const latestNews = recentNews
 
   const getAuthorName = (item: NewsItem) => item.profiles?.full_name || item.profiles?.email || 'ThirdEye News'
-  const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const formatDate = (date: string) => fmtShort(date)
 
-  const getTimeAgo = (date: string) => {
-    const diff = Date.now() - new Date(date).getTime()
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    if (hours < 1) return 'ഇപ്പോൾ'
-    if (hours < 24) return `${hours} മണിക്കൂർ മുൻപ്`
-    const days = Math.floor(hours / 24)
-    return `${days} ദിവസം മുൻപ്`
-  }
+  const getTimeAgo = (date: string) => timeAgo(date)
 
   return (
     <div className={`min-h-screen ${colors.background}`}>
@@ -187,7 +179,7 @@ export function HomeContent({
       <main className="md:hidden">
         {/* Hero Story Card - Featured/Pinned News */}
         {featuredNews && (
-          <section className="relative overflow-hidden" style={{ height: 280 }}>
+          <section className="relative overflow-hidden aspect-[16/10]">
             <Link key={featuredNews.id} href={`/news/${featuredNews.id}`} className="block w-full h-full">
               {featuredNews.image_url ? (
                 <>
@@ -220,7 +212,7 @@ export function HomeContent({
                       <span className="text-white text-xs opacity-80">
                         {featuredNews.published_at && formatDate(featuredNews.published_at)}
                         {featuredNews.published_at && ' | '}
-                        {featuredNews.published_at && new Date(featuredNews.published_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        {featuredNews.published_at && formatTime(featuredNews.published_at)}
                       </span>
                       {pinnedNews.length > 1 && (
                         <div className="flex gap-1">
@@ -266,9 +258,9 @@ export function HomeContent({
                 <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               </span>
             </div>
-            <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth">
+            <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x">
               {latestNews.slice(0, 10).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="flex flex-col" style={{ width: 115 }}>
+                <Link key={item.id} href={`/news/${item.id}`} className="flex flex-col snap-start" style={{ width: 115 }}>
                   <div className="rounded-md overflow-hidden" style={{ height: 75 }}>
                     {item.image_url ? (
                       <div className="relative w-full h-full">
@@ -289,7 +281,7 @@ export function HomeContent({
                     </p>
                     {item.published_at && (
                       <p className="text-on-surface-variant text-xs mt-1">
-                        {new Date(item.published_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        {formatTime(item.published_at)}
                       </p>
                     )}
                   </div>
@@ -550,7 +542,6 @@ export function HomeContent({
 
       <Footer />
 
-      <BottomNavBar />
       <WhatsAppButton />
     </div>
   )

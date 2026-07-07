@@ -6,8 +6,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
-import { BottomNavBar } from '@/components/BottomNavBar'
+import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
+import { formatShortDate } from '@/lib/dateFormat'
 
 const PAGE_SIZE = 10
 
@@ -96,10 +97,10 @@ export function SearchContent() {
   }
 
   return (
-    <div className={`min-h-screen ${colors.background} pb-[80px] md:pb-0`}>
+    <div className={`min-h-screen ${colors.background}`}>
       <Header />
       
-      <main className="w-full max-w-container-max mx-auto px-margin-mobile md:px-gutter py-stack-md">
+      <main className="w-full max-w-[700px] mx-auto px-4 md:px-6 pt-4 pb-8">
         {/* Search Input with Dropdown */}
         <div className="mb-6 relative" ref={dropdownRef}>
           <div className={`relative ${colors.surfaceContainerLowest} border ${colors.outlineVariant} rounded-xl`}>
@@ -112,7 +113,7 @@ export function SearchContent() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery && setShowDropdown(true)}
               placeholder="Search news..."
-              className="w-full pl-12 pr-4 py-3 bg-transparent text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+              className="w-full pl-12 pr-12 py-3.5 bg-transparent text-on-surface placeholder:text-on-surface-variant focus:outline-none text-base"
             />
             {searchQuery && (
               <button
@@ -192,10 +193,7 @@ export function SearchContent() {
                             </h4>
                             {item.published_at && (
                               <span className="text-on-surface-variant text-xs">
-                                {new Date(item.published_at).toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric'
-                                })}
+                                {formatShortDate(item.published_at)}
                               </span>
                             )}
                           </div>
@@ -243,11 +241,7 @@ export function SearchContent() {
                     <div className="flex items-center gap-2 text-on-surface-variant text-xs">
                       {item.published_at && (
                         <span>
-                          {new Date(item.published_at).toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric'
-                          })}
+                          {new Date(item.published_at).getFullYear()} {formatShortDate(item.published_at)}
                         </span>
                       )}
                       {item.profiles?.full_name && (
@@ -271,33 +265,7 @@ export function SearchContent() {
         )}
       </main>
 
-      <footer className="bg-inverse-surface text-primary-fixed font-body-md text-body-md w-full mt-auto flex flex-col items-center gap-stack-md p-stack-md text-center pb-24 md:pb-stack-md">
-        <div className="font-headline-md text-headline-md text-primary-fixed">
-          <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto mx-auto" />
-        </div>
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          <a className="text-inverse-on-surface opacity-80 hover:text-secondary-fixed transition-colors cursor-pointer" href="#">
-            ഞങ്ങളെക്കുറിച്ച്
-          </a>
-          <a className="text-inverse-on-surface opacity-80 hover:text-secondary-fixed transition-colors cursor-pointer" href="#">
-            പരസ്യം
-          </a>
-          <a className="text-inverse-on-surface opacity-80 hover:text-secondary-fixed transition-colors cursor-pointer" href="#">
-            സ്വകാര്യതാ നയം
-          </a>
-          <a className="text-inverse-on-surface opacity-80 hover:text-secondary-fixed transition-colors cursor-pointer" href="#">
-            സമ്പർക്കം
-          </a>
-        </div>
-        <p className="text-inverse-on-surface opacity-60 text-sm mt-4">
-          © 2024 IDL വാർത്തകൾ. All rights reserved.
-        </p>
-        <p className="text-inverse-on-surface opacity-50 text-xs mt-1">
-          Made by <a href="https://abijithcb.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-secondary-fixed transition-colors">abijithcb.com</a>
-        </p>
-      </footer>
-
-      <BottomNavBar />
+      <Footer />
     </div>
   )
 }

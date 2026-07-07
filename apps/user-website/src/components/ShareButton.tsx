@@ -10,7 +10,7 @@ export function ShareButton({ onShare }: ShareButtonProps) {
   const [showLabel, setShowLabel] = useState(false)
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 md:bottom-8">
+    <div className="fixed bottom-6 right-4 z-50">
       <button
         onClick={onShare}
         onMouseEnter={() => setShowLabel(true)}

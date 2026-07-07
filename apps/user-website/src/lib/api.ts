@@ -1,12 +1,37 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
 const API_TOKEN = process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
 
+function getBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    return ''
+  }
+  return API_BASE_URL
+}
+
+function getHeaders(): Record<string, string> {
+  if (typeof window !== 'undefined') {
+    return { 'Content-Type': 'application/json' }
+  }
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_TOKEN}`,
+  }
+}
+
+function mapPath(path: string): string {
+  if (typeof window !== 'undefined') {
+    return path
+  }
+  return path.replace(/^\/api\//, '/api/public/')
+}
+
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const baseUrl = getBaseUrl()
+  const fullPath = mapPath(path)
+  const res = await fetch(`${baseUrl}${fullPath}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_TOKEN}`,
+      ...getHeaders(),
       ...options?.headers,
     },
   })
@@ -20,12 +45,11 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 async function apiPost<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const baseUrl = getBaseUrl()
+  const fullPath = mapPath(path)
+  const res = await fetch(`${baseUrl}${fullPath}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_TOKEN}`,
-    },
+    headers: getHeaders(),
   })
 
   if (!res.ok) {
@@ -76,52 +100,52 @@ export interface Ad {
 
 export const api = {
   async getCategories(): Promise<Category[]> {
-    return apiFetch<Category[]>('/api/public/categories')
+    return apiFetch<Category[]>('/api/categories')
   },
 
   async getPinnedNews(categoryId?: string, limit: number = 5): Promise<NewsItem[]> {
     const params = new URLSearchParams({ type: 'pinned', limit: String(limit) })
     if (categoryId) params.set('category', categoryId)
-    return apiFetch<NewsItem[]>(`/api/public/news?${params}`)
+    return apiFetch<NewsItem[]>(`/api/news?${params}`)
   },
 
   async getRecentNews(categoryId?: string, limit: number = 10, offset: number = 0): Promise<NewsItem[]> {
     const params = new URLSearchParams({ type: 'recent', limit: String(limit), offset: String(offset) })
     if (categoryId) params.set('category', categoryId)
-    return apiFetch<NewsItem[]>(`/api/public/news?${params}`)
+    return apiFetch<NewsItem[]>(`/api/news?${params}`)
   },
 
   async getTrendingNews(limit: number = 5): Promise<NewsItem[]> {
     const params = new URLSearchParams({ type: 'trending', limit: String(limit) })
-    return apiFetch<NewsItem[]>(`/api/public/news?${params}`)
+    return apiFetch<NewsItem[]>(`/api/news?${params}`)
   },
 
   async searchNews(query: string, limit: number = 10, offset: number = 0): Promise<NewsItem[]> {
     const params = new URLSearchParams({ q: query, limit: String(limit), offset: String(offset) })
-    return apiFetch<NewsItem[]>(`/api/public/news?${params}`)
+    return apiFetch<NewsItem[]>(`/api/news?${params}`)
   },
 
   async getNewsById(id: string): Promise<NewsItem | null> {
     try {
-      return await apiFetch<NewsItem>(`/api/public/news/${id}`)
+      return await apiFetch<NewsItem>(`/api/news/${id}`)
     } catch {
       return null
     }
   },
 
   async getRelatedNews(id: string, limit: number = 4): Promise<NewsItem[]> {
-    return apiFetch<NewsItem[]>(`/api/public/news/${id}/related?limit=${limit}`)
+    return apiFetch<NewsItem[]>(`/api/news/${id}/related?limit=${limit}`)
   },
 
   async incrementView(id: string): Promise<void> {
     try {
-      await apiPost(`/api/public/news/${id}/view`)
+      await apiPost(`/api/news/${id}/view`)
     } catch (err) {
       console.error('Failed to increment view:', err)
     }
   },
 
   async getAds(position: string = 'main_banner', limit: number = 3): Promise<Ad[]> {
-    return apiFetch<Ad[]>(`/api/public/ads?position=${position}&limit=${limit}`)
+    return apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`)
   },
 }

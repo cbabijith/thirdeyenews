@@ -6,13 +6,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
-import { BottomNavBar } from '@/components/BottomNavBar'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
 import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
 import DOMPurify from 'isomorphic-dompurify'
+import { formatMalayalamDate, formatShortDate, formatLongDate, formatTime } from '@/lib/dateFormat'
 
 interface RelatedNews {
   id: string
@@ -64,11 +64,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const newsUrl = window.location.href
     const publishedDate = news.published_at
-      ? new Date(news.published_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
+      ? formatLongDate(news.published_at)
       : ''
 
     const shareText = `📰 *ThirdEye News* | ${category}
@@ -131,15 +127,11 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
   }
 
   const formattedDate = news.published_at
-    ? new Date(news.published_at).toLocaleDateString('ml-IN', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+    ? formatMalayalamDate(news.published_at)
     : ''
 
   const authorName = news.profiles?.full_name || 'സ്റ്റാഫ് റിപ്പോർട്ടർ'
-  const formatDateShort = (date: string) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const formatDateShort = (date: string) => formatShortDate(date)
 
   const sanitizedContent = news.content ? DOMPurify.sanitize(news.content) : ''
 
@@ -152,9 +144,9 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         <div className="flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-1 text-on-surface-variant text-[12px] font-medium hover:text-on-surface transition-colors"
+            className="inline-flex items-center gap-1 text-on-surface-variant text-[13px] font-medium hover:text-on-surface transition-colors min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             തിരികെ
           </button>
           {news.categories && (
@@ -170,7 +162,7 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         </h1>
 
         {/* Metadata Row */}
-        <div className="flex items-center gap-2 text-[11px] text-on-surface-variant">
+        <div className="flex items-center gap-2 text-[12px] text-on-surface-variant flex-wrap">
           {news.published_at && (
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-[13px]">schedule</span>
@@ -195,14 +187,12 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
 
         {/* Featured Image */}
         {news.image_url && (
-          <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-surface-container mt-1 relative">
-            <Image
+          <div className="w-full rounded-xl overflow-hidden bg-surface-container mt-1">
+            <img
               src={news.image_url}
               alt={news.title}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 700px"
-              className="object-cover"
+              className="w-full h-auto block"
+              loading="eager"
             />
           </div>
         )}
@@ -278,7 +268,6 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         )}
       </main>
 
-      <BottomNavBar />
       <ShareButton onShare={handleShare} />
 
       <Footer />
