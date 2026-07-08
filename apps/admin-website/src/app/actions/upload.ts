@@ -1,6 +1,18 @@
 'use server'
 
-import { uploadImage as r2Upload, deleteImage as r2Delete } from '@thirdeyenews/shared-supabase'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT || '',
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+  },
+})
+
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || ''
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || ''
 
 export async function uploadImageAction(formData: FormData, folder: string = 'news') {
   try {
@@ -11,7 +23,19 @@ export async function uploadImageAction(formData: FormData, folder: string = 'ne
     const fileName = `${Math.random()}.${fileExt}`
     const filePath = `${folder}/${fileName}`
 
-    const publicUrl = await r2Upload(file, filePath)
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: filePath,
+      Body: buffer,
+      ContentType: file.type,
+    })
+
+    await s3Client.send(command)
+
+    const publicUrl = `${R2_PUBLIC_URL}/${filePath}`
     return { data: publicUrl, error: null }
   } catch (error) {
     console.error('Error uploading image to R2:', error)
@@ -29,7 +53,12 @@ export async function deleteImageAction(url: string) {
       key = pathParts.slice(newsIdx).join('/')
     }
 
-    await r2Delete(key)
+    const command = new DeleteObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    })
+
+    await s3Client.send(command)
     return { success: true, error: null }
   } catch (error) {
     console.error('Error deleting image from R2:', error)

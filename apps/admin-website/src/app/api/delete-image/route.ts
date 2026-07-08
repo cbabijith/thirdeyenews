@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { deleteImage as r2Delete } from '@thirdeyenews/shared-supabase'
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'
+
+export const runtime = 'nodejs'
+
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT || '',
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+  },
+})
+
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || ''
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +30,12 @@ export async function POST(req: NextRequest) {
       key = pathParts.slice(newsIdx).join('/')
     }
 
-    await r2Delete(key)
+    const command = new DeleteObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    })
+
+    await s3Client.send(command)
     return NextResponse.json({ success: true, error: null })
   } catch (error) {
     console.error('Delete error:', error)

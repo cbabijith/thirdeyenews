@@ -1,11 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadImage as r2Upload } from '@thirdeyenews/shared-supabase'
-import sharp from 'sharp'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+
+export const runtime = 'nodejs'
+export const maxDuration = 60
 
 const MAX_SIZE = 100 * 1024
 const TARGET_SIZE = 50 * 1024
 
+const s3Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT || '',
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+  },
+})
+
+const BUCKET_NAME = process.env.R2_BUCKET_NAME || ''
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || ''
+
 async function compressToWebP(buffer: Buffer): Promise<Buffer> {
+  const sharp = (await import('sharp')).default
   let quality = 85
   let width = 1600
   let result = await sharp(buffer)
@@ -54,14 +69,34 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer()
     const originalBuffer = Buffer.from(arrayBuffer)
 
-    const compressedBuffer = await compressToWebP(originalBuffer)
+    let uploadBuffer: Buffer
+    let contentType: string
+    let fileExt: string
 
-    const fileName = `${Math.random()}.webp`
+    try {
+      uploadBuffer = await compressToWebP(originalBuffer)
+      contentType = 'image/webp'
+      fileExt = 'webp'
+    } catch (compressErr) {
+      console.error('Sharp compression failed, uploading original:', compressErr)
+      uploadBuffer = originalBuffer
+      contentType = file.type || 'image/jpeg'
+      fileExt = file.name.split('.').pop() || 'jpg'
+    }
+
+    const fileName = `${Math.random()}.${fileExt}`
     const filePath = `${folder}/${fileName}`
 
-    const webpFile = new File([new Uint8Array(compressedBuffer)], fileName, { type: 'image/webp' })
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: filePath,
+      Body: uploadBuffer,
+      ContentType: contentType,
+    })
 
-    const publicUrl = await r2Upload(webpFile, filePath)
+    await s3Client.send(command)
+
+    const publicUrl = `${R2_PUBLIC_URL}/${filePath}`
     return NextResponse.json({ data: publicUrl, error: null })
   } catch (error) {
     console.error('Upload error:', error)

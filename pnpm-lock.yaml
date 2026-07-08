@@ -17,6 +17,9 @@ importers:
 
   apps/admin-website:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.0.0
+        version: 3.1068.0
       '@hello-pangea/dnd':
         specifier: ^18.0.1
         version: 18.0.1(@types/react@18.3.29)(react-dom@18.3.1)(react@18.3.1)
