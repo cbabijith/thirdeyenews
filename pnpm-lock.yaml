@@ -32,9 +32,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@3.4.19)
-      '@thirdeyenews/shared-supabase':
-        specifier: workspace:*
-        version: link:../../packages/shared-supabase
       '@tiptap/react':
         specifier: ^3.23.6
         version: 3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6)(@tiptap/pm@3.23.6)(@types/react-dom@18.3.7)(@types/react@18.3.29)(react-dom@18.3.1)(react@18.3.1)
@@ -126,9 +123,6 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@3.4.19)
-      '@thirdeyenews/shared-supabase':
-        specifier: workspace:*
-        version: link:../../packages/shared-supabase
       autoprefixer:
         specifier: ^10.4.17
         version: 10.5.0(postcss@8.5.15)
