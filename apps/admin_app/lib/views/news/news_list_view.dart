@@ -158,8 +158,8 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppTheme.secondaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFFEE2E2),
+        foregroundColor: AppTheme.primaryColor,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onPressed: () {

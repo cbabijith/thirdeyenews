@@ -5,6 +5,7 @@ class AppTheme {
   // Brand Colors
   static const Color primaryColor = Color(0xFFD42B2B); // ThirdEye Red
   static const Color primaryDarkColor = Color(0xFFC02626);
+  static const Color crimsonColor = Color(0xFF881337); // Deep Crimson
   static const Color secondaryColor = Color(0xFF0F172A); // Charcoal/Slate
   static const Color accentColor = Color(0xFF10B981); // Emerald Green
   static const Color warningColor = Color(0xFFF59E0B); // Amber
