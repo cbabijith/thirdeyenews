@@ -604,7 +604,7 @@ class DashboardOverviewView extends ConsumerWidget {
                 return Wrap(
                   spacing: 12,
                   runSpacing: 12,
-                  children: List.generate(4, (index) => _buildStatCardShimmer(cardWidth)),
+                  children: List.generate(4, (index) => _buildStatCardShimmer(context, cardWidth)),
                 );
               },
             ),
@@ -621,7 +621,7 @@ class DashboardOverviewView extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 4,
               separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemBuilder: (context, index) => _buildArticleItemShimmer(),
+              itemBuilder: (context, index) => _buildArticleItemShimmer(context),
             ),
             const SizedBox(height: 24),
 
@@ -645,13 +645,17 @@ class DashboardOverviewView extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatCardShimmer(double width) {
+  Widget _buildStatCardShimmer(BuildContext context, double width) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.all(16),
       child: const Column(
@@ -671,12 +675,16 @@ class DashboardOverviewView extends ConsumerWidget {
     );
   }
 
-  Widget _buildArticleItemShimmer() {
+  Widget _buildArticleItemShimmer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: borderColor),
       ),
       padding: const EdgeInsets.all(12),
       child: const Row(

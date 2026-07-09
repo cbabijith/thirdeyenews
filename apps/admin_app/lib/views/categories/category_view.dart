@@ -267,11 +267,15 @@ class CategoryView extends ConsumerWidget {
                 itemCount: 5,
                 separatorBuilder: (context, index) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
+                  final isDark = Theme.of(context).brightness == Brightness.dark;
+                  final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+                  final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
                   return Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardBg,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                      border: Border.all(color: borderColor, width: 1),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: const Row(

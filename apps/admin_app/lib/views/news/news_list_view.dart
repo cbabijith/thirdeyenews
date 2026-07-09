@@ -269,11 +269,15 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
       itemCount: 4,
       separatorBuilder: (context, index) => const SizedBox(height: 14),
       itemBuilder: (context, index) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+        final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
