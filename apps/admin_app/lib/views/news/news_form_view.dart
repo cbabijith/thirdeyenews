@@ -35,6 +35,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   bool _isSaving = false;
   bool _isLoadingDetails = false;
   String _initialHtml = '';
+  double _editorHeight = 300;
 
   @override
   void initState() {
@@ -344,24 +345,36 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title Input
+              // Title Input Header Label
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+                child: Text(
+                  'ARTICLE TITLE',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF64748B), // Slate 500
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
               Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                 child: TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
-                    hintText: 'Untitled',
+                    hintText: 'Enter title here...',
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     filled: false,
                     contentPadding: EdgeInsets.zero,
                   ),
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                   validator: (value) => value == null || value.trim().isEmpty ? 'Title is required' : null,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               
               // Custom Detached Toolbar (Only Bold and Bullet List)
               ToolBar(
@@ -376,6 +389,21 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                 iconSize: 20,
               ),
               
+              // Content Input Header Label
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 16.0),
+                child: Text(
+                  'ARTICLE CONTENT',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF64748B), // Slate 500
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              
               // QuillHtmlEditor WYSIWYG Panel
               ClipRRect(
                 borderRadius: const BorderRadius.only(
@@ -383,16 +411,29 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                   bottomRight: Radius.circular(12),
                 ),
                 child: SizedBox(
-                  height: 400,
+                  height: _editorHeight,
                   child: QuillHtmlEditor(
                     controller: _quillController,
-                    hintText: 'Write article content here...',
+                    hintText: 'Enter content here...',
                     isEnabled: true,
                     minHeight: 300,
                     backgroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    hintTextPadding: const EdgeInsets.symmetric(horizontal: 20),
+                    hintTextStyle: const TextStyle(
+                      color: Color(0xFF94A3B8), // Slate 400 (visible grey)
+                      fontSize: 14,
+                    ),
                     onEditorCreated: () {
                       if (_initialHtml.isNotEmpty) {
                         _quillController.setText(_initialHtml);
+                      }
+                    },
+                    onEditorResized: (height) {
+                      if (height >= 300 && height != _editorHeight) {
+                        setState(() {
+                          _editorHeight = height;
+                        });
                       }
                     },
                   ),
