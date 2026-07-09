@@ -24,17 +24,22 @@ class NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
     final formattedDate = DateFormat.yMMMd().format(item.createdAt);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.03),
+            color: isDark ? Colors.black.withOpacity(0.1) : const Color(0xFF0F172A).withOpacity(0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -55,8 +60,8 @@ class NewsCard extends StatelessWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                      border: Border.all(color: borderColor, width: 1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: item.imageUrl != null && item.imageUrl!.isNotEmpty
@@ -70,9 +75,9 @@ class NewsCard extends StatelessWidget {
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ),
-                            errorWidget: (context, url, error) => _emptyThumbnail(),
+                            errorWidget: (context, url, error) => _emptyThumbnail(context),
                           )
-                        : _emptyThumbnail(),
+                        : _emptyThumbnail(context),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -135,10 +140,10 @@ class NewsCard extends StatelessWidget {
                         item.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Color(0xFF0F172A),
+                          color: textPrimary,
                           height: 1.3,
                         ),
                       ),
@@ -147,18 +152,18 @@ class NewsCard extends StatelessWidget {
                       // Metadata Info
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today_outlined, size: 11, color: Color(0xFF64748B)),
+                          Icon(Icons.calendar_today_outlined, size: 11, color: textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             formattedDate,
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                            style: TextStyle(fontSize: 11, color: textSecondary),
                           ),
                           const SizedBox(width: 12),
-                          const Icon(Icons.visibility_outlined, size: 12, color: Color(0xFF64748B)),
+                          Icon(Icons.visibility_outlined, size: 12, color: textSecondary),
                           const SizedBox(width: 4),
                           Text(
                             '${item.viewCount} views',
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                            style: TextStyle(fontSize: 11, color: textSecondary),
                           ),
                         ],
                       ),
@@ -172,7 +177,7 @@ class NewsCard extends StatelessWidget {
           // Divider
           Container(
             height: 1,
-            color: const Color(0xFFF1F5F9),
+            color: borderColor,
           ),
 
           // Bottom Action Bar
@@ -186,6 +191,7 @@ class NewsCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _statePill(
+                      context: context,
                       isActive: item.isPublished,
                       activeText: 'LIVE',
                       inactiveText: 'DRAFT',
@@ -196,6 +202,7 @@ class NewsCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _statePill(
+                      context: context,
                       isActive: item.isPinned,
                       activeText: 'PINNED',
                       inactiveText: 'PIN',
@@ -215,7 +222,7 @@ class NewsCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     _actionButton(
                       icon: Icons.edit_outlined,
-                      color: const Color(0xFF475569), // Slate 600
+                      color: isDark ? AppTheme.darkTextSecondary : const Color(0xFF475569), // Slate 600
                       onTap: onEdit,
                       tooltip: 'Edit Article',
                     ),
@@ -236,14 +243,16 @@ class NewsCard extends StatelessWidget {
     );
   }
 
-  Widget _emptyThumbnail() {
+  Widget _emptyThumbnail(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: const Color(0xFFF8FAFC),
+      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
       child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF94A3B8), size: 28),
     );
   }
 
   Widget _statePill({
+    required BuildContext context,
     required bool isActive,
     required String activeText,
     required String inactiveText,
@@ -252,7 +261,8 @@ class NewsCard extends StatelessWidget {
     required Color activeColor,
     required VoidCallback onTap,
   }) {
-    final color = isActive ? activeColor : const Color(0xFF64748B); // Slate 500
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isActive ? activeColor : (isDark ? AppTheme.darkTextSecondary : const Color(0xFF64748B)); // Slate 500
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),

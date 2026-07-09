@@ -22,6 +22,12 @@ class DashboardOverviewView extends ConsumerWidget {
     final authState = ref.watch(authViewModelProvider);
     final isWide = MediaQuery.of(context).size.width > 768;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     final adminName = authState.profile?.fullName ?? authState.profile?.email?.split('@').first ?? "Admin";
     final todayDate = DateFormat('EEEE, MMMM d').format(DateTime.now());
 
@@ -71,21 +77,21 @@ class DashboardOverviewView extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Good day,',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B),
+                          color: textSecondary,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         adminName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFF0F172A),
+                          color: textPrimary,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -94,20 +100,20 @@ class DashboardOverviewView extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: borderColor),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.calendar_today_outlined, size: 12, color: Color(0xFF64748B)),
+                        Icon(Icons.calendar_today_outlined, size: 12, color: textSecondary),
                         const SizedBox(width: 6),
                         Text(
                           todayDate,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF475569),
+                            color: isDark ? AppTheme.darkTextPrimary : const Color(0xFF475569),
                           ),
                         ),
                       ],
@@ -129,6 +135,7 @@ class DashboardOverviewView extends ConsumerWidget {
                     runSpacing: 12,
                     children: [
                       _buildStatCard(
+                        context: context,
                         title: 'Published',
                         value: state.publishedCount,
                         icon: Icons.public_rounded,
@@ -138,6 +145,7 @@ class DashboardOverviewView extends ConsumerWidget {
                         iconColor: AppTheme.accentColor,
                       ),
                       _buildStatCard(
+                        context: context,
                         title: 'Drafts',
                         value: state.draftCount,
                         icon: Icons.drafts_rounded,
@@ -147,6 +155,7 @@ class DashboardOverviewView extends ConsumerWidget {
                         iconColor: AppTheme.warningColor,
                       ),
                       _buildStatCard(
+                        context: context,
                         title: 'Total Views',
                         value: state.totalViews,
                         icon: Icons.visibility_rounded,
@@ -156,6 +165,7 @@ class DashboardOverviewView extends ConsumerWidget {
                         iconColor: AppTheme.infoColor,
                       ),
                       _buildStatCard(
+                        context: context,
                         title: 'Categories',
                         value: state.totalCategories,
                         icon: Icons.folder_copy_rounded,
@@ -175,12 +185,12 @@ class DashboardOverviewView extends ConsumerWidget {
                 children: [
                   const Icon(Icons.trending_up_rounded, size: 18, color: AppTheme.primaryColor),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Top Viewed Articles',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F172A),
+                      color: textPrimary,
                     ),
                   ),
                 ],
@@ -209,12 +219,12 @@ class DashboardOverviewView extends ConsumerWidget {
                     final article = state.topViewed[index];
                     return Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF0F172A).withOpacity(0.01),
+                            color: isDark ? Colors.black.withOpacity(0.1) : const Color(0xFF0F172A).withOpacity(0.01),
                             blurRadius: 4,
                             offset: const Offset(0, 1),
                           ),
@@ -224,7 +234,7 @@ class DashboardOverviewView extends ConsumerWidget {
                       child: Row(
                         children: [
                           // Rank Badge
-                          _buildRankBadge(index),
+                          _buildRankBadge(context, index),
                           const SizedBox(width: 12),
 
                           // Article Image
@@ -258,18 +268,18 @@ class DashboardOverviewView extends ConsumerWidget {
                                   article.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F172A),
+                                    color: textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
                                   '${article.categoryName ?? 'Uncategorized'} · ${DateFormat.yMd().format(article.createdAt)}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: Color(0xFF64748B),
+                                    color: textSecondary,
                                   ),
                                 ),
                               ],
@@ -280,19 +290,19 @@ class DashboardOverviewView extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.visibility_outlined, size: 12, color: Color(0xFF64748B)),
+                                Icon(Icons.visibility_outlined, size: 12, color: textSecondary),
                                 const SizedBox(width: 4),
                                 Text(
                                   '${article.viewCount}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF475569),
+                                    color: isDark ? AppTheme.darkTextPrimary : const Color(0xFF475569),
                                   ),
                                 ),
                               ],
@@ -322,12 +332,12 @@ class DashboardOverviewView extends ConsumerWidget {
               const SizedBox(height: 28),
 
               // Quick Actions
-              const Text(
+              Text(
                 'Quick Actions',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -336,6 +346,7 @@ class DashboardOverviewView extends ConsumerWidget {
                 runSpacing: 8,
                 children: [
                   _buildActionButton(
+                    context: context,
                     icon: Icons.add_outlined,
                     label: 'New Article',
                     isPrimary: true,
@@ -347,12 +358,14 @@ class DashboardOverviewView extends ConsumerWidget {
                     },
                   ),
                   _buildActionButton(
+                    context: context,
                     icon: Icons.folder_outlined,
                     label: 'Categories',
                     isPrimary: false,
                     onPressed: () => onTabSelect(2), // Categories is index 2
                   ),
                   _buildActionButton(
+                    context: context,
                     icon: Icons.campaign_outlined,
                     label: 'Ads',
                     isPrimary: false,
@@ -368,6 +381,7 @@ class DashboardOverviewView extends ConsumerWidget {
   }
 
   Widget _buildStatCard({
+    required BuildContext context,
     required String title,
     required int value,
     required IconData icon,
@@ -376,15 +390,21 @@ class DashboardOverviewView extends ConsumerWidget {
     required Color trendColor,
     required Color iconColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.02),
+            color: isDark ? Colors.black.withOpacity(0.1) : const Color(0xFF0F172A).withOpacity(0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -427,19 +447,19 @@ class DashboardOverviewView extends ConsumerWidget {
           const SizedBox(height: 14),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF64748B),
+              color: textSecondary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             NumberFormat().format(value),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: textPrimary,
               letterSpacing: -0.5,
             ),
           ),
@@ -449,26 +469,34 @@ class DashboardOverviewView extends ConsumerWidget {
   }
 
   Widget _buildActionButton({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required bool isPrimary,
     required VoidCallback onPressed,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textSecondary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF475569);
+
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isPrimary ? const Color(0xFF0F172A) : Colors.white,
+          color: isPrimary 
+              ? (isDark ? AppTheme.primaryColor : const Color(0xFF0F172A))
+              : cardBg,
           border: Border.all(
-            color: isPrimary ? Colors.transparent : const Color(0xFFE2E8F0),
+            color: isPrimary ? Colors.transparent : borderColor,
           ),
           borderRadius: BorderRadius.circular(8),
           boxShadow: isPrimary
               ? [
                   BoxShadow(
-                    color: const Color(0xFF0F172A).withOpacity(0.1),
+                    color: isDark ? Colors.black.withOpacity(0.2) : const Color(0xFF0F172A).withOpacity(0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -481,7 +509,7 @@ class DashboardOverviewView extends ConsumerWidget {
             Icon(
               icon,
               size: 16,
-              color: isPrimary ? Colors.white : const Color(0xFF475569),
+              color: isPrimary ? Colors.white : textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -489,7 +517,7 @@ class DashboardOverviewView extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: isPrimary ? Colors.white : const Color(0xFF475569),
+                color: isPrimary ? Colors.white : textSecondary,
               ),
             ),
           ],
@@ -498,22 +526,23 @@ class DashboardOverviewView extends ConsumerWidget {
     );
   }
 
-  Widget _buildRankBadge(int index) {
+  Widget _buildRankBadge(BuildContext context, int index) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Color bgColor;
     Color textColor;
 
     if (index == 0) {
-      bgColor = const Color(0xFFFEF3C7); // Amber 100
-      textColor = const Color(0xFFD97706); // Amber 600
+      bgColor = isDark ? const Color(0xFF78350F).withOpacity(0.3) : const Color(0xFFFEF3C7); // Amber 100
+      textColor = const Color(0xFFF59E0B); // Amber 600
     } else if (index == 1) {
-      bgColor = const Color(0xFFF1F5F9); // Slate 100
-      textColor = const Color(0xFF475569); // Slate 600
+      bgColor = isDark ? const Color(0xFF334155).withOpacity(0.4) : const Color(0xFFF1F5F9); // Slate 100
+      textColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569); // Slate 600
     } else if (index == 2) {
-      bgColor = const Color(0xFFFFEDD5); // Orange 100
-      textColor = const Color(0xFFEA580C); // Orange 600
+      bgColor = isDark ? const Color(0xFF7C2D12).withOpacity(0.3) : const Color(0xFFFFEDD5); // Orange 100
+      textColor = const Color(0xFFF97316); // Orange 600
     } else {
-      bgColor = const Color(0xFFF8FAFC); // Slate 50
-      textColor = const Color(0xFF94A3B8); // Slate 400
+      bgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC); // Slate 50
+      textColor = isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8); // Slate 400
     }
 
     return Container(

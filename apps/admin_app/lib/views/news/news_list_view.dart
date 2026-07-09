@@ -57,12 +57,16 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
     );
   }
 
-  Widget _buildDropdownContainer({required Widget child}) {
+  Widget _buildDropdownContainer({required BuildContext context, required Widget child}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: cardBg,
+        border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),
       ),
       height: 48,
@@ -78,6 +82,9 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
     final newsNotifier = ref.read(newsViewModelProvider.notifier);
     final width = MediaQuery.of(context).size.width;
     final isMobile = width < 600;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
     final searchField = TextField(
       controller: _searchController,
@@ -96,18 +103,18 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderSide: BorderSide(color: borderColor),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppTheme.primaryColor),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-        fillColor: Colors.white,
+        fillColor: cardBg,
         filled: true,
       ),
       onChanged: (val) {
@@ -117,12 +124,13 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
     );
 
     final categoryDropdown = _buildDropdownContainer(
+      context: context,
       child: DropdownButton<String>(
         value: newsState.filterCategoryId.isEmpty ? null : newsState.filterCategoryId,
         hint: const Text('All Categories', style: TextStyle(fontSize: 13, color: Colors.grey)),
         icon: const Icon(Icons.filter_list, size: 18),
         isExpanded: true,
-        style: const TextStyle(fontSize: 13, color: AppTheme.lightTextPrimary),
+        style: TextStyle(fontSize: 13, color: isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary),
         onChanged: (val) => newsNotifier.setFilterCategory(val ?? ''),
         items: [
           const DropdownMenuItem<String>(
@@ -140,11 +148,12 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
     );
 
     final sortDropdown = _buildDropdownContainer(
+      context: context,
       child: DropdownButton<String>(
         value: newsState.sortBy,
         icon: const Icon(Icons.sort, size: 18),
         isExpanded: true,
-        style: const TextStyle(fontSize: 13, color: AppTheme.lightTextPrimary),
+        style: TextStyle(fontSize: 13, color: isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary),
         onChanged: (val) => newsNotifier.setSortBy(val ?? 'date-desc'),
         items: const [
           DropdownMenuItem(value: 'date-desc', child: Text('Newest')),

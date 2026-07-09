@@ -34,6 +34,11 @@ class AdListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final adState = ref.watch(adViewModelProvider);
     final notifier = ref.read(adViewModelProvider.notifier);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final containerBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
 
     if (adState.isLoading) {
       return _buildAdShimmer(context);
@@ -71,12 +76,12 @@ class AdListView extends ConsumerWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Ads',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.lightTextPrimary,
+                        color: textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -95,15 +100,15 @@ class AdListView extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC), // Slate 50
-                border: Border.all(color: const Color(0xFFE2E8F0)), // Slate 200
+                color: containerBg, // Slate 50
+                border: Border.all(color: borderColor), // Slate 200
                 borderRadius: BorderRadius.circular(8),
               ),
               child: RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   style: TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF64748B), // Slate 500
+                    color: textSecondary, // Slate 500
                     height: 1.4,
                   ),
                   children: [
@@ -252,10 +257,10 @@ class AdListView extends ConsumerWidget {
                                           const SizedBox(height: 8),
                                           Text(
                                             ad.title,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
-                                              color: AppTheme.lightTextPrimary,
+                                              color: textPrimary,
                                             ),
                                           ),
                                           if (ad.linkUrl != null &&

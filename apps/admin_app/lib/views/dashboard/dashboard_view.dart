@@ -98,6 +98,10 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       const AdListView(),
     ];
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Scaffold(
       appBar: isWideScreen
           ? AppBar(
@@ -117,19 +121,19 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Text(
+                  Text(
                     'ThirdEye News',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.lightTextPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(width: 10),
                   Container(
                     width: 1,
                     height: 16,
-                    color: const Color(0xFFE2E8F0),
+                    color: borderCol,
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -137,7 +141,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[600],
+                      color: isDark ? AppTheme.darkTextSecondary : Colors.grey[600],
                     ),
                   ),
                 ],
@@ -194,12 +198,17 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   }
 
   Widget _buildMobileHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+
     return Container(
       height: 70,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+      decoration: BoxDecoration(
+        color: cardBg,
+        border: Border(bottom: BorderSide(color: borderCol)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -224,17 +233,17 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'ThirdEye News',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.lightTextPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   Text(
                     'Admin Panel',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+                    style: TextStyle(fontSize: 10, color: isDark ? AppTheme.darkTextSecondary : Colors.grey[500]),
                   ),
                 ],
               ),
@@ -246,23 +255,26 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   }
 
   Widget _buildWebSidebar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
     final width = _sidebarOpen ? 256.0 : 80.0;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       width: width,
       curve: Curves.easeInOut,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(right: BorderSide(color: Color(0xFFE2E8F0))),
+      decoration: BoxDecoration(
+        color: cardBg,
+        border: Border(right: BorderSide(color: borderCol)),
       ),
       child: Column(
         children: [
           // Sidebar Header
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: borderCol)),
             ),
             child: Row(
               mainAxisAlignment: _sidebarOpen
@@ -337,8 +349,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
           // Sidebar Bottom Drawer
           Container(
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
+            decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: borderCol)),
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -356,7 +368,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hoverColor: Colors.red[50],
+                    hoverColor: isDark ? AppTheme.crimsonColor.withOpacity(0.1) : Colors.red[50],
                     onTap: _showLogoutDialog,
                   )
                 else ...[
@@ -386,6 +398,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     IconData activeIcon,
   ) {
     final isActive = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       onTap: () => _changeTab(index),
@@ -395,7 +408,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             ? const EdgeInsets.symmetric(horizontal: 16, vertical: 12)
             : const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF0F172A) : Colors.transparent,
+          color: isActive
+              ? (isDark ? AppTheme.primaryColor.withOpacity(0.15) : const Color(0xFF0F172A))
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -405,7 +420,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           children: [
             Icon(
               isActive ? activeIcon : icon,
-              color: isActive ? Colors.white : Colors.grey[600],
+              color: isActive
+                  ? (isDark ? AppTheme.primaryColor : Colors.white)
+                  : Colors.grey[600],
               size: 20,
             ),
             if (_sidebarOpen) ...[
@@ -413,7 +430,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
               Text(
                 label,
                 style: TextStyle(
-                  color: isActive ? Colors.white : Colors.grey[700],
+                  color: isActive
+                      ? (isDark ? AppTheme.primaryColor : Colors.white)
+                      : (isDark ? AppTheme.darkTextSecondary : Colors.grey[700]),
                   fontSize: 13,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
                 ),
@@ -426,6 +445,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   }
 
   Widget _buildCustomBottomNavBar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderCol = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : const Color(0xFF64748B);
+
     final navItems = [
       _NavItem(Icons.dashboard_outlined, Icons.dashboard_rounded, 'Overview'),
       _NavItem(Icons.article_outlined, Icons.article_rounded, 'News'),
@@ -437,12 +461,12 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       height: 64,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        border: Border.all(color: borderCol, width: 1),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.08),
+            color: isDark ? Colors.black.withOpacity(0.3) : const Color(0xFF0F172A).withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -479,7 +503,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                           isSelected ? item.activeIcon : item.inactiveIcon,
                           color: isSelected
                               ? AppTheme.primaryColor
-                              : const Color(0xFF64748B),
+                              : textSecondary,
                           size: 22,
                         ),
                       ),
@@ -491,7 +515,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                           color: isSelected
                               ? AppTheme.primaryColor
-                              : const Color(0xFF64748B),
+                              : textSecondary,
                           letterSpacing: 0.2,
                         ),
                       ),

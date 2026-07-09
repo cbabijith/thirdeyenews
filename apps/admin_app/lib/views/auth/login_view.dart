@@ -157,8 +157,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        border: Border.all(color: Colors.red[200]!),
+                        color: isDark ? AppTheme.dangerColor.withOpacity(0.12) : Colors.red[50],
+                        border: Border.all(color: isDark ? AppTheme.dangerColor.withOpacity(0.3) : Colors.red[200]!),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -266,19 +266,22 @@ class _LoginViewState extends ConsumerState<LoginView> {
   }
 
   InputDecoration _inputDecoration(String hint, {Widget? prefixIcon, Widget? suffixIcon}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      filled: true,
+      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey[300]!),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey[300]!),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),

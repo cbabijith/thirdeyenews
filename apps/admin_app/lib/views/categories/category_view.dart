@@ -98,6 +98,10 @@ class CategoryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoryState = ref.watch(categoryViewModelProvider);
     final notifier = ref.read(categoryViewModelProvider.notifier);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
 
     if (categoryState.isLoading) {
       return _buildCategoryShimmer(context);
@@ -125,12 +129,12 @@ class CategoryView extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Categories',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.lightTextPrimary,
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -159,7 +163,7 @@ class CategoryView extends ConsumerWidget {
                           elevation: 0.5,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
+                            side: BorderSide(color: borderColor),
                           ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
@@ -177,22 +181,22 @@ class CategoryView extends ConsumerWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFF1F5F9), // Slate 100
+                                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9), // Slate 100
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.folder_open_outlined,
-                                    color: Color(0xFF64748B), // Slate 500
+                                    color: textSecondary, // Slate 500
                                   ),
                                 ),
                               ],
                             ),
                             title: Text(
                               category.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: AppTheme.lightTextPrimary,
+                                color: textPrimary,
                               ),
                             ),
                             subtitle: Text(

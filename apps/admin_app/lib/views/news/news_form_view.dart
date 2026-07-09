@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
+import '../../config/theme.dart';
 import '../../models/news.dart';
 import '../../viewmodels/news_viewmodel.dart';
 import '../../viewmodels/category_viewmodel.dart';
@@ -157,43 +158,32 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   }
 
   Widget _buildWebPublishButton() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF1E293B);
+
     return InkWell(
       onTap: () {
         setState(() => _isPublished = !_isPublished);
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPublished ? const Color(0xFFF0FDF4) : const Color(0xFFF8FAFC),
-          border: Border.all(
-            color: _isPublished ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
-          ),
+          color: containerBg,
+          border: Border.all(color: borderColor),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: _isPublished ? const Color(0xFF22C55E) : const Color(0xFFE2E8F0),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Icon(
-                Icons.language,
-                size: 16,
-                color: _isPublished ? Colors.white : const Color(0xFF94A3B8),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Publish',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -208,7 +198,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
               height: 20,
               padding: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
-                color: _isPublished ? const Color(0xFF22C55E) : const Color(0xFFCBD5E1),
+                color: _isPublished ? const Color(0xFF22C55E) : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: _isPublished ? Alignment.centerRight : Alignment.centerLeft,
@@ -235,43 +225,32 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   }
 
   Widget _buildWebPinButton() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF1E293B);
+
     return InkWell(
       onTap: () {
         setState(() => _isPinned = !_isPinned);
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _isPinned ? const Color(0xFFEEF2FF) : const Color(0xFFF8FAFC),
-          border: Border.all(
-            color: _isPinned ? const Color(0xFFC7D2FE) : const Color(0xFFE2E8F0),
-          ),
+          color: containerBg,
+          border: Border.all(color: borderColor),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: _isPinned ? const Color(0xFF6366F1) : const Color(0xFFE2E8F0),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Icon(
-                Icons.push_pin,
-                size: 16,
-                color: _isPinned ? Colors.white : const Color(0xFF94A3B8),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Pin to Home',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -286,7 +265,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
               height: 20,
               padding: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
-                color: _isPinned ? const Color(0xFF6366F1) : const Color(0xFFCBD5E1),
+                color: _isPinned ? const Color(0xFF6366F1) : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
                 borderRadius: BorderRadius.circular(10),
               ),
               alignment: _isPinned ? Alignment.centerRight : Alignment.centerLeft,
@@ -332,6 +311,11 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
         .where((sub) => sub.categoryId == _selectedCategoryId)
         .toList();
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppTheme.darkSurface : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF0F172A);
+
     final mainContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -340,7 +324,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: Color(0xFFE2E8F0)),
+            side: BorderSide(color: borderColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +354,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                     filled: false,
                     contentPadding: EdgeInsets.zero,
                   ),
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textPrimary),
                   validator: (value) => value == null || value.trim().isEmpty ? 'Title is required' : null,
                 ),
               ),
@@ -383,8 +367,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                   ToolBarStyle.bold,
                   ToolBarStyle.listBullet,
                 ],
-                toolBarColor: const Color(0xFFF8FAFC), // Slate 50
-                activeIconColor: const Color(0xFF0F172A),
+                toolBarColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC), // Slate 50
+                activeIconColor: isDark ? Colors.white : const Color(0xFF0F172A),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 iconSize: 20,
               ),
@@ -417,7 +401,11 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                     hintText: 'Enter content here...',
                     isEnabled: true,
                     minHeight: 300,
-                    backgroundColor: Colors.white,
+                    backgroundColor: cardBg,
+                    textStyle: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 14,
+                    ),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     hintTextPadding: const EdgeInsets.symmetric(horizontal: 20),
                     hintTextStyle: const TextStyle(
@@ -519,6 +507,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       ],
     );
 
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.initialArticle == null ? 'Create Article' : 'Edit Article'),
@@ -528,7 +518,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           else
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F172A),
+                backgroundColor: isDark ? AppTheme.primaryColor : const Color(0xFF0F172A),
                 foregroundColor: Colors.white,
                 minimumSize: const Size(120, 40),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -570,11 +560,14 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     required IconData icon,
     required List<Widget> children,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
+        side: BorderSide(color: borderColor),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -611,29 +604,35 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       return _imagePreview(Image.network(_remoteImageUrl!, fit: BoxFit.contain));
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final bg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF334155);
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : const Color(0xFF64748B);
+
     return InkWell(
       onTap: _pickImage,
       child: Container(
         height: 140,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
-          border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+          color: bg,
+          border: Border.all(color: borderColor, width: 1.5),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.image_search_outlined, size: 32, color: Color(0xFF64748B)),
-            SizedBox(height: 8),
+            Icon(Icons.image_search_outlined, size: 32, color: textSecondary),
+            const SizedBox(height: 8),
             Text(
               'Featured Image',
-              style: TextStyle(color: Color(0xFF334155), fontSize: 13, fontWeight: FontWeight.bold),
+              style: TextStyle(color: textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Click to select or upload',
-              style: TextStyle(color: Color(0xFF64748B), fontSize: 11),
+              style: TextStyle(color: textSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -642,6 +641,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   }
 
   Widget _imagePreview(Widget imageWidget) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Stack(
       children: [
         ClipRRect(
@@ -649,7 +649,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           child: Container(
             height: 180,
             width: double.infinity,
-            color: const Color(0xFFF1F5F9), // Slate 100 background
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9), // Slate 100 background
             child: imageWidget,
           ),
         ),

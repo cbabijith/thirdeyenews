@@ -192,6 +192,8 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
       ],
     );
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.initialAd == null ? 'Create Advertisement' : 'Edit Advertisement'),
@@ -201,7 +203,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
           else
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F172A),
+                backgroundColor: isDark ? AppTheme.primaryColor : const Color(0xFF0F172A),
                 foregroundColor: Colors.white,
                 minimumSize: const Size(120, 40),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -279,14 +281,18 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
       return _imagePreview(Image.network(_remoteImageUrl!, fit: BoxFit.contain));
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return InkWell(
       onTap: _pickImage,
       child: Container(
         height: 120,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+          color: bg,
+          border: Border.all(color: borderColor, width: 1.5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Column(
@@ -302,15 +308,19 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
   }
 
   Widget _imagePreview(Widget imageWidget) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Stack(
       children: [
         Container(
           height: 140,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            color: bg,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: borderColor),
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
