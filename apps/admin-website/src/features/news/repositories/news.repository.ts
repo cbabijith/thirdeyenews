@@ -59,6 +59,16 @@ export const newsRepository = {
     return result as unknown as News[]
   },
 
+  async findAllWithRelations(limit: number, offset: number): Promise<News[]> {
+    const result = await db.query.news.findMany({
+      with: { categories: true, profiles: true },
+      orderBy: [desc(news.created_at)],
+      limit,
+      offset,
+    })
+    return result as unknown as News[]
+  },
+
   async count(): Promise<number> {
     const [result] = await db.select({ value: count() }).from(news)
     return result?.value || 0
@@ -80,10 +90,10 @@ export const newsRepository = {
     let orderByClause
     switch (params.sortBy) {
       case 'date-desc':
-        orderByClause = [desc(news.published_at), desc(news.created_at)]
+        orderByClause = [desc(news.created_at)]
         break
       case 'date-asc':
-        orderByClause = [asc(news.published_at), asc(news.created_at)]
+        orderByClause = [asc(news.created_at)]
         break
       case 'title-asc':
         orderByClause = [asc(news.title)]
