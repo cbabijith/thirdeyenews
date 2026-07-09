@@ -606,9 +606,9 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
 
   Widget _buildImagePicker() {
     if (_pickedImageFile != null) {
-      return _imagePreview(Image.file(_pickedImageFile!, fit: BoxFit.cover));
+      return _imagePreview(Image.file(_pickedImageFile!, fit: BoxFit.contain));
     } else if (_remoteImageUrl != null && _remoteImageUrl!.isNotEmpty) {
-      return _imagePreview(Image.network(_remoteImageUrl!, fit: BoxFit.cover));
+      return _imagePreview(Image.network(_remoteImageUrl!, fit: BoxFit.contain));
     }
 
     return InkWell(
@@ -646,9 +646,10 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: SizedBox(
-            height: 140,
+          child: Container(
+            height: 180,
             width: double.infinity,
+            color: const Color(0xFFF1F5F9), // Slate 100 background
             child: imageWidget,
           ),
         ),
