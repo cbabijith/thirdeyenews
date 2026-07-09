@@ -37,12 +37,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = news.description || news.content?.replace(/<[^>]*>/g, '').substring(0, 160) || ''
   const imageUrl = news.image_url || ''
 
+  const url = `https://thirdeyenewslive.com/news/${resolvedParams.id}`
+
   return {
     title: `${news.title} - ThirdEye വാർത്തകൾ`,
     description: description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: news.title,
       description: description,
+      url: url,
       images: imageUrl ? [
         {
           url: imageUrl,
@@ -53,7 +59,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       ] : [],
       type: 'article',
       publishedTime: news.published_at || undefined,
-      siteName: 'ThirdEye വാർത്തകൾ',
+      siteName: 'ThirdEye News',
+      locale: 'ml_IN',
     },
     twitter: {
       card: 'summary_large_image',
