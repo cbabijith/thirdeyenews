@@ -12,7 +12,7 @@ import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
 import DOMPurify from 'isomorphic-dompurify'
-import { formatMalayalamDate, formatShortDate, formatLongDate, formatTime } from '@/lib/dateFormat'
+import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
 
 interface RelatedNews {
   id: string
@@ -60,34 +60,37 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const handleShare = async () => {
     if (typeof window === 'undefined' || !news) return
 
-    const category = news.categories?.name || 'ബ്രേക്കിംഗ് ന്യൂസ്'
-
-    const newsUrl = window.location.href
-    const publishedDate = news.published_at
-      ? formatLongDate(news.published_at)
+    const category = news.categories?.name || 'Main'
+    const newsUrl = `https://thirdeyenewslive.com/news/${news.id}`
+    const date = news.published_at
+      ? new Date(news.published_at).toLocaleDateString('en-GB')
       : ''
 
-    const shareText = `📰 *ThirdEye News* | ${category}
+    const stripHtml = (html: string) => {
+      return html
+        .replace(/<p>/g, '\n')
+        .replace(/<\/p>/g, '\n')
+        .replace(/<br\s*\/?>/g, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+    }
 
-✍️ *${news.title}*
+    const body = stripHtml(news.content || news.description || '')
 
-👉 *മുഴുവൻ വാർത്ത വായിക്കാൻ:*
-${newsUrl}
+    const shareText = `ThirdEye News | ${category}
 
-📅 ${publishedDate}
+${news.title}
+${date ? `\n📅 ${date}\n` : ''}
+${body}
 
-━━━━━━━━━━━━━━━
-
-📲 *ThirdEye News വാട്സ്ആപ്പ് ചാനലിൽ ചേരൂ*
-
-കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ, ബ്രേക്കിംഗ് അപ്ഡേറ്റുകൾ, പ്രത്യേക റിപ്പോർട്ടുകൾ എന്നിവ അതിവേഗം ലഭിക്കാൻ ഞങ്ങളുടെ വാട്സ്ആപ്പ് ചാനലിൽ ഇപ്പോൾ തന്നെ ജോയിൻ ചെയ്യൂ
-
-👇 *ചാനലിൽ ചേരാൻ*
-https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
-
-━━━━━━━━━━━━━━━
-*ThirdEye News*
-സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ 🌐 www.thirdeyenews.com`
+${newsUrl}`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
