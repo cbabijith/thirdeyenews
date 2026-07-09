@@ -26,136 +26,303 @@ class NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final formattedDate = DateFormat.yMMMd().format(item.createdAt);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Thumbnail
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                width: 72,
-                height: 72,
-                child: item.imageUrl != null && item.imageUrl!.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: item.imageUrl!,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[200]),
-                        errorWidget: (context, url, error) => _emptyThumbnail(),
-                      )
-                    : _emptyThumbnail(),
-              ),
-            ),
-            const SizedBox(width: 16),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Thumbnail
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: item.imageUrl!,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                              child: SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => _emptyThumbnail(),
+                          )
+                        : _emptyThumbnail(),
+                  ),
+                ),
+                const SizedBox(width: 14),
 
-            // Metadata & Title
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Badges
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
+                // Title & Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _badge(
-                        text: item.isPublished ? 'LIVE' : 'DRAFT',
-                        color: item.isPublished ? AppTheme.accentColor : AppTheme.warningColor,
+                      // Category Tag & Video Badge
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              (item.categoryName ?? 'Uncategorized').toUpperCase(),
+                              style: const TextStyle(
+                                color: AppTheme.primaryColor,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                          if (item.youtubeLink != null && item.youtubeLink!.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.dangerColor.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.play_circle_outline, size: 10, color: AppTheme.dangerColor),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    'VIDEO',
+                                    style: TextStyle(
+                                      color: AppTheme.dangerColor,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                      if (item.isPinned)
-                        _badge(
-                          text: 'PINNED',
-                          color: AppTheme.primaryColor,
-                          icon: Icons.push_pin_outlined,
+                      const SizedBox(height: 8),
+
+                      // Title
+                      Text(
+                        item.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: Color(0xFF0F172A),
+                          height: 1.3,
                         ),
-                      if (item.youtubeLink != null && item.youtubeLink!.isNotEmpty)
-                        _badge(
-                          text: 'VIDEO',
-                          color: AppTheme.dangerColor,
-                          icon: Icons.play_circle_outline,
-                        ),
-                      _badge(
-                        text: '${item.viewCount} views',
-                        color: Colors.grey,
-                        icon: Icons.visibility_outlined,
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Metadata Info
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today_outlined, size: 11, color: Color(0xFF64748B)),
+                          const SizedBox(width: 4),
+                          Text(
+                            formattedDate,
+                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.visibility_outlined, size: 12, color: Color(0xFF64748B)),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${item.viewCount} views',
+                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  // Title
-                  Text(
-                    item.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  // Category & Date
-                  Text(
-                    '${item.categoryName ?? 'Uncategorized'} · $formattedDate',
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
+          ),
 
-            // Quick Actions
-            Column(
+          // Divider
+          Container(
+            height: 1,
+            color: const Color(0xFFF1F5F9),
+          ),
+
+          // Bottom Action Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Toggles
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.public_outlined,
-                        color: item.isPublished ? Colors.amber : Colors.green,
-                        size: 20,
-                      ),
-                      tooltip: item.isPublished ? 'Unpublish' : 'Publish',
-                      onPressed: onTogglePublish,
+                    _statePill(
+                      isActive: item.isPublished,
+                      activeText: 'LIVE',
+                      inactiveText: 'DRAFT',
+                      activeIcon: Icons.public,
+                      inactiveIcon: Icons.public_off,
+                      activeColor: AppTheme.accentColor,
+                      onTap: onTogglePublish,
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.push_pin_outlined,
-                        color: item.isPinned ? AppTheme.primaryColor : Colors.grey,
-                        size: 20,
-                      ),
-                      tooltip: item.isPinned ? 'Unpin' : 'Pin',
-                      onPressed: onTogglePin,
+                    const SizedBox(width: 8),
+                    _statePill(
+                      isActive: item.isPinned,
+                      activeText: 'PINNED',
+                      inactiveText: 'PIN',
+                      activeIcon: Icons.push_pin,
+                      inactiveIcon: Icons.push_pin_outlined,
+                      activeColor: AppTheme.primaryColor,
+                      onTap: onTogglePin,
                     ),
                   ],
                 ),
+
+                // CRUD & Share Actions
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: SvgPicture.string(
-                        '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                          <path fill="#25D366" d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.16 5.348 5.497.01 12.053 0c3.183.001 6.177 1.24 8.43 3.496a11.905 11.905 0 0 1 3.483 8.423c-.005 6.544-5.342 11.884-11.898 11.884h-.004c-1.995 0-3.953-.516-5.698-1.503L0 24zm6.59-2.631c1.554.922 3.19 1.408 4.887 1.409h.003c5.385 0 9.767-4.372 9.77-9.743a9.75 9.75 0 0 0-2.859-6.892A9.752 9.752 0 0 0 12.052 3.32c-5.383 0-9.767 4.376-9.77 9.745-.001 1.83.479 3.619 1.391 5.178l-.348 1.272 1.322-.346zm11.485-7.403c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                        </svg>'''
-                      ),
-                      tooltip: 'Share on WhatsApp',
-                      onPressed: () => _shareToWhatsApp(context),
+                    _whatsappButton(context),
+                    const SizedBox(width: 4),
+                    _actionButton(
+                      icon: Icons.edit_outlined,
+                      color: const Color(0xFF475569), // Slate 600
+                      onTap: onEdit,
+                      tooltip: 'Edit Article',
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, size: 20),
-                      tooltip: 'Edit',
-                      onPressed: onEdit,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline, color: AppTheme.dangerColor, size: 20),
-                      tooltip: 'Delete',
-                      onPressed: onDelete,
+                    const SizedBox(width: 4),
+                    _actionButton(
+                      icon: Icons.delete_outline,
+                      color: AppTheme.dangerColor,
+                      onTap: onDelete,
+                      tooltip: 'Delete Article',
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _emptyThumbnail() {
+    return Container(
+      color: const Color(0xFFF8FAFC),
+      child: const Icon(Icons.image_not_supported_outlined, color: Color(0xFF94A3B8), size: 28),
+    );
+  }
+
+  Widget _statePill({
+    required bool isActive,
+    required String activeText,
+    required String inactiveText,
+    required IconData activeIcon,
+    required IconData inactiveIcon,
+    required Color activeColor,
+    required VoidCallback onTap,
+  }) {
+    final color = isActive ? activeColor : const Color(0xFF64748B); // Slate 500
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: color.withOpacity(0.15)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(isActive ? activeIcon : inactiveIcon, size: 12, color: color),
+            const SizedBox(width: 4),
+            Text(
+              isActive ? activeText : inactiveText,
+              style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.3,
+              ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+    required String tooltip,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+      ),
+    );
+  }
+
+  Widget _whatsappButton(BuildContext context) {
+    return Tooltip(
+      message: 'Share on WhatsApp',
+      child: InkWell(
+        onTap: () => _shareToWhatsApp(context),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF25D366).withOpacity(0.08),
+            shape: BoxShape.circle,
+          ),
+          child: SvgPicture.string(
+            '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
+              <path fill="#25D366" d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.16 5.348 5.497.01 12.053 0c3.183.001 6.177 1.24 8.43 3.496a11.905 11.905 0 0 1 3.483 8.423c-.005 6.544-5.342 11.884-11.898 11.884h-.004c-1.995 0-3.953-.516-5.698-1.503L0 24zm6.59-2.631c1.554.922 3.19 1.408 4.887 1.409h.003c5.385 0 9.767-4.372 9.77-9.743a9.75 9.75 0 0 0-2.859-6.892A9.752 9.752 0 0 0 12.052 3.32c-5.383 0-9.767 4.376-9.77 9.745-.001 1.83.479 3.619 1.391 5.178l-.348 1.272 1.322-.346zm11.485-7.403c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            </svg>'''
+          ),
         ),
       ),
     );
@@ -207,39 +374,5 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         }
       }
     }
-  }
-
-  Widget _emptyThumbnail() {
-    return Container(
-      color: Colors.grey[100],
-      child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 32),
-    );
-  }
-
-  Widget _badge({required String text, required Color color, IconData? icon}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 10, color: color),
-            const SizedBox(width: 2),
-          ],
-          Text(
-            text.toUpperCase(),
-            style: TextStyle(
-              color: color,
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
