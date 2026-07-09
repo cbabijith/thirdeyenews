@@ -62,16 +62,32 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const category = news.categories?.name || 'ബ്രേക്കിംഗ് ന്യൂസ്'
 
-    const newsUrl = `https://thirdeyenewslive.com/news/${news.id}`
+    const newsUrl = window.location.href
     const publishedDate = news.published_at
       ? formatLongDate(news.published_at)
       : ''
 
-    const bodyText = news.content
-      ? news.content.replace(/<p>/g, '\n').replace(/<\/p>/g, '\n').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/\n{3,}/g, '\n\n').trim()
-      : news.description || ''
+    const shareText = `📰 *ThirdEye News* | ${category}
 
-    const shareText = `*ThirdEye News | ${category}*\n\n*${news.title}*\n\n${bodyText}\n\n${newsUrl}\n\n━━━━━━━━━━━━━━━\n\n📲 *ThirdEye News വാട്സ്ആപ്പ് ചാനലിൽ ചേരൂ*\n\nകേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ, ബ്രേക്കിംഗ് അപ്ഡേറ്റുകൾ, പ്രത്യേക റിപ്പോർട്ടുകൾ എന്നിവ അതിവേഗം ലഭിക്കാൻ ഞങ്ങളുടെ വാട്സ്ആപ്പ് ചാനലിൽ ഇപ്പോൾ തന്നെ ജോയിൻ ചെയ്യൂ\n\n👇 *ചാനലിൽ ചേരാൻ*\nhttps://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t\n\n━━━━━━━━━━━━━━━\n*ThirdEye News*\nസത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ 🌐 https://thirdeyenewslive.com`
+✍️ *${news.title}*
+
+👉 *മുഴുവൻ വാർത്ത വായിക്കാൻ:*
+${newsUrl}
+
+📅 ${publishedDate}
+
+━━━━━━━━━━━━━━━
+
+📲 *ThirdEye News വാട്സ്ആപ്പ് ചാനലിൽ ചേരൂ*
+
+കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ, ബ്രേക്കിംഗ് അപ്ഡേറ്റുകൾ, പ്രത്യേക റിപ്പോർട്ടുകൾ എന്നിവ അതിവേഗം ലഭിക്കാൻ ഞങ്ങളുടെ വാട്സ്ആപ്പ് ചാനലിൽ ഇപ്പോൾ തന്നെ ജോയിൻ ചെയ്യൂ
+
+👇 *ചാനലിൽ ചേരാൻ*
+https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
+
+━━━━━━━━━━━━━━━
+*ThirdEye News*
+സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ 🌐 www.thirdeyenews.com`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
