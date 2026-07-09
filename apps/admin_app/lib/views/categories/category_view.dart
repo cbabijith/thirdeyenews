@@ -11,7 +11,7 @@ class CategoryView extends ConsumerWidget {
     final nameController = TextEditingController(text: category?.name);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(category == null ? 'New Category' : 'Edit Category'),
         content: TextField(
@@ -24,7 +24,7 @@ class CategoryView extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
@@ -38,8 +38,16 @@ class CategoryView extends ConsumerWidget {
                   : await notifier.updateCategory(category.id, name);
 
               if (context.mounted) {
-                Navigator.pop(context);
-                if (!success) {
+                Navigator.pop(dialogContext);
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(category == null
+                          ? 'Category created successfully!'
+                          : 'Category updated successfully!'),
+                    ),
+                  );
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Failed to save category')),
                   );
@@ -53,19 +61,30 @@ class CategoryView extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, String title, String content, VoidCallback onDelete) {
+  void _confirmDelete(BuildContext context, String title, String content, Future<bool> Function() onDelete) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
           TextButton(
-            onPressed: () {
-              onDelete();
-              Navigator.pop(context);
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await onDelete();
+              if (context.mounted) {
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Category deleted successfully!')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to delete category')),
+                  );
+                }
+              }
             },
             child: const Text('Delete', style: TextStyle(color: AppTheme.dangerColor)),
           ),

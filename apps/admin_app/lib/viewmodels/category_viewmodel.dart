@@ -53,6 +53,10 @@ class CategoryViewModel extends StateNotifier<CategoryState> {
     try {
       final categories = await _categoryRepository.getCategories();
       final subcategories = await _categoryRepository.getSubcategories();
+      
+      // Sort categories by priority ascending to match web order
+      categories.sort((a, b) => a.priority.compareTo(b.priority));
+      
       state = CategoryState(
         categories: categories,
         subcategories: subcategories,
@@ -71,9 +75,11 @@ class CategoryViewModel extends StateNotifier<CategoryState> {
     try {
       final slug = _generateSlug(name);
       final newCategory = await _categoryRepository.createCategory(name, slug);
-      state = state.copyWith(
-        categories: [...state.categories, newCategory]..sort((a, b) => a.name.compareTo(b.name)),
-      );
+      
+      final updatedCategories = [...state.categories, newCategory]
+        ..sort((a, b) => a.priority.compareTo(b.priority));
+        
+      state = state.copyWith(categories: updatedCategories);
       return true;
     } catch (_) {
       return false;
@@ -85,9 +91,11 @@ class CategoryViewModel extends StateNotifier<CategoryState> {
     try {
       final slug = _generateSlug(name);
       final updated = await _categoryRepository.updateCategory(id, name, slug);
-      state = state.copyWith(
-        categories: state.categories.map((c) => c.id == id ? updated : c).toList(),
-      );
+      
+      final updatedCategories = state.categories.map((c) => c.id == id ? updated : c).toList()
+        ..sort((a, b) => a.priority.compareTo(b.priority));
+        
+      state = state.copyWith(categories: updatedCategories);
       return true;
     } catch (_) {
       return false;

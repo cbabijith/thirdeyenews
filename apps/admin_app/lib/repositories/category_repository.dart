@@ -43,7 +43,7 @@ class CategoryRepository {
         'description': null,
       },
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create category: ${response.data}');
     }
     final jsonMap = response.data as Map<String, dynamic>;
@@ -91,7 +91,7 @@ class CategoryRepository {
         'description': description,
       },
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create subcategory: ${response.data}');
     }
     final jsonMap = response.data as Map<String, dynamic>;
