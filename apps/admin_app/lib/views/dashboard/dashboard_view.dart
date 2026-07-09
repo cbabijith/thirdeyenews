@@ -189,37 +189,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           ),
         ],
       ),
-      bottomNavigationBar: isWideScreen
-          ? null
-          : BottomNavigationBar(
-              currentIndex: _selectedIndex,
-              onTap: _changeTab,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: const Color(0xFF0F172A),
-              unselectedItemColor: Colors.grey,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.dashboard_outlined),
-                  activeIcon: Icon(Icons.dashboard),
-                  label: 'Dashboard',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.article_outlined),
-                  activeIcon: Icon(Icons.article),
-                  label: 'News',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.category_outlined),
-                  activeIcon: Icon(Icons.category),
-                  label: 'Categories',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.campaign_outlined),
-                  activeIcon: Icon(Icons.campaign),
-                  label: 'Ads',
-                ),
-              ],
-            ),
+      bottomNavigationBar: isWideScreen ? null : _buildCustomBottomNavBar(),
     );
   }
 
@@ -454,4 +424,93 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       ),
     );
   }
+
+  Widget _buildCustomBottomNavBar() {
+    final navItems = [
+      _NavItem(Icons.dashboard_outlined, Icons.dashboard_rounded, 'Overview'),
+      _NavItem(Icons.article_outlined, Icons.article_rounded, 'News'),
+      _NavItem(Icons.category_outlined, Icons.category_rounded, 'Categories'),
+      _NavItem(Icons.campaign_outlined, Icons.campaign_rounded, 'Ads'),
+    ];
+
+    return Container(
+      height: 64,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(navItems.length, (index) {
+              final item = navItems[index];
+              final isSelected = _selectedIndex == index;
+
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => _changeTab(index),
+                  behavior: HitTestBehavior.opaque,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppTheme.primaryColor.withOpacity(0.08)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          isSelected ? item.activeIcon : item.inactiveIcon,
+                          color: isSelected
+                              ? AppTheme.primaryColor
+                              : const Color(0xFF64748B),
+                          size: 22,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                          color: isSelected
+                              ? AppTheme.primaryColor
+                              : const Color(0xFF64748B),
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem {
+  final IconData inactiveIcon;
+  final IconData activeIcon;
+  final String label;
+
+  _NavItem(this.inactiveIcon, this.activeIcon, this.label);
 }
