@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../config/theme.dart';
 import '../../viewmodels/dashboard_viewmodel.dart';
 import '../news/news_form_view.dart';
+import '../components/shimmer_container.dart';
 
 class DashboardOverviewView extends ConsumerWidget {
   final Function(int) onTabSelect;
@@ -19,11 +20,7 @@ class DashboardOverviewView extends ConsumerWidget {
     final isWide = MediaQuery.of(context).size.width > 768;
 
     if (state.isLoading && state.topViewed.isEmpty) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return _buildShimmerLoading(context);
     }
 
     if (state.errorMessage != null && state.topViewed.isEmpty) {
@@ -374,6 +371,138 @@ class DashboardOverviewView extends ConsumerWidget {
       label: Text(
         label,
         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width > 768;
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(
+          horizontal: isWide ? 24.0 : 16.0,
+          vertical: 24.0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Shimmer
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerContainer(width: 140, height: 28, borderRadius: 6),
+                SizedBox(height: 8),
+                ShimmerContainer(width: 220, height: 14, borderRadius: 4),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Metrics Cards Grid Shimmer
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final cardWidth = isWide
+                    ? (constraints.maxWidth - 36) / 4
+                    : (constraints.maxWidth - 12) / 2;
+
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: List.generate(4, (index) => _buildStatCardShimmer(cardWidth)),
+                );
+              },
+            ),
+            const SizedBox(height: 32),
+
+            // Top Viewed Articles Title
+            const ShimmerContainer(width: 160, height: 18, borderRadius: 4),
+            const SizedBox(height: 12),
+
+            // Top Viewed Articles List Shimmer
+            ListView.separated(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 4,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (context, index) => _buildArticleItemShimmer(),
+            ),
+            const SizedBox(height: 24),
+
+            // Quick Actions Title
+            const ShimmerContainer(width: 110, height: 18, borderRadius: 4),
+            const SizedBox(height: 12),
+
+            // Quick Actions Shimmer
+            const Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ShimmerContainer(width: 120, height: 40, borderRadius: 8),
+                ShimmerContainer(width: 120, height: 40, borderRadius: 8),
+                ShimmerContainer(width: 120, height: 40, borderRadius: 8),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCardShimmer(double width) {
+    return Container(
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ShimmerContainer(width: 28, height: 28, borderRadius: 6),
+              SizedBox(width: 8),
+              ShimmerContainer(width: 80, height: 12, borderRadius: 3),
+            ],
+          ),
+          SizedBox(height: 16),
+          ShimmerContainer(width: 60, height: 24, borderRadius: 4),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArticleItemShimmer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: const Row(
+        children: [
+          ShimmerContainer(width: 32, height: 32, borderRadius: 6),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerContainer(width: 160, height: 12, borderRadius: 3),
+                SizedBox(height: 6),
+                ShimmerContainer(width: 100, height: 9, borderRadius: 2),
+              ],
+            ),
+          ),
+          SizedBox(width: 12),
+          ShimmerContainer(width: 44, height: 12, borderRadius: 3),
+          SizedBox(width: 12),
+          ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+        ],
       ),
     );
   }

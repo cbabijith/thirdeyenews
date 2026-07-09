@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../viewmodels/ad_viewmodel.dart';
 import '../../config/theme.dart';
 import 'ad_form_view.dart';
+import '../components/shimmer_container.dart';
 
 class AdListView extends ConsumerWidget {
   const AdListView({super.key});
@@ -35,7 +36,7 @@ class AdListView extends ConsumerWidget {
     final notifier = ref.read(adViewModelProvider.notifier);
 
     if (adState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildAdShimmer(context);
     }
 
     final activeCount = adState.ads.where((a) => a.isActive).length;
@@ -381,6 +382,114 @@ class AdListView extends ConsumerWidget {
                         );
                       },
                     ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdShimmer(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Stats
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerContainer(width: 80, height: 24, borderRadius: 6),
+                SizedBox(height: 8),
+                ShimmerContainer(width: 120, height: 13, borderRadius: 3),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Info Banner Shimmer
+            const ShimmerContainer(width: double.infinity, height: 44, borderRadius: 8),
+            const SizedBox(height: 16),
+
+            // List of Ad Cards Shimmer
+            Expanded(
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                itemCount: 3,
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                    ),
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Square image thumbnail
+                            const ShimmerContainer(width: 100, height: 100, borderRadius: 8),
+                            const SizedBox(width: 16),
+
+                            // Content Details
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Badge tags
+                                  Row(
+                                    children: [
+                                      ShimmerContainer(width: 50, height: 14, borderRadius: 4),
+                                      SizedBox(width: 6),
+                                      ShimmerContainer(width: 65, height: 14, borderRadius: 4),
+                                      SizedBox(width: 6),
+                                      ShimmerContainer(width: 35, height: 11, borderRadius: 2),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12),
+
+                                  // Title
+                                  ShimmerContainer(width: 160, height: 14, borderRadius: 3),
+                                  SizedBox(height: 8),
+
+                                  // Link
+                                  Row(
+                                    children: [
+                                      ShimmerContainer(width: 12, height: 12, borderRadius: 2),
+                                      SizedBox(width: 6),
+                                      ShimmerContainer(width: 120, height: 11, borderRadius: 2),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Divider
+                        const SizedBox(height: 12),
+                        Container(height: 1, color: const Color(0xFFF1F5F9)),
+                        const SizedBox(height: 8),
+
+                        // Bottom Buttons Row
+                        const Row(
+                          children: [
+                            ShimmerContainer(width: 80, height: 24, borderRadius: 6),
+                            Spacer(),
+                            ShimmerContainer(width: 45, height: 24, borderRadius: 6),
+                            SizedBox(width: 8),
+                            ShimmerContainer(width: 45, height: 24, borderRadius: 6),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

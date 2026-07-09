@@ -7,6 +7,7 @@ import 'config/theme.dart';
 import 'viewmodels/auth_viewmodel.dart';
 import 'views/auth/login_view.dart';
 import 'views/dashboard/dashboard_view.dart';
+import 'views/splash/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,7 @@ class MyApp extends ConsumerStatefulWidget {
 
 class _MyAppState extends ConsumerState<MyApp> {
   bool _isCheckingAuth = true;
+  bool _isSplashFinished = false;
 
   @override
   void initState() {
@@ -55,26 +57,17 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: _isCheckingAuth
-          ? const Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.remove_red_eye_outlined,
-                      size: 64,
-                      color: AppTheme.primaryColor,
-                    ),
-                    SizedBox(height: 16),
-                    CircularProgressIndicator(),
-                  ],
-                ),
-              ),
+      home: (!_isSplashFinished || _isCheckingAuth)
+          ? SplashView(
+              onFinish: () {
+                setState(() {
+                  _isSplashFinished = true;
+                });
+              },
             )
           : authState.isAuthenticated
-          ? const DashboardView()
-          : const LoginView(),
+              ? const DashboardView()
+              : const LoginView(),
     );
   }
 }

@@ -5,6 +5,7 @@ import '../../viewmodels/category_viewmodel.dart';
 import 'components/news_card.dart';
 import 'news_form_view.dart';
 import '../../config/theme.dart';
+import '../components/shimmer_container.dart';
 
 class NewsListView extends ConsumerStatefulWidget {
   const NewsListView({super.key});
@@ -198,7 +199,7 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
             // Articles List
             Expanded(
               child: newsState.isLoading && newsState.newsItems.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
+                  ? _buildNewsListShimmer()
                   : newsState.newsItems.isEmpty
                       ? const Center(child: Text('No articles found.'))
                       : RefreshIndicator(
@@ -242,6 +243,103 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNewsListShimmer() {
+    return ListView.separated(
+      padding: EdgeInsets.zero,
+      itemCount: 4,
+      separatorBuilder: (context, index) => const SizedBox(height: 14),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Thumbnail
+                    const ShimmerContainer(width: 80, height: 80, borderRadius: 8),
+                    const SizedBox(width: 14),
+
+                    // Title & Details
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Category Tag
+                          ShimmerContainer(width: 70, height: 14, borderRadius: 4),
+                          SizedBox(height: 8),
+
+                          // Title
+                          ShimmerContainer(width: double.infinity, height: 14, borderRadius: 3),
+                          SizedBox(height: 6),
+                          ShimmerContainer(width: 180, height: 14, borderRadius: 3),
+                          SizedBox(height: 8),
+
+                          // Metadata Row
+                          Row(
+                            children: [
+                              ShimmerContainer(width: 60, height: 11, borderRadius: 2),
+                              SizedBox(width: 12),
+                              ShimmerContainer(width: 50, height: 11, borderRadius: 2),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Divider
+              Container(
+                height: 1,
+                color: const Color(0xFFF1F5F9),
+              ),
+
+              // Bottom Actions
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Toggles
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ShimmerContainer(width: 55, height: 24, borderRadius: 6),
+                        SizedBox(width: 8),
+                        ShimmerContainer(width: 55, height: 24, borderRadius: 6),
+                      ],
+                    ),
+
+                    // CRUD & Share Actions
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+                        SizedBox(width: 4),
+                        ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+                        SizedBox(width: 4),
+                        ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

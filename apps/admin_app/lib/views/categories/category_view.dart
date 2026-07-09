@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../viewmodels/category_viewmodel.dart';
 import '../../models/category.dart';
 import '../../config/theme.dart';
+import '../components/shimmer_container.dart';
 
 class CategoryView extends ConsumerWidget {
   const CategoryView({super.key});
@@ -99,7 +100,7 @@ class CategoryView extends ConsumerWidget {
     final notifier = ref.read(categoryViewModelProvider.notifier);
 
     if (categoryState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildCategoryShimmer(context);
     }
 
     return Scaffold(
@@ -222,6 +223,74 @@ class CategoryView extends ConsumerWidget {
                         );
                       },
                     ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryShimmer(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Title
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerContainer(width: 120, height: 24, borderRadius: 6),
+                SizedBox(height: 8),
+                ShimmerContainer(width: 85, height: 13, borderRadius: 3),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // List of Category Cards Shimmer
+            Expanded(
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                itemCount: 5,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: const Row(
+                      children: [
+                        // Drag handle + folder container
+                        ShimmerContainer(width: 16, height: 20, borderRadius: 3),
+                        SizedBox(width: 8),
+                        ShimmerContainer(width: 40, height: 40, borderRadius: 8),
+                        SizedBox(width: 12),
+
+                        // Title & Subtitle slug
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ShimmerContainer(width: 110, height: 14, borderRadius: 3),
+                              SizedBox(height: 6),
+                              ShimmerContainer(width: 70, height: 11, borderRadius: 2),
+                            ],
+                          ),
+                        ),
+
+                        // Edit / Delete icons
+                        ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+                        SizedBox(width: 8),
+                        ShimmerContainer(width: 28, height: 28, borderRadius: 14),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
