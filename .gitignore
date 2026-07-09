@@ -90,3 +90,6 @@ ios/Runner/GeneratedPluginRegistrant.*
 
 # OS
 Thumbs.db
+
+# Flutter admin_app Secrets
+apps/admin_app/lib/config/supabase_config.dart
