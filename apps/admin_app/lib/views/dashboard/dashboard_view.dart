@@ -101,7 +101,47 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     return Scaffold(
       appBar: isWideScreen
           ? AppBar(
-              title: Text(_titles[_selectedIndex]),
+              title: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/logo.svg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'ThirdEye News',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.lightTextPrimary,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    width: 1,
+                    height: 16,
+                    color: const Color(0xFFE2E8F0),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    _titles[_selectedIndex],
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
               actions: [
                 if (authState.profile != null) ...[
                   Padding(
@@ -137,7 +177,8 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           : null, // Custom sticky header on mobile
       body: Column(
         children: [
-          if (!isWideScreen) SafeArea(bottom: false, child: _buildMobileHeader()),
+          if (!isWideScreen)
+            SafeArea(bottom: false, child: _buildMobileHeader()),
           Expanded(
             child: Row(
               children: [
@@ -196,11 +237,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 90,
+                height: 90,
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  // color: AppTheme.primaryColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: SvgPicture.asset(
