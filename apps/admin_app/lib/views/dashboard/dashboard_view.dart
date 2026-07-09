@@ -130,22 +130,14 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                       ],
                     ),
                   ),
+                  const SizedBox(width: 12),
                 ],
-                IconButton(
-                  icon: const Icon(
-                    Icons.logout_outlined,
-                    color: AppTheme.dangerColor,
-                  ),
-                  tooltip: 'Sign Out',
-                  onPressed: _showLogoutDialog,
-                ),
-                const SizedBox(width: 12),
               ],
             )
           : null, // Custom sticky header on mobile
       body: Column(
         children: [
-          if (!isWideScreen) _buildMobileHeader(),
+          if (!isWideScreen) SafeArea(bottom: false, child: _buildMobileHeader()),
           Expanded(
             child: Row(
               children: [
@@ -192,7 +184,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
   Widget _buildMobileHeader() {
     return Container(
-      height: 80,
+      height: 70,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -236,13 +228,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                 ],
               ),
             ],
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.logout_outlined,
-              color: AppTheme.dangerColor,
-            ),
-            onPressed: _showLogoutDialog,
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../viewmodels/ad_viewmodel.dart';
 import '../../config/theme.dart';
 import 'ad_form_view.dart';
@@ -37,6 +38,8 @@ class AdListView extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final activeCount = adState.ads.where((a) => a.isActive).length;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -49,91 +52,338 @@ class AdListView extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: adState.ads.isEmpty
-            ? const Center(child: Text('No advertisements found.'))
-            : ListView.builder(
-                itemCount: adState.ads.length,
-                itemBuilder: (context, index) {
-                  final ad = adState.ads[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          // Image preview
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: SizedBox(
-                              width: 80,
-                              height: 50,
-                              child: CachedNetworkImage(
-                                imageUrl: ad.imageUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(color: Colors.grey[200]),
-                                errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Stats (Web aligned)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Ads',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.lightTextPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${adState.ads.length} ads • $activeCount active',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
-                          // Text fields
-                          Expanded(
+            // Info Banner (Web aligned)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC), // Slate 50
+                border: Border.all(color: const Color(0xFFE2E8F0)), // Slate 200
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: RichText(
+                text: const TextSpan(
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF64748B), // Slate 500
+                    height: 1.4,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Main Banner',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF334155), // Slate 700
+                      ),
+                    ),
+                    TextSpan(text: ' — home & news pages (2-3 recommended). '),
+                    TextSpan(
+                      text: 'Bottom Nav',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF334155),
+                      ),
+                    ),
+                    TextSpan(text: ' — mobile bottom bar (1 active only).'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Ads List Content
+            Expanded(
+              child: adState.ads.isEmpty
+                  ? const Center(child: Text('No advertisements found.'))
+                  : ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: adState.ads.length,
+                      itemBuilder: (context, index) {
+                        final ad = adState.ads[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          elevation: 0.5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(ad.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                                const SizedBox(height: 4),
                                 Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        ad.position.toUpperCase(),
-                                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    // Premium Square-ish Thumbnail (Web aligned)
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 100,
+                                        child: CachedNetworkImage(
+                                          imageUrl: ad.imageUrl,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => Container(
+                                            color: Colors.grey[200],
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(
+                                            Icons.broken_image,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                                       ),
                                     ),
+                                    const SizedBox(width: 16),
+
+                                    // Content Panel
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Badge Tags (Web aligned)
+                                          Wrap(
+                                            spacing: 6,
+                                            runSpacing: 4,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 6,
+                                                  vertical: 2,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: ad.isActive
+                                                      ? const Color(0xFFF0FDF4)
+                                                      : const Color(0xFFFEF9C3),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  ad.isActive
+                                                      ? 'ACTIVE'
+                                                      : 'INACTIVE',
+                                                  style: TextStyle(
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: ad.isActive
+                                                        ? const Color(0xFF16A34A)
+                                                        : const Color(
+                                                            0xFFB45309,
+                                                          ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 6,
+                                                  vertical: 2,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      const Color(0xFFF1F5F9),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Text(
+                                                  ad.position == 'main_banner'
+                                                      ? 'MAIN BANNER'
+                                                      : 'BOTTOM NAV',
+                                                  style: const TextStyle(
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFF475569),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                'Order: ${ad.displayOrder}',
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            ad.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              color: AppTheme.lightTextPrimary,
+                                            ),
+                                          ),
+                                          if (ad.linkUrl != null &&
+                                              ad.linkUrl!.isNotEmpty) ...[
+                                            const SizedBox(height: 6),
+                                            InkWell(
+                                              onTap: () async {
+                                                final uri = Uri.parse(
+                                                  ad.linkUrl!,
+                                                );
+                                                if (await canLaunchUrl(uri)) {
+                                                  await launchUrl(
+                                                    uri,
+                                                    mode: LaunchMode
+                                                        .externalApplication,
+                                                  );
+                                                }
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.open_in_new,
+                                                    size: 12,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Flexible(
+                                                    child: Text(
+                                                      ad.linkUrl!,
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.blue,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(
+                                  height: 20,
+                                  color: Color(0xFFF1F5F9),
+                                ),
+                                // Bottom Actions Panel (Web aligned)
+                                Row(
+                                  children: [
+                                    TextButton.icon(
+                                      icon: Icon(
+                                        ad.isActive
+                                            ? Icons.power_settings_new
+                                            : Icons.power_settings_new_outlined,
+                                        size: 16,
+                                        color: ad.isActive
+                                            ? const Color(0xFFD97706)
+                                            : const Color(0xFF16A34A),
+                                      ),
+                                      label: Text(
+                                        ad.isActive ? 'Deactivate' : 'Activate',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: ad.isActive
+                                              ? const Color(0xFFD97706)
+                                              : const Color(0xFF16A34A),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onPressed: () =>
+                                          notifier.toggleActive(ad),
+                                    ),
+                                    const Spacer(),
+                                    TextButton.icon(
+                                      icon: const Icon(
+                                        Icons.edit_outlined,
+                                        size: 16,
+                                        color: Color(0xFF64748B),
+                                      ),
+                                      label: const Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xFF475569),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdFormView(initialAd: ad),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                     const SizedBox(width: 8),
-                                    Text('Order: ${ad.displayOrder}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    TextButton.icon(
+                                      icon: const Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 16,
+                                        color: AppTheme.dangerColor,
+                                      ),
+                                      label: const Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppTheme.dangerColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      onPressed: () => _confirmDelete(
+                                        context,
+                                        ad.title,
+                                        () => notifier.deleteAd(ad.id),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
                           ),
-
-                          // Active toggle and action buttons
-                          Switch(
-                            value: ad.isActive,
-                            activeColor: AppTheme.accentColor,
-                            onChanged: (val) => notifier.toggleActive(ad),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.edit_outlined),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => AdFormView(initialAd: ad)),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, color: AppTheme.dangerColor),
-                            onPressed: () => _confirmDelete(
-                              context,
-                              ad.title,
-                              () => notifier.deleteAd(ad.id),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
+            ),
+          ],
+        ),
       ),
     );
   }

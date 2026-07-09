@@ -150,6 +150,7 @@ class DashboardOverviewView extends ConsumerWidget {
                 )
               else
                 ListView.separated(
+                  padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: state.topViewed.length,
@@ -248,7 +249,7 @@ class DashboardOverviewView extends ConsumerWidget {
                     );
                   },
                 ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Quick Actions
               const Text(

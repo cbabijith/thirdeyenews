@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quill_html_editor/quill_html_editor.dart';
 import '../../models/news.dart';
 import '../../viewmodels/news_viewmodel.dart';
 import '../../viewmodels/category_viewmodel.dart';
-import '../../config/theme.dart';
+import '../../providers.dart';
 
 class NewsFormView extends ConsumerStatefulWidget {
   final News? initialArticle;
@@ -19,7 +20,8 @@ class NewsFormView extends ConsumerStatefulWidget {
 class _NewsFormViewState extends ConsumerState<NewsFormView> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
+  late QuillEditorController _quillController;
+
   final _descController = TextEditingController();
   final _youtubeController = TextEditingController();
 
@@ -31,14 +33,18 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   File? _pickedImageFile;
   String? _remoteImageUrl;
   bool _isSaving = false;
+  bool _isLoadingDetails = false;
+  String _initialHtml = '';
 
   @override
   void initState() {
     super.initState();
+    _quillController = QuillEditorController();
+    
     if (widget.initialArticle != null) {
       final article = widget.initialArticle!;
       _titleController.text = article.title;
-      _contentController.text = article.content;
+      _initialHtml = article.content;
       _descController.text = article.description ?? '';
       _youtubeController.text = article.youtubeLink ?? '';
       _selectedCategoryId = article.categoryId;
@@ -46,13 +52,45 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       _isPublished = article.isPublished;
       _isPinned = article.isPinned;
       _remoteImageUrl = article.imageUrl;
+      
+      // Asynchronously fetch complete article details from API
+      _loadFullArticleDetails();
+    }
+  }
+
+  Future<void> _loadFullArticleDetails() async {
+    if (widget.initialArticle == null) return;
+    setState(() => _isLoadingDetails = true);
+    try {
+      final fullArticle = await ref.read(newsRepositoryProvider).getNewsById(widget.initialArticle!.id);
+      if (fullArticle != null && mounted) {
+        setState(() {
+          _titleController.text = fullArticle.title;
+          _initialHtml = fullArticle.content;
+          _descController.text = fullArticle.description ?? '';
+          _youtubeController.text = fullArticle.youtubeLink ?? '';
+          _selectedCategoryId = fullArticle.categoryId;
+          _selectedSubcategoryId = fullArticle.subcategoryId;
+          _isPublished = fullArticle.isPublished;
+          _isPinned = fullArticle.isPinned;
+          _remoteImageUrl = fullArticle.imageUrl;
+        });
+        // Populate rich text editor with new fetched content
+        _quillController.setText(_initialHtml);
+      }
+    } catch (_) {
+      // Fallback to minimal data if server is down or error occurs
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingDetails = false);
+      }
     }
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _contentController.dispose();
+    _quillController.dispose();
     _descController.dispose();
     _youtubeController.dispose();
     super.dispose();
@@ -78,12 +116,16 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
 
   Future<void> _saveForm() async {
     if (!_formKey.currentState!.validate()) return;
+    
     setState(() => _isSaving = true);
+    
+    // Asynchronously fetch HTML string from the rich editor
+    final contentHtml = await _quillController.getText();
 
     final article = News(
       id: widget.initialArticle?.id ?? '',
       title: _titleController.text.trim(),
-      content: _contentController.text.trim(),
+      content: contentHtml.trim(),
       description: _descController.text.trim().isEmpty ? null : _descController.text.trim(),
       youtubeLink: _youtubeController.text.trim().isEmpty ? null : _youtubeController.text.trim(),
       categoryId: _selectedCategoryId,
@@ -113,8 +155,175 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     }
   }
 
+  Widget _buildWebPublishButton() {
+    return InkWell(
+      onTap: () {
+        setState(() => _isPublished = !_isPublished);
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: _isPublished ? const Color(0xFFF0FDF4) : const Color(0xFFF8FAFC),
+          border: Border.all(
+            color: _isPublished ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: _isPublished ? const Color(0xFF22C55E) : const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(
+                Icons.language,
+                size: 16,
+                color: _isPublished ? Colors.white : const Color(0xFF94A3B8),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Publish',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _isPublished ? 'Live & visible' : 'Saved as draft',
+                    style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 36,
+              height: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              decoration: BoxDecoration(
+                color: _isPublished ? const Color(0xFF22C55E) : const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: _isPublished ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 1,
+                      offset: Offset(0, 1),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebPinButton() {
+    return InkWell(
+      onTap: () {
+        setState(() => _isPinned = !_isPinned);
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: _isPinned ? const Color(0xFFEEF2FF) : const Color(0xFFF8FAFC),
+          border: Border.all(
+            color: _isPinned ? const Color(0xFFC7D2FE) : const Color(0xFFE2E8F0),
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: _isPinned ? const Color(0xFF6366F1) : const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(
+                Icons.push_pin,
+                size: 16,
+                color: _isPinned ? Colors.white : const Color(0xFF94A3B8),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Pin to Home',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _isPinned ? 'Featured on homepage' : 'Show in regular feed',
+                    style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 36,
+              height: 20,
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              decoration: BoxDecoration(
+                color: _isPinned ? const Color(0xFF6366F1) : const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: _isPinned ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 1,
+                      offset: Offset(0, 1),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingDetails) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Article'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     final categoryState = ref.watch(categoryViewModelProvider);
     final isWide = MediaQuery.of(context).size.width > 900;
     
@@ -127,41 +336,69 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       children: [
         // Editor Section Card
         Card(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                TextFormField(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: const BorderSide(color: Color(0xFFE2E8F0)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title Input
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+                child: TextFormField(
                   controller: _titleController,
                   decoration: const InputDecoration(
-                    labelText: 'Article Title *',
                     hintText: 'Untitled',
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     filled: false,
+                    contentPadding: EdgeInsets.zero,
                   ),
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
                   validator: (value) => value == null || value.trim().isEmpty ? 'Title is required' : null,
                 ),
-                const Divider(height: 32, color: Color(0xFFE2E8F0)),
-                TextFormField(
-                  controller: _contentController,
-                  maxLines: 12,
-                  decoration: const InputDecoration(
-                    labelText: 'Content body *',
-                    hintText: 'Write article content here...',
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    filled: false,
-                    alignLabelWithHint: true,
-                  ),
-                  style: const TextStyle(fontSize: 14, height: 1.6),
-                  validator: (value) => value == null || value.trim().isEmpty ? 'Content is required' : null,
+              ),
+              const SizedBox(height: 12),
+              
+              // Custom Detached Toolbar (Only Bold and Bullet List)
+              ToolBar(
+                controller: _quillController,
+                toolBarConfig: const [
+                  ToolBarStyle.bold,
+                  ToolBarStyle.listBullet,
+                ],
+                toolBarColor: const Color(0xFFF8FAFC), // Slate 50
+                activeIconColor: const Color(0xFF0F172A),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                iconSize: 20,
+              ),
+              
+              // QuillHtmlEditor WYSIWYG Panel
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
                 ),
-              ],
-            ),
+                child: SizedBox(
+                  height: 400,
+                  child: QuillHtmlEditor(
+                    controller: _quillController,
+                    hintText: 'Write article content here...',
+                    isEnabled: true,
+                    minHeight: 300,
+                    backgroundColor: Colors.white,
+                    onEditorCreated: () {
+                      if (_initialHtml.isNotEmpty) {
+                        _quillController.setText(_initialHtml);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -169,30 +406,14 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
 
     final settingsSidebar = Column(
       children: [
-        // Publish Options Card
+        // Publish Options Card (Web aligned)
         _buildCard(
           title: 'Publish Settings',
           icon: Icons.auto_awesome,
           children: [
-            SwitchListTile(
-              title: const Text('Publish Immediately', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              subtitle: const Text('Live & visible in public feeds', style: TextStyle(fontSize: 11)),
-              value: _isPublished,
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              activeColor: AppTheme.accentColor,
-              onChanged: (val) => setState(() => _isPublished = val),
-            ),
-            const Divider(color: Color(0xFFF1F5F9)),
-            SwitchListTile(
-              title: const Text('Pin to Homepage', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-              subtitle: const Text('Feature on home top banner', style: TextStyle(fontSize: 11)),
-              value: _isPinned,
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              activeColor: AppTheme.primaryColor,
-              onChanged: (val) => setState(() => _isPinned = val),
-            ),
+            _buildWebPublishButton(),
+            const SizedBox(height: 12),
+            _buildWebPinButton(),
           ],
         ),
         const SizedBox(height: 16),
@@ -242,8 +463,6 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           title: 'Media',
           icon: Icons.image_outlined,
           children: [
-            const Text('Featured Image', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
-            const SizedBox(height: 8),
             _buildImagePicker(),
             const SizedBox(height: 12),
             TextFormField(
@@ -311,6 +530,11 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     required List<Widget> children,
   }) {
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -323,7 +547,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                 Text(
                   title.toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF64748B),
                     letterSpacing: 0.5,
@@ -349,19 +573,27 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     return InkWell(
       onTap: _pickImage,
       child: Container(
-        height: 120,
+        height: 140,
         width: double.infinity,
         decoration: BoxDecoration(
           color: const Color(0xFFF8FAFC),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
-          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_photo_alternate_outlined, size: 36, color: Colors.grey),
-            SizedBox(height: 6),
-            Text('Click to upload image', style: TextStyle(color: Colors.grey, fontSize: 12)),
+            Icon(Icons.image_search_outlined, size: 32, color: Color(0xFF64748B)),
+            SizedBox(height: 8),
+            Text(
+              'Featured Image',
+              style: TextStyle(color: Color(0xFF334155), fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Click to select or upload',
+              style: TextStyle(color: Color(0xFF64748B), fontSize: 11),
+            ),
           ],
         ),
       ),
