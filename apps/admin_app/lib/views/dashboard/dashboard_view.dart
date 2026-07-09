@@ -457,73 +457,75 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       _NavItem(Icons.campaign_outlined, Icons.campaign_rounded, 'Ads'),
     ];
 
-    return Container(
-      height: 64,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderCol, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : const Color(0xFF0F172A).withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(navItems.length, (index) {
-              final item = navItems[index];
-              final isSelected = _selectedIndex == index;
+    return SafeArea(
+      child: Container(
+        height: 64,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderCol, width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black.withOpacity(0.3) : const Color(0xFF0F172A).withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(navItems.length, (index) {
+                final item = navItems[index];
+                final isSelected = _selectedIndex == index;
 
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => _changeTab(index),
-                  behavior: HitTestBehavior.opaque,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppTheme.primaryColor.withOpacity(0.08)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => _changeTab(index),
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppTheme.primaryColor.withOpacity(0.08)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isSelected ? item.activeIcon : item.inactiveIcon,
+                            color: isSelected
+                                ? AppTheme.primaryColor
+                                : textSecondary,
+                            size: 22,
+                          ),
                         ),
-                        child: Icon(
-                          isSelected ? item.activeIcon : item.inactiveIcon,
-                          color: isSelected
-                              ? AppTheme.primaryColor
-                              : textSecondary,
-                          size: 22,
+                        const SizedBox(height: 3),
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                            color: isSelected
+                                ? AppTheme.primaryColor
+                                : textSecondary,
+                            letterSpacing: 0.2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        item.label,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                          color: isSelected
-                              ? AppTheme.primaryColor
-                              : textSecondary,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       ),
