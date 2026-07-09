@@ -3,7 +3,6 @@ import { api, NewsItem } from '@/lib/api'
 import { NewsDetailClient } from './NewsDetailClient'
 
 export const revalidate = 60
-export const dynamic = 'force-dynamic'
 
 interface RelatedNews {
   id: string
@@ -15,9 +14,20 @@ interface RelatedNews {
   }
 }
 
+const newsCache = new Map<string, { data: NewsItem | null; ts: number }>()
+const CACHE_TTL = 60_000
+
 async function fetchNews(id: string): Promise<NewsItem | null> {
+  const cached = newsCache.get(id)
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return cached.data
+  }
   const data = await api.getNewsById(id)
-  if (!data || !data.is_published) return null
+  if (!data || !data.is_published) {
+    newsCache.set(id, { data: null, ts: Date.now() })
+    return null
+  }
+  newsCache.set(id, { data, ts: Date.now() })
   return data
 }
 
@@ -39,7 +49,10 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
     notFound()
   }
 
-  const relatedNews = await fetchRelatedNews(id, news?.category_id)
+  const [_, relatedNews] = await Promise.all([
+    Promise.resolve(news),
+    fetchRelatedNews(id, news?.category_id)
+  ])
 
   return <NewsDetailClient news={news} relatedNews={relatedNews} />
 }

@@ -84,9 +84,9 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const body = stripHtml(news.content || news.description || '')
 
-    const shareText = `ThirdEye News | ${category}
+    const shareText = `*ThirdEye News* | ${category}
 
-${news.title}
+*${news.title}*
 ${date ? `\n📅 ${date}\n` : ''}
 ${body}
 

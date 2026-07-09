@@ -13,11 +13,23 @@ interface NewsItem {
   }
 }
 
+const metaCache = new Map<string, { data: NewsItem | null; ts: number }>()
+const CACHE_TTL = 60_000
+
 async function getNews(id: string): Promise<NewsItem | null> {
+  const cached = metaCache.get(id)
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return cached.data
+  }
   try {
     const data = await api.getNewsById(id)
-    if (!data) return null
-    return data as unknown as NewsItem
+    if (!data) {
+      metaCache.set(id, { data: null, ts: Date.now() })
+      return null
+    }
+    const item = data as unknown as NewsItem
+    metaCache.set(id, { data: item, ts: Date.now() })
+    return item
   } catch {
     return null
   }
