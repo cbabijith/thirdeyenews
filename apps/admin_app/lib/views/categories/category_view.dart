@@ -104,9 +104,17 @@ class CategoryView extends ConsumerWidget {
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppTheme.secondaryColor,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onPressed: () => _showCategoryDialog(context, ref),
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.create_new_folder_outlined, size: 20),
+        label: const Text(
+          'Create Category',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

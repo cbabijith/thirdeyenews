@@ -157,14 +157,22 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
     );
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppTheme.secondaryColor,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const NewsFormView()),
           );
         },
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.post_add_rounded, size: 20),
+        label: const Text(
+          'Create Article',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

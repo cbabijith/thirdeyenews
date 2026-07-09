@@ -42,14 +42,22 @@ class AdListView extends ConsumerWidget {
     final activeCount = adState.ads.where((a) => a.isActive).length;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: AppTheme.secondaryColor,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AdFormView()),
           );
         },
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add_to_photos_outlined, size: 20),
+        label: const Text(
+          'Create Ad',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.3),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
