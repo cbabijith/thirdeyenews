@@ -10,11 +10,21 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://thirdeyenewslive.com'),
   title: 'ThirdEye News - User Website',
   description: 'ThirdEye News User Portal',
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
+  },
+  openGraph: {
+    siteName: 'ThirdEye News',
+    locale: 'ml_IN',
+    type: 'website',
+    images: ['/logo.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 }
 
