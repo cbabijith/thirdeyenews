@@ -20,38 +20,36 @@ export function BreakingNewsTicker({ pinnedNews = [], latestNews = [] }: Breakin
     return null
   }
 
-  const firstNews = allNews[0]
-
   const renderTickerList = () => (
-    <div className="flex items-center gap-8 px-4">
+    <div className="flex items-center gap-4">
       {allNews.map((item, index) => (
         <Link
           key={`${item.id}-${index}`}
           href={`/news/${item.slug || item.id}`}
-          className="hover:underline flex items-center whitespace-nowrap text-on-surface text-xs font-medium transition-all"
+          className="hover:text-primary flex items-center whitespace-nowrap text-on-surface text-[12px] font-semibold transition-colors"
         >
           <span>{item.title}</span>
-          <span className="material-symbols-outlined text-sm ml-2 text-on-surface-variant">chevron_right</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/30 mx-6 shrink-0" />
         </Link>
       ))}
     </div>
   )
 
   return (
-    <div className="w-full flex items-center bg-background border-b border-border relative z-10">
-      {/* Left Fixed Section - Red Breaking News Label */}
-      <Link
-        href={`/news/${firstNews.slug || firstNews.id}`}
-        className="bg-primary flex items-center gap-1 px-3 py-2 shrink-0 z-10"
-      >
-        <span className="material-symbols-outlined text-[13px] text-on-primary">bolt</span>
-        <span className="text-on-primary font-bold text-xs tracking-wide whitespace-nowrap">
-          BREAKING NEWS
+    <div className="w-full flex items-center bg-surface-container-lowest border-b border-border/30 h-9 relative z-10 px-4">
+      {/* Pulse Dot Indicator + Label */}
+      <div className="flex items-center gap-2 shrink-0 pr-4 border-r border-border/40 mr-4">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
         </span>
-      </Link>
+        <span className="text-primary font-black text-[10px] uppercase tracking-[0.18em] whitespace-nowrap">
+          LIVE
+        </span>
+      </div>
 
       {/* Right Scrolling Section */}
-      <div className="flex-1 bg-background overflow-hidden group">
+      <div className="flex-1 overflow-hidden group">
         <div className="animate-breaking-marquee flex items-center h-full group-hover:[animation-play-state:paused]">
           {renderTickerList()}
           {renderTickerList()}
