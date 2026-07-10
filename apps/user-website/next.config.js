@@ -6,6 +6,10 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'assets.thirdeyenewslive.com',
+      },
+      {
+        protocol: 'https',
         hostname: '*.r2.dev',
       },
       {
