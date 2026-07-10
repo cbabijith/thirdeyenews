@@ -188,7 +188,7 @@ export function NewsClient({
             {newsItems.map((item) => (
               <div
                 key={item.id}
-                className="group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors"
+                className={`group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors ${moreMenuId === item.id ? 'relative z-30' : 'relative z-0'}`}
               >
                 {/* Thumbnail - 56x42 compact */}
                 <div className="w-14 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-100">
