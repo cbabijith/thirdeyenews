@@ -2,17 +2,27 @@ import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
+let categoriesCache: { data: any; ts: number } | null = null
+const CATEGORIES_CACHE_TTL = 300_000 // 5 minutes cache
+
 export async function GET() {
   try {
+    if (categoriesCache && Date.now() - categoriesCache.ts < CATEGORIES_CACHE_TTL) {
+      return NextResponse.json(categoriesCache.data)
+    }
+
     const res = await fetch(`${process.env.ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'}/api/public/categories`, {
       headers: {
         'Authorization': `Bearer ${process.env.ADMIN_API_TOKEN || ''}`,
       },
     })
     const json = await res.json()
+    categoriesCache = { data: json, ts: Date.now() }
     return NextResponse.json(json)
   } catch (err) {
     console.error('Categories proxy error:', err)
+    // Return stale cache if available on error, otherwise fallback
+    if (categoriesCache) return NextResponse.json(categoriesCache.data)
     return NextResponse.json({ data: [] })
   }
 }
