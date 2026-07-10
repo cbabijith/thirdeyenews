@@ -122,7 +122,7 @@ class NewsViewModel extends StateNotifier<NewsState> {
   }
 
   // Create article
-  Future<bool> createArticle(News article, File? localImage) async {
+  Future<bool> createArticle(News article, File? localImage, File? localAdImage) async {
     try {
       String? imageUrl = article.imageUrl;
       if (localImage != null) {
@@ -130,7 +130,16 @@ class NewsViewModel extends StateNotifier<NewsState> {
         imageUrl = await _newsRepository.uploadNewsImage(localImage, fileName);
       }
 
-      final created = await _newsRepository.createNews(article.copyWith(imageUrl: imageUrl));
+      String? adImageUrl = article.adImageUrl;
+      if (localAdImage != null) {
+        final fileName = 'ad_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        adImageUrl = await _newsRepository.uploadNewsImage(localAdImage, fileName);
+      }
+
+      final created = await _newsRepository.createNews(article.copyWith(
+        imageUrl: imageUrl,
+        adImageUrl: adImageUrl,
+      ));
       state = state.copyWith(
         newsItems: [created, ...state.newsItems],
         count: state.count + 1,
@@ -142,7 +151,7 @@ class NewsViewModel extends StateNotifier<NewsState> {
   }
 
   // Update article
-  Future<bool> updateArticle(String id, News article, File? localImage) async {
+  Future<bool> updateArticle(String id, News article, File? localImage, File? localAdImage) async {
     try {
       String? imageUrl = article.imageUrl;
       if (localImage != null) {
@@ -150,7 +159,16 @@ class NewsViewModel extends StateNotifier<NewsState> {
         imageUrl = await _newsRepository.uploadNewsImage(localImage, fileName);
       }
 
-      final updated = await _newsRepository.updateNews(id, article.copyWith(imageUrl: imageUrl));
+      String? adImageUrl = article.adImageUrl;
+      if (localAdImage != null) {
+        final fileName = 'ad_${DateTime.now().millisecondsSinceEpoch}.jpg';
+        adImageUrl = await _newsRepository.uploadNewsImage(localAdImage, fileName);
+      }
+
+      final updated = await _newsRepository.updateNews(id, article.copyWith(
+        imageUrl: imageUrl,
+        adImageUrl: adImageUrl,
+      ));
       state = state.copyWith(
         newsItems: state.newsItems.map((n) => n.id == id ? updated : n).toList(),
       );

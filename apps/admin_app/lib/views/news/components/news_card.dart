@@ -339,31 +339,18 @@ class NewsCard extends StatelessWidget {
   }
 
   Future<void> _shareToWhatsApp(BuildContext context) async {
-    final category = item.categoryName ?? 'ബ്രേക്കിംഗ് ന്യൂസ്';
-    final newsUrl = 'https://www.thirdeyenews.com/news/${item.id}';
-    final formattedDate = DateFormat.yMMMd().format(item.createdAt);
+    final title = item.title;
+    final boldTitle = title
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .map((line) => '*$line*')
+        .join('\n');
 
-    final shareText = '''📰 *ThirdEye News* | $category
+    final linkIdentifier = item.slug != null && item.slug!.trim().isNotEmpty ? item.slug!.trim() : item.id;
+    final newsUrl = 'https://thirdeyenewslive.com/news/$linkIdentifier';
 
-✍️ *${item.title}*
-
-👉 *മുഴുവൻ വാർത്ത വായിക്കാൻ:*
-$newsUrl
-
-📅 $formattedDate
-
-━━━━━━━━━━━━━━━
-
-📲 *ThirdEye News വാട്സ്ആപ്പ് ചാനലിൽ ചേരൂ*
-
-കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ, ബ്രേക്കിംഗ് അപ്ഡേറ്റുകൾ, പ്രത്യേക റിപ്പോർട്ടുകൾ എന്നിവ അതിവേഗം ലഭിക്കാൻ ഞങ്ങളുടെ വാട്സ്ആപ്പ് ചാനലിൽ ഇപ്പോൾ തന്നെ ജോയിൻ ചെയ്യൂ
-
-👇 *ചാനലിൽ ചേരാൻ*
-https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
-
-━━━━━━━━━━━━━━━
-*ThirdEye News*
-സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ 🌐 www.thirdeyenews.com''';
+    final shareText = '$boldTitle\n\n$newsUrl\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9';
 
     final whatsappUrl = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(shareText)}');
     try {

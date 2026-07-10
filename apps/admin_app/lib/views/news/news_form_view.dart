@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quill_html_editor/quill_html_editor.dart';
@@ -25,6 +26,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
 
   final _descController = TextEditingController();
   final _youtubeController = TextEditingController();
+  final _slugController = TextEditingController();
+  final _adLinkController = TextEditingController();
 
   String? _selectedCategoryId;
   String? _selectedSubcategoryId;
@@ -33,6 +36,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   
   File? _pickedImageFile;
   String? _remoteImageUrl;
+  File? _pickedAdImageFile;
+  String? _remoteAdImageUrl;
   bool _isSaving = false;
   bool _isLoadingDetails = false;
   String _initialHtml = '';
@@ -49,11 +54,14 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       _initialHtml = article.content;
       _descController.text = article.description ?? '';
       _youtubeController.text = article.youtubeLink ?? '';
+      _slugController.text = article.slug ?? '';
+      _adLinkController.text = article.adLinkUrl ?? '';
       _selectedCategoryId = article.categoryId;
       _selectedSubcategoryId = article.subcategoryId;
       _isPublished = article.isPublished;
       _isPinned = article.isPinned;
       _remoteImageUrl = article.imageUrl;
+      _remoteAdImageUrl = article.adImageUrl;
       
       // Asynchronously fetch complete article details from API
       _loadFullArticleDetails();
@@ -71,11 +79,14 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           _initialHtml = fullArticle.content;
           _descController.text = fullArticle.description ?? '';
           _youtubeController.text = fullArticle.youtubeLink ?? '';
+          _slugController.text = fullArticle.slug ?? '';
+          _adLinkController.text = fullArticle.adLinkUrl ?? '';
           _selectedCategoryId = fullArticle.categoryId;
           _selectedSubcategoryId = fullArticle.subcategoryId;
           _isPublished = fullArticle.isPublished;
           _isPinned = fullArticle.isPinned;
           _remoteImageUrl = fullArticle.imageUrl;
+          _remoteAdImageUrl = fullArticle.adImageUrl;
         });
         // Populate rich text editor with new fetched content
         _quillController.setText(_initialHtml);
@@ -95,6 +106,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     _quillController.dispose();
     _descController.dispose();
     _youtubeController.dispose();
+    _slugController.dispose();
+    _adLinkController.dispose();
     super.dispose();
   }
 
@@ -116,6 +129,24 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
     });
   }
 
+  Future<void> _pickAdImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedAdImageFile = File(pickedFile.path);
+        _remoteAdImageUrl = null;
+      });
+    }
+  }
+
+  void _removeAdImage() {
+    setState(() {
+      _pickedAdImageFile = null;
+      _remoteAdImageUrl = null;
+    });
+  }
+
   Future<void> _saveForm() async {
     if (!_formKey.currentState!.validate()) return;
     
@@ -132,6 +163,9 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
       youtubeLink: _youtubeController.text.trim().isEmpty ? null : _youtubeController.text.trim(),
       categoryId: _selectedCategoryId,
       subcategoryId: _selectedSubcategoryId,
+      slug: _slugController.text.trim().isEmpty ? null : _slugController.text.trim(),
+      adImageUrl: _remoteAdImageUrl,
+      adLinkUrl: _adLinkController.text.trim().isEmpty ? null : _adLinkController.text.trim(),
       isPublished: _isPublished,
       isPinned: _isPinned,
       imageUrl: _remoteImageUrl,
@@ -143,8 +177,8 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
 
     final notifier = ref.read(newsViewModelProvider.notifier);
     final success = widget.initialArticle == null
-        ? await notifier.createArticle(article, _pickedImageFile)
-        : await notifier.updateArticle(widget.initialArticle!.id, article, _pickedImageFile);
+        ? await notifier.createArticle(article, _pickedImageFile, _pickedAdImageFile)
+        : await notifier.updateArticle(widget.initialArticle!.id, article, _pickedImageFile, _pickedAdImageFile);
 
     setState(() => _isSaving = false);
     if (mounted) {
@@ -447,6 +481,36 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
         ),
         const SizedBox(height: 16),
 
+        // URL Settings Card
+        _buildCard(
+          title: 'URL Settings',
+          icon: Icons.link_outlined,
+          children: [
+            TextFormField(
+              controller: _slugController,
+              decoration: const InputDecoration(
+                labelText: 'Custom Link Slug (Optional)',
+                hintText: 'e.g. crimekottayam34',
+                helperText: 'Lowercase letters, numbers, and hyphens only.',
+              ),
+              style: const TextStyle(fontSize: 13),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9-]')),
+              ],
+              onChanged: (val) {
+                final lowercase = val.toLowerCase();
+                if (lowercase != val) {
+                  _slugController.value = _slugController.value.copyWith(
+                    text: lowercase,
+                    selection: TextSelection.collapsed(offset: lowercase.length),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
         // Organization Settings Card
         _buildCard(
           title: 'Organization',
@@ -501,6 +565,27 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                 prefixIcon: Icon(Icons.link, size: 18),
               ),
               style: const TextStyle(fontSize: 13),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // In-Article Ad Card
+        _buildCard(
+          title: 'In-Article Ad',
+          icon: Icons.campaign_outlined,
+          children: [
+            _buildAdImagePicker(),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _adLinkController,
+              decoration: const InputDecoration(
+                labelText: 'Ad Redirect Link',
+                hintText: 'https://example.com',
+                prefixIcon: Icon(Icons.link, size: 18),
+              ),
+              style: const TextStyle(fontSize: 13),
+              keyboardType: TextInputType.url,
             ),
           ],
         ),
@@ -658,6 +743,81 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           right: 6,
           child: InkWell(
             onTap: _removeImage,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.close, size: 16, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAdImagePicker() {
+    if (_pickedAdImageFile != null) {
+      return _adImagePreview(Image.file(_pickedAdImageFile!, fit: BoxFit.contain));
+    } else if (_remoteAdImageUrl != null && _remoteAdImageUrl!.isNotEmpty) {
+      return _adImagePreview(Image.network(_remoteAdImageUrl!, fit: BoxFit.contain));
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1);
+    final bg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final textPrimary = isDark ? AppTheme.darkTextPrimary : const Color(0xFF334155);
+    final textSecondary = isDark ? AppTheme.darkTextSecondary : const Color(0xFF64748B);
+
+    return InkWell(
+      onTap: _pickAdImage,
+      child: Container(
+        height: 140,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: bg,
+          border: Border.all(color: borderColor, width: 1.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add_photo_alternate_outlined, size: 32, color: textSecondary),
+            const SizedBox(height: 8),
+            Text(
+              'Ad Image (Optional)',
+              style: TextStyle(color: textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Click to select or upload',
+              style: TextStyle(color: textSecondary, fontSize: 11),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _adImagePreview(Widget imageWidget) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            height: 180,
+            width: double.infinity,
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9), // Slate 100 background
+            child: imageWidget,
+          ),
+        ),
+        Positioned(
+          top: 6,
+          right: 6,
+          child: InkWell(
+            onTap: _removeAdImage,
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: const BoxDecoration(

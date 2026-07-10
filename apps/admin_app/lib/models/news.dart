@@ -7,6 +7,9 @@ class News {
   final String? youtubeLink;
   final String? categoryId;
   final String? subcategoryId;
+  final String? slug;
+  final String? adImageUrl;
+  final String? adLinkUrl;
   final String? createdBy;
   final bool isPublished;
   final bool isPinned;
@@ -24,6 +27,9 @@ class News {
     this.youtubeLink,
     this.categoryId,
     this.subcategoryId,
+    this.slug,
+    this.adImageUrl,
+    this.adLinkUrl,
     this.createdBy,
     this.isPublished = false,
     this.isPinned = false,
@@ -51,6 +57,9 @@ class News {
       youtubeLink: json['youtube_link'] as String?,
       categoryId: json['category_id'] as String?,
       subcategoryId: json['subcategory_id'] as String?,
+      slug: json['slug'] as String?,
+      adImageUrl: json['ad_image_url'] as String?,
+      adLinkUrl: json['ad_link_url'] as String?,
       createdBy: json['created_by'] as String?,
       isPublished: json['is_published'] as bool? ?? false,
       isPinned: json['is_pinned'] as bool? ?? false,
@@ -74,6 +83,9 @@ class News {
       'youtube_link': youtubeLink,
       'category_id': categoryId,
       'subcategory_id': subcategoryId,
+      'slug': slug,
+      'ad_image_url': adImageUrl,
+      'ad_link_url': adLinkUrl,
       'is_published': isPublished,
       'is_pinned': isPinned,
       if (publishedAt != null) 'published_at': publishedAt!.toIso8601String(),
@@ -89,6 +101,9 @@ class News {
     String? youtubeLink,
     String? categoryId,
     String? subcategoryId,
+    String? slug,
+    String? adImageUrl,
+    String? adLinkUrl,
     String? createdBy,
     bool? isPublished,
     bool? isPinned,
@@ -106,6 +121,9 @@ class News {
       youtubeLink: youtubeLink ?? this.youtubeLink,
       categoryId: categoryId ?? this.categoryId,
       subcategoryId: subcategoryId ?? this.subcategoryId,
+      slug: slug ?? this.slug,
+      adImageUrl: adImageUrl ?? this.adImageUrl,
+      adLinkUrl: adLinkUrl ?? this.adLinkUrl,
       createdBy: createdBy ?? this.createdBy,
       isPublished: isPublished ?? this.isPublished,
       isPinned: isPinned ?? this.isPinned,
