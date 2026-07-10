@@ -47,7 +47,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const { colors } = useThemeStore()
   const router = useRouter()
   const news = initialNews
-  const [relatedNews] = useState<RelatedNews[]>(initialRelated)
+  const [relatedNews] = useState<RelatedNews[]>(initialRelated || [])
   const viewCountedRef = useRef(false)
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         </div>
 
         {/* Related Articles */}
-        {relatedNews.length > 0 && (
+        {relatedNews && relatedNews.length > 0 && (
           <section className="w-full pt-4">
             <h3 className="text-on-surface text-[14px] font-bold mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-primary rounded-full"></span>

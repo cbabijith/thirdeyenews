@@ -34,7 +34,7 @@ async function fetchNews(id: string): Promise<NewsItem | null> {
 async function fetchRelatedNews(newsId: string, categoryId?: string | null): Promise<RelatedNews[]> {
   try {
     const data = await api.getRelatedNews(newsId, 4)
-    return data as unknown as RelatedNews[]
+    return Array.isArray(data) ? (data as unknown as RelatedNews[]) : []
   } catch (err) {
     console.error('Failed to fetch related news:', err)
     return []
