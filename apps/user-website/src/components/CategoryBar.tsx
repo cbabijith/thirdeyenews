@@ -18,7 +18,7 @@ export function CategoryBar({ categories, selectedCategory, onCategorySelect }: 
   const { colors } = useThemeStore()
 
   return (
-    <nav className="bg-background/90 backdrop-blur-md border-b border-border/40 sticky top-14 z-30">
+    <nav className="bg-background/90 backdrop-blur-md border-b border-border/40 sticky top-20 z-30">
       <div className="max-w-[1240px] mx-auto flex items-center px-4 md:px-6 h-12">
         {/* Horizontal Category Items Scroll Container */}
         <div className="flex-1 flex items-center gap-7 overflow-x-auto no-scrollbar scroll-smooth">

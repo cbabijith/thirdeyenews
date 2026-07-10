@@ -69,7 +69,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-border flex items-center justify-between px-4 md:px-6 h-14 w-full">
+      <header className="sticky top-0 z-50 bg-background border-b border-border flex items-center justify-between px-4 md:px-6 h-20 w-full">
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Menu"
@@ -80,7 +80,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
 
         {/* Logo */}
         <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
-          <img src="/thirdeye.svg" alt="ThirdEye News" className="h-10 md:h-11 w-auto" />
+          <img src="/thirdeye.svg" alt="ThirdEye News" className="h-[60px] md:h-[66px] w-auto" />
         </Link>
 
         <div className="flex items-center gap-3">
