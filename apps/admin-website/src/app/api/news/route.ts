@@ -42,11 +42,16 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ data: result.data, count: result.count })
 }
 
+import { triggerRevalidation } from '@/lib/revalidate'
+
 export async function POST(req: NextRequest) {
   const body = await req.json()
   const result = await newsService.createNews(body)
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 500 })
+  }
+  if (result.data) {
+    triggerRevalidation(result.data.slug || result.data.id).catch(console.error)
   }
   return NextResponse.json({ data: result.data })
 }
