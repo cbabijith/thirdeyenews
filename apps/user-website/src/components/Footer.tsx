@@ -45,7 +45,7 @@ export function Footer() {
               <span>Since 2015</span>
               <span>•</span>
               <a 
-                href="https://maps.app.goo.gl/4Nz7YyCZq1ukGeL86" 
+                href="https://www.google.com/maps?q=9.591900825500488,76.52499389648438&z=17&hl=en" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-primary hover:underline flex items-center gap-0.5"
