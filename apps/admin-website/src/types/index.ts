@@ -1,5 +1,5 @@
 // Role Types
-export type UserRole = 'admin' | 'staff' | 'user'
+export type UserRole = 'superadmin' | 'admin' | 'staff' | 'user'
 
 import type { Category, Subcategory } from '@/features/category/types'
 export type { Category, Subcategory }

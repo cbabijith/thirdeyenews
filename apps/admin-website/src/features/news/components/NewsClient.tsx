@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useNews } from '../hooks/useNews'
+import { usePermissions } from '@/hooks/usePermissions'
 import { Search, Plus, Pin, Globe, Eye, Pencil, Trash2, Video, ChevronDown, X, Folder, ArrowUpDown, MoreVertical, ExternalLink, Newspaper } from 'lucide-react'
 
 function stripHtml(html: string): string {
@@ -84,6 +85,7 @@ export function NewsClient({
   } = useNews({ initialNews, initialCategories, initialCount })
 
   const [moreMenuId, setMoreMenuId] = useState<string | null>(null)
+  const { hasRole } = usePermissions()
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -301,14 +303,18 @@ export function NewsClient({
                           <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
                           View on Site
                         </button>
-                        <div className="border-t border-gray-100 my-1" />
-                        <button
-                          onClick={() => { setDeleteItemId(item.id); setMoreMenuId(null) }}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          Delete
-                        </button>
+                        {hasRole('superadmin') && (
+                          <>
+                            <div className="border-t border-gray-100 my-1" />
+                            <button
+                              onClick={() => { setDeleteItemId(item.id); setMoreMenuId(null) }}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Delete
+                            </button>
+                          </>
+                        )}
                       </div>
                     </>
                   )}

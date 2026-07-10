@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useNavigationStore } from '@/store/navigationStore'
 import { LayoutDashboard, Newspaper, Folder, Megaphone, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 
@@ -10,12 +11,15 @@ export function Sidebar() {
   const pathname = usePathname()
   const { sidebarOpen, toggleSidebar, setCurrentPath } = useNavigationStore()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const { hasRole } = usePermissions()
 
   const navItems = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+    ...(hasRole('superadmin') ? [{ href: '/', label: 'Dashboard', icon: LayoutDashboard }] : []),
     { href: '/content/news', label: 'News', icon: Newspaper },
-    { href: '/content/categories', label: 'Categories', icon: Folder },
-    { href: '/content/ads', label: 'Ads', icon: Megaphone },
+    ...(hasRole('superadmin') ? [
+      { href: '/content/categories', label: 'Categories', icon: Folder },
+      { href: '/content/ads', label: 'Ads', icon: Megaphone },
+    ] : []),
   ]
 
   const handleNavClick = (href: string) => {
