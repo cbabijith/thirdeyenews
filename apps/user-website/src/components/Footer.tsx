@@ -78,7 +78,7 @@ export function Footer() {
             <span className="material-symbols-outlined text-[16px] text-primary">mail</span>
             സമ്പർക്കം
           </a>
-          <a href="https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[13px] hover:text-white transition-colors flex items-center gap-1.5">
+          <a href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[13px] hover:text-white transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[16px] text-secondary">chat</span>
             WhatsApp ചാനൽ
           </a>
@@ -86,7 +86,7 @@ export function Footer() {
 
         {/* Social / Contact Icons */}
         <div className="flex items-center gap-3 pt-1">
-          <a href="https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
+          <a href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
             <span className="material-symbols-outlined text-[18px] text-white">chat</span>
           </a>
           <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">

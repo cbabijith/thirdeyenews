@@ -196,11 +196,15 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <article className="w-full mt-2">
           {news.description && (
             <div className="border-l-[3px] border-secondary pl-4 mb-5">
-              <p className="font-semibold text-on-surface text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em' }}>{news.description}</p>
+              <p className="font-semibold !text-black text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em', color: '#000000' }}>{news.description}</p>
             </div>
           )}
           {sanitizedContent && (
-            <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+            <div 
+              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
+              style={{ color: '#000000' }}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
+            />
           )}
         </article>
 
