@@ -113,7 +113,7 @@ export function Footer() {
                 </a>
               </li>
               <li className="text-[11px] text-on-surface-variant/50 mt-1">
-                Since 2015
+                Since 2016
               </li>
               <li className="text-[11px] text-on-surface-variant/50">
                 Chief Editor: Sreekumar
