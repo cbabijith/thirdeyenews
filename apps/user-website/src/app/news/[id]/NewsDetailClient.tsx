@@ -198,15 +198,29 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <article className="w-full mt-2">
           {news.description && (
             <div className="border-l-[3px] border-secondary pl-4 mb-5">
-              <p className="font-semibold !text-black text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em', color: '#000000' }}>{news.description}</p>
+              <p className="font-semibold text-black dark:text-white text-[15px] md:text-[16px] leading-relaxed text-left">{news.description}</p>
             </div>
           )}
           {news.content && (
-            <div 
-              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_strong]:!text-black [&_em]:!text-black [&_a]:!text-black [&_li]:!text-black [&_ul]:!text-black [&_ol]:!text-black [&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black [&_*]:!text-black [&_*]:[color:#000000!important] [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
-              style={{ color: '#000000' }}
-              dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
-            />
+            <>
+              <style dangerouslySetInnerHTML={{ __html: `
+                .news-content-area,
+                .news-content-area * {
+                  color: #000000 !important;
+                  text-align: left !important;
+                }
+                html.dark .news-content-area,
+                html.dark .news-content-area *,
+                .dark .news-content-area,
+                .dark .news-content-area * {
+                  color: #ffffff !important;
+                }
+              ` }} />
+              <div 
+                className="news-content-area leading-relaxed text-[16px] md:text-[17px]" 
+                dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
+              />
+            </>
           )}
         </article>
 
