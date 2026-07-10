@@ -4,8 +4,20 @@ import { useState, useEffect, useRef } from 'react'
 import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useStorage } from '@/hooks/useStorage'
-import { RichTextEditor } from '@/components/editor/RichTextEditor'
+import dynamic from 'next/dynamic'
 import { ArrowLeft, ImagePlus, X, Link as LinkIcon, Pin, Globe, FileText, Sparkles, ChevronDown } from 'lucide-react'
+
+const RichTextEditor = dynamic(
+  () => import('@/components/editor/RichTextEditor').then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[450px] w-full border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center animate-pulse">
+        <span className="text-sm text-gray-400 font-medium">Loading rich text editor...</span>
+      </div>
+    ),
+  }
+)
 
 interface NewsFormProps {
   categories: Category[]
