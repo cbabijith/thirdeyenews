@@ -60,37 +60,9 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const handleShare = async () => {
     if (typeof window === 'undefined' || !news) return
 
-    const category = news.categories?.name || 'Main'
     const newsUrl = `https://thirdeyenewslive.com/news/${news.id}`
-    const date = news.published_at
-      ? new Date(news.published_at).toLocaleDateString('en-GB')
-      : ''
 
-    const stripHtml = (html: string) => {
-      return html
-        .replace(/<p>/g, '\n')
-        .replace(/<\/p>/g, '\n')
-        .replace(/<br\s*\/?>/g, '\n')
-        .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/\n{3,}/g, '\n\n')
-        .trim()
-    }
-
-    const body = stripHtml(news.content || news.description || '')
-
-    const shareText = `*ThirdEye News* | ${category}
-
-*${news.title}*
-${date ? `\n📅 ${date}\n` : ''}
-${body}
-
-${newsUrl}`
+    const shareText = `*${news.title}*\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`

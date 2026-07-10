@@ -24,13 +24,10 @@ function stripHtml(html: string): string {
 }
 
 function buildWhatsAppShareUrl(item: News): string {
-  const category = item.categories?.name || 'News'
   const title = item.title
-  const body = stripHtml(item.content || item.description || '')
   const link = `https://thirdeyenewslive.com/news/${item.id}`
-  const date = new Date(item.created_at).toLocaleDateString('en-GB')
 
-  const text = `*ThirdEye News | ${category}*\n\n*${title}*\n\n📅 ${date}\n\n${body}\n\n${link}`
+  const text = `*${title}*\n\n${link}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 
