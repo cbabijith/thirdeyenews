@@ -47,6 +47,7 @@ export const news = pgTable('news', {
   is_pinned: boolean('is_pinned').default(false).notNull(),
   published_at: timestamp('published_at', { withTimezone: true }),
   view_count: integer('view_count').default(0).notNull(),
+  slug: text('slug').unique(),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })

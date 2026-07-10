@@ -15,6 +15,13 @@
       "when": 1783443526997,
       "tag": "0001_loud_husk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783680439025,
+      "tag": "0002_opposite_penance",
+      "breakpoints": true
     }
   ]
 }

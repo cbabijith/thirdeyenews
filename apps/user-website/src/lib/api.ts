@@ -76,6 +76,7 @@ export interface NewsItem {
   is_published?: boolean
   view_count?: number
   category_id?: string | null
+  slug?: string | null
   categories?: {
     name: string
     slug: string

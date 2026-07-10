@@ -21,6 +21,7 @@ interface NewsFormProps {
     is_published: boolean
     is_pinned: boolean
     published_at: string
+    slug?: string | null
   }) => Promise<void> | void
   onCancel: () => void
 }
@@ -47,7 +48,8 @@ export function NewsForm({
     youtube_link: '',
     is_published: false,
     is_pinned: false,
-    published_at: ''
+    published_at: '',
+    slug: ''
   })
 
   const filteredSubcategories = subcategories.filter(
@@ -65,7 +67,8 @@ export function NewsForm({
         youtube_link: initialData.youtube_link || '',
         is_published: initialData.is_published || false,
         is_pinned: initialData.is_pinned || false,
-        published_at: initialData.published_at || ''
+        published_at: initialData.published_at || '',
+        slug: initialData.slug || ''
       })
     }
   }, [initialData])
@@ -94,7 +97,8 @@ export function NewsForm({
             youtube_link: draft.youtube_link || '',
             is_published: draft.is_published || false,
             is_pinned: draft.is_pinned || false,
-            published_at: draft.published_at || ''
+            published_at: draft.published_at || '',
+            slug: draft.slug || ''
           })
         } catch (e) {
           console.error('Error loading draft:', e)
@@ -251,6 +255,33 @@ export function NewsForm({
                   }`} />
                 </div>
               </button>
+            </div>
+
+            {/* URL settings card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <LinkIcon className="w-3.5 h-3.5" />
+                URL Settings
+              </h3>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Custom Link Slug (Optional)</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.slug || ''}
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')
+                      updateField('slug', value)
+                    }}
+                    className="w-full px-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400"
+                    placeholder="e.g. crimekottayam34"
+                  />
+                </div>
+                <span className="text-[10px] text-gray-400 block mt-1">
+                  Lowercase letters, numbers, and hyphens only.
+                </span>
+              </div>
             </div>
 
             {/* Category card */}

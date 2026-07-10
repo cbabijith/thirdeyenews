@@ -58,7 +58,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const handleShare = async () => {
     if (typeof window === 'undefined' || !news) return
 
-    const newsUrl = `https://thirdeyenewslive.com/news/${news.id}`
+    const newsUrl = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
 
     const boldTitle = news.title
       .split('\n')

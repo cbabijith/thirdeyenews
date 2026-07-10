@@ -18,13 +18,15 @@ export const newsRepository = {
   },
 
   async findById(id: string, includeCategory = true): Promise<News | null> {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+    const condition = isUUID ? eq(news.id, id) : eq(news.slug, id)
     const result = includeCategory
       ? await db.query.news.findFirst({
-          where: eq(news.id, id),
+          where: condition,
           with: { categories: true, profiles: true },
         })
       : await db.query.news.findFirst({
-          where: eq(news.id, id),
+          where: condition,
           with: { profiles: true },
         })
     return result as unknown as News | null
@@ -144,6 +146,7 @@ export const newsRepository = {
         is_pinned: data.is_pinned || false,
         published_at: data.published_at ? new Date(data.published_at) : null,
         view_count: data.view_count || 0,
+        slug: data.slug || null,
       })
       .returning()
     return result as unknown as News
@@ -162,6 +165,7 @@ export const newsRepository = {
     if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
     if (updates.published_at !== undefined)
       updateData.published_at = updates.published_at ? new Date(updates.published_at) : null
+    if (updates.slug !== undefined) updateData.slug = updates.slug || null
 
     const [result] = await db.update(news).set(updateData).where(eq(news.id, id)).returning()
     return result as unknown as News | null

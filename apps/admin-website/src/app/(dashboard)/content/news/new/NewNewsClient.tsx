@@ -31,6 +31,7 @@ export function NewNewsClient({ categories, subcategories }: NewNewsClientProps)
         is_pinned: formData.is_pinned || false,
         published_at: formData.is_published ? (formData.published_at || new Date().toISOString()) : null,
         view_count: 0,
+        slug: formData.slug || null,
       } as Omit<News, 'id' | 'created_at' | 'updated_at'>),
     })
     const json = await res.json()
