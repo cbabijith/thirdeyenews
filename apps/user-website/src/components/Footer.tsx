@@ -15,7 +15,10 @@ export function Footer() {
             <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto" />
           </div>
           <p className="text-white/60 text-[13px] leading-relaxed">
-            സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ. കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ അതിവേഗം ലഭിക്കാൻ ThirdEye News.
+            പക്ഷം ചേരാതെ, മുഖം നോക്കാതെ, സമഗ്രമായ വാർത്തകൾ
+          </p>
+          <p className="text-white/50 text-[12px] leading-relaxed mt-1">
+            നേരിനു നേരേ തുറന്നുവെച്ച വാർത്തയുടെ മൂന്നാം കണ്ണ്.!!
           </p>
           
           {/* Contact Details */}
@@ -23,26 +26,26 @@ export function Footer() {
             <div className="flex items-start gap-2.5">
               <span className="material-symbols-outlined text-[16px] text-white/40 mt-0.5">person</span>
               <span className="leading-tight">
-                <strong className="text-white/80 font-medium">Chief Editor:</strong> Binu Karunakaran
+                <strong className="text-white/80 font-medium">Chief Editor:</strong> Sreekumar
               </span>
             </div>
             <div className="flex items-start gap-2.5">
               <span className="material-symbols-outlined text-[16px] text-white/40 mt-0.5">location_on</span>
               <span className="leading-normal">
-                Make over Building, Kalathilpady Ponpally road, Vadavathoor P.O, Kottayam - 686010
+                Excel Building, Sastri Road, Kottayam - 686001
               </span>
             </div>
             <div className="flex items-center gap-2.5">
               <span className="material-symbols-outlined text-[16px] text-white/40">call</span>
-              <a href="tel:9020333222" className="hover:text-primary transition-colors text-white/80">
-                +91 9020333222
+              <a href="tel:9847200864" className="hover:text-primary transition-colors text-white/80">
+                9847200864
               </a>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-white/30 pl-6.5 mt-0.5">
               <span>Since 2015</span>
               <span>•</span>
               <a 
-                href="https://maps.app.goo.gl/4Nz7YyCZq1ukGeL86" 
+                href="https://www.google.com/maps?q=9.591900825500488,76.52499389648438&z=17&hl=en" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-primary hover:underline flex items-center gap-0.5"
@@ -75,7 +78,7 @@ export function Footer() {
             <span className="material-symbols-outlined text-[16px] text-primary">mail</span>
             സമ്പർക്കം
           </a>
-          <a href="https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[13px] hover:text-white transition-colors flex items-center gap-1.5">
+          <a href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" target="_blank" rel="noopener noreferrer" className="text-white/70 text-[13px] hover:text-white transition-colors flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[16px] text-secondary">chat</span>
             WhatsApp ചാനൽ
           </a>
@@ -83,13 +86,13 @@ export function Footer() {
 
         {/* Social / Contact Icons */}
         <div className="flex items-center gap-3 pt-1">
-          <a href="https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
+          <a href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-secondary transition-colors">
             <span className="material-symbols-outlined text-[18px] text-white">chat</span>
           </a>
           <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
             <span className="material-symbols-outlined text-[18px] text-white">share</span>
           </a>
-          <a href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
+          <a href="mailto:thirdeyenewslive@gmail.com" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
             <span className="material-symbols-outlined text-[18px] text-white">mail</span>
           </a>
         </div>
@@ -100,7 +103,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col gap-2">
           <p className="text-white/40 text-[11px]">
-            © 2024 ThirdEye വാർത്തകൾ. All rights reserved.
+            © 2025 ThirdEye വാർത്തകൾ. All rights reserved.
           </p>
           <p className="text-white/30 text-[10px]">
             Made by <a href="https://abijithcb.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">abijithcb.com</a>

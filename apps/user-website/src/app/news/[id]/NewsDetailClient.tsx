@@ -8,11 +8,9 @@ import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
-import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
-import DOMPurify from 'isomorphic-dompurify'
-import { formatMalayalamDate, formatShortDate, formatLongDate, formatTime } from '@/lib/dateFormat'
+import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
 
 interface RelatedNews {
   id: string
@@ -30,24 +28,37 @@ interface NewsDetailClientProps {
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
-  if (!url) return ''
-  if (url.includes('embed/')) return url
-  if (url.includes('youtu.be/')) {
-    const id = url.split('youtu.be/')[1].split('?')[0]
-    return `https://www.youtube.com/embed/${id}`
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : ''
+}
+
+function renderAdHtml(imageUrl: string, linkUrl?: string | null): string {
+  const imgHtml = `<img src="${imageUrl}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
+  if (linkUrl) {
+    return `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%;">${imgHtml}</a>`
   }
-  if (url.includes('watch?v=')) {
-    const id = url.split('watch?v=')[1].split('&')[0]
-    return `https://www.youtube.com/embed/${id}`
+  return imgHtml
+}
+
+function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl?: string | null): string {
+  if (!adImageUrl) return content
+
+  const closingTag = '</p>'
+  const index = content.indexOf(closingTag)
+  if (index === -1) {
+    return content + renderAdHtml(adImageUrl, adLinkUrl)
   }
-  return url
+
+  const insertPosition = index + closingTag.length
+  return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
 }
 
 export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
   const news = initialNews
-  const [relatedNews] = useState<RelatedNews[]>(initialRelated)
+  const [relatedNews] = useState<RelatedNews[]>(initialRelated || [])
   const viewCountedRef = useRef(false)
 
   useEffect(() => {
@@ -60,34 +71,16 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const handleShare = async () => {
     if (typeof window === 'undefined' || !news) return
 
-    const category = news.categories?.name || 'ബ്രേക്കിംഗ് ന്യൂസ്'
+    const newsUrl = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
 
-    const newsUrl = window.location.href
-    const publishedDate = news.published_at
-      ? formatLongDate(news.published_at)
-      : ''
+    const boldTitle = news.title
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => `*${line}*`)
+      .join('\n')
 
-    const shareText = `📰 *ThirdEye News* | ${category}
-
-✍️ *${news.title}*
-
-👉 *മുഴുവൻ വാർത്ത വായിക്കാൻ:*
-${newsUrl}
-
-📅 ${publishedDate}
-
-━━━━━━━━━━━━━━━
-
-📲 *ThirdEye News വാട്സ്ആപ്പ് ചാനലിൽ ചേരൂ*
-
-കേരളത്തിലെയും ലോകത്തെയും പ്രധാന വാർത്തകൾ, ബ്രേക്കിംഗ് അപ്ഡേറ്റുകൾ, പ്രത്യേക റിപ്പോർട്ടുകൾ എന്നിവ അതിവേഗം ലഭിക്കാൻ ഞങ്ങളുടെ വാട്സ്ആപ്പ് ചാനലിൽ ഇപ്പോൾ തന്നെ ജോയിൻ ചെയ്യൂ
-
-👇 *ചാനലിൽ ചേരാൻ*
-https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
-
-━━━━━━━━━━━━━━━
-*ThirdEye News*
-സത്യസന്ധവും വേഗമേറിയതുമായ വാർത്തകൾ 🌐 www.thirdeyenews.com`
+    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
@@ -133,7 +126,6 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
   const authorName = news.profiles?.full_name || 'സ്റ്റാഫ് റിപ്പോർട്ടർ'
   const formatDateShort = (date: string) => formatShortDate(date)
 
-  const sanitizedContent = news.content ? DOMPurify.sanitize(news.content) : ''
 
   return (
     <div className={`min-h-screen ${colors.background}`}>
@@ -142,13 +134,13 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
       <main className="w-full max-w-[700px] mx-auto px-4 md:px-6 pt-3 md:pt-5 pb-8 flex flex-col gap-3 md:gap-4">
         {/* Back + Category Row */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
+          <Link
+            href="/"
             className="inline-flex items-center gap-1 text-on-surface-variant text-[13px] font-medium hover:text-on-surface transition-colors min-h-[44px]"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             തിരികെ
-          </button>
+          </Link>
           {news.categories && (
             <span className="text-secondary text-[10px] font-semibold uppercase tracking-wide">
               {news.categories.name}
@@ -174,15 +166,6 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
             <span className="material-symbols-outlined text-[13px]">person</span>
             {authorName}
           </span>
-          {news.view_count !== undefined && news.view_count > 0 && (
-            <>
-              <span className="w-1 h-1 rounded-full bg-outline"></span>
-              <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-[13px]">visibility</span>
-                {news.view_count}
-              </span>
-            </>
-          )}
         </div>
 
         {/* Featured Image */}
@@ -214,11 +197,15 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         <article className="w-full mt-2">
           {news.description && (
             <div className="border-l-[3px] border-secondary pl-4 mb-5">
-              <p className="font-semibold text-on-surface text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em' }}>{news.description}</p>
+              <p className="font-semibold !text-black text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em', color: '#000000' }}>{news.description}</p>
             </div>
           )}
-          {sanitizedContent && (
-            <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+          {news.content && (
+            <div 
+              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_strong]:!text-black [&_em]:!text-black [&_a]:!text-black [&_li]:!text-black [&_ul]:!text-black [&_ol]:!text-black [&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black [&_*]:!text-black [&_*]:[color:#000000!important] [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
+              style={{ color: '#000000' }}
+              dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
+            />
           )}
         </article>
 
@@ -228,7 +215,7 @@ https://chat.whatsapp.com/B6JGw1jqCMeFBABRYql9MV?mode=ems_copy_t
         </div>
 
         {/* Related Articles */}
-        {relatedNews.length > 0 && (
+        {relatedNews && relatedNews.length > 0 && (
           <section className="w-full pt-4">
             <h3 className="text-on-surface text-[14px] font-bold mb-3 flex items-center gap-2">
               <span className="w-1 h-4 bg-primary rounded-full"></span>

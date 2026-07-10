@@ -31,35 +31,35 @@ export function Sidebar() {
         }`}
       >
         {/* Header / Logo */}
-        <div className={`p-4 border-b border-gray-100 flex items-center ${sidebarOpen ? 'justify-between' : 'justify-center'}`}>
+        <div className={`px-3 py-2.5 border-b border-gray-100 flex items-center ${sidebarOpen ? 'justify-between' : 'justify-center'}`}>
           {sidebarOpen ? (
             <div className="flex items-center">
-              <img src="/logo.svg" alt="ThirdEye News" className="h-10 w-auto object-contain" />
+              <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto object-contain" />
             </div>
           ) : (
             <button
               onClick={toggleSidebar}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-all active:scale-95 cursor-pointer"
+              className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-all active:scale-95 cursor-pointer"
               title="Expand sidebar"
             >
-              <img src="/logo.svg" alt="ThirdEye News" className="h-10 w-10 object-contain" />
+              <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-8 object-contain" />
             </button>
           )}
           
           {sidebarOpen && (
             <button
               onClick={toggleSidebar}
-              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
+              className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
               title="Collapse sidebar"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
             </button>
           )}
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 py-6">
-          <ul className="space-y-1.5 px-3">
+        <nav className="flex-1 py-3">
+          <ul className="space-y-1 px-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               const Icon = item.icon
@@ -69,7 +69,7 @@ export function Sidebar() {
                     href={item.href}
                     onClick={() => handleNavClick(item.href)}
                     className={`flex items-center rounded-lg transition-all duration-200 ${
-                      sidebarOpen ? 'px-3 py-2.5 gap-3' : 'p-3 justify-center'
+                      sidebarOpen ? 'px-3 py-2 gap-3' : 'p-2.5 justify-center'
                     } ${
                       isActive
                         ? 'bg-gray-900 text-white'
@@ -77,7 +77,7 @@ export function Sidebar() {
                     }`}
                     title={!sidebarOpen ? item.label : undefined}
                   >
-                    <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400'} />
+                    <Icon size={18} className={isActive ? 'text-white' : 'text-gray-400'} />
                     {sidebarOpen && (
                       <span className="font-medium text-sm">{item.label}</span>
                     )}
@@ -91,41 +91,41 @@ export function Sidebar() {
         {/* Bottom: Logout + Collapse Toggle */}
         <div className="border-t border-gray-100">
           {sidebarOpen && (
-            <div className="px-3 py-3">
+            <div className="px-2 py-2">
               <button
                 onClick={() => setShowLogoutConfirm(true)}
-                className="flex items-center w-full px-3 py-2.5 gap-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+                className="flex items-center w-full px-3 py-2 gap-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
               >
-                <LogOut size={20} className="text-gray-400" />
+                <LogOut size={18} className="text-gray-400" />
                 <span className="font-medium text-sm">Logout</span>
               </button>
             </div>
           )}
           {!sidebarOpen && (
-            <div className="p-4 flex flex-col items-center gap-3">
+            <div className="p-2 flex flex-col items-center gap-2">
               <button
                 onClick={() => setShowLogoutConfirm(true)}
                 className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
                 title="Logout"
               >
-                <LogOut size={20} />
+                <LogOut size={18} />
               </button>
               <button
                 onClick={toggleSidebar}
                 className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
                 title="Expand sidebar"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={18} />
               </button>
             </div>
           )}
           {sidebarOpen && (
-            <div className="px-3 pb-3">
+            <div className="px-2 pb-2">
               <button
                 onClick={toggleSidebar}
-                className="flex items-center w-full px-3 py-2.5 gap-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+                className="flex items-center w-full px-3 py-2 gap-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
               >
-                <ChevronLeft size={20} className="text-gray-400" />
+                <ChevronLeft size={18} className="text-gray-400" />
                 <span className="font-medium text-sm">Collapse</span>
               </button>
             </div>

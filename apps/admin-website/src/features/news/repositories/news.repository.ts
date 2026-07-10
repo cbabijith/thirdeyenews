@@ -18,13 +18,15 @@ export const newsRepository = {
   },
 
   async findById(id: string, includeCategory = true): Promise<News | null> {
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+    const condition = isUUID ? eq(news.id, id) : eq(news.slug, id)
     const result = includeCategory
       ? await db.query.news.findFirst({
-          where: eq(news.id, id),
+          where: condition,
           with: { categories: true, profiles: true },
         })
       : await db.query.news.findFirst({
-          where: eq(news.id, id),
+          where: condition,
           with: { profiles: true },
         })
     return result as unknown as News | null
@@ -59,6 +61,16 @@ export const newsRepository = {
     return result as unknown as News[]
   },
 
+  async findAllWithRelations(limit: number, offset: number): Promise<News[]> {
+    const result = await db.query.news.findMany({
+      with: { categories: true, profiles: true },
+      orderBy: [desc(news.created_at)],
+      limit,
+      offset,
+    })
+    return result as unknown as News[]
+  },
+
   async count(): Promise<number> {
     const [result] = await db.select({ value: count() }).from(news)
     return result?.value || 0
@@ -80,10 +92,10 @@ export const newsRepository = {
     let orderByClause
     switch (params.sortBy) {
       case 'date-desc':
-        orderByClause = [desc(news.published_at), desc(news.created_at)]
+        orderByClause = [desc(news.created_at)]
         break
       case 'date-asc':
-        orderByClause = [asc(news.published_at), asc(news.created_at)]
+        orderByClause = [asc(news.created_at)]
         break
       case 'title-asc':
         orderByClause = [asc(news.title)]
@@ -134,6 +146,9 @@ export const newsRepository = {
         is_pinned: data.is_pinned || false,
         published_at: data.published_at ? new Date(data.published_at) : null,
         view_count: data.view_count || 0,
+        slug: data.slug || null,
+        ad_image_url: data.ad_image_url || null,
+        ad_link_url: data.ad_link_url || null,
       })
       .returning()
     return result as unknown as News
@@ -152,6 +167,9 @@ export const newsRepository = {
     if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
     if (updates.published_at !== undefined)
       updateData.published_at = updates.published_at ? new Date(updates.published_at) : null
+    if (updates.slug !== undefined) updateData.slug = updates.slug || null
+    if (updates.ad_image_url !== undefined) updateData.ad_image_url = updates.ad_image_url || null
+    if (updates.ad_link_url !== undefined) updateData.ad_link_url = updates.ad_link_url || null
 
     const [result] = await db.update(news).set(updateData).where(eq(news.id, id)).returning()
     return result as unknown as News | null

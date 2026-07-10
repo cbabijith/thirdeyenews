@@ -1,8 +1,7 @@
 'use client'
 
 export function WhatsAppButton() {
-  const phoneNumber = '919020333222'
-  const whatsappUrl = `https://wa.me/${phoneNumber}`
+  const whatsappUrl = 'https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9'
 
   return (
     <a

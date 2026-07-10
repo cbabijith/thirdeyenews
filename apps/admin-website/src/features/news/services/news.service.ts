@@ -43,7 +43,7 @@ export const newsService = {
   async getNewsForListPage(limit: number, offset: number): Promise<{ data: News[]; count: number }> {
     try {
       const [data, totalCount] = await Promise.all([
-        newsRepository.findPublishedWithRelations(limit, offset),
+        newsRepository.findAllWithRelations(limit, offset),
         newsRepository.count(),
       ])
       return { data, count: totalCount }

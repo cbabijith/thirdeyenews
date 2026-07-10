@@ -1,20 +1,18 @@
-const API_BASE_URL = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
-const API_TOKEN = process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
-
 function getBaseUrl(): string {
   if (typeof window !== 'undefined') {
     return ''
   }
-  return API_BASE_URL
+  return process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
 }
 
 function getHeaders(): Record<string, string> {
   if (typeof window !== 'undefined') {
     return { 'Content-Type': 'application/json' }
   }
+  const token = process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${API_TOKEN}`,
+    'Authorization': `Bearer ${token}`,
   }
 }
 
@@ -78,6 +76,9 @@ export interface NewsItem {
   is_published?: boolean
   view_count?: number
   category_id?: string | null
+  slug?: string | null
+  ad_image_url?: string | null
+  ad_link_url?: string | null
   categories?: {
     name: string
     slug: string
