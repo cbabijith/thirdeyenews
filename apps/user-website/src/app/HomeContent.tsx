@@ -479,37 +479,42 @@ export function HomeContent({
                 <div className="flex flex-col gap-6">
                   {/* Main Hero Card */}
                   <Link href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
-                    <div className="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 bg-surface-container-lowest">
-                      {featuredNews.image_url ? (
-                        <div className="relative w-full h-[400px]">
-                          <Image
-                            src={featuredNews.image_url}
-                            alt={featuredNews.title}
-                            fill
-                            priority
-                            sizes="600px"
-                            className="object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-full h-[400px] bg-surface-container flex items-center justify-center">
-                          <span className="material-symbols-outlined text-6xl text-on-surface-variant/20">newspaper</span>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                    <div className="flex flex-col gap-4">
+                      {/* Hero Image Container */}
+                      <div className="relative rounded-2xl overflow-hidden bg-surface-container shadow-md hover:shadow-lg transition-all duration-500">
+                        {featuredNews.image_url ? (
+                          <div className="relative w-full h-[400px]">
+                            <Image
+                              src={featuredNews.image_url}
+                              alt={featuredNews.title}
+                              fill
+                              priority
+                              sizes="600px"
+                              className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-[400px] flex items-center justify-center text-on-surface-variant/20">
+                            <span className="material-symbols-outlined text-6xl">newspaper</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Hero Meta & Title Below Image */}
+                      <div className="px-1 py-1">
                         {featuredNews.categories && (
-                          <span className="inline-block bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded mb-3">
+                          <span className="text-primary text-[11px] font-black uppercase tracking-[0.2em] block mb-2">
                             {featuredNews.categories.name}
                           </span>
                         )}
-                        <h2 className="text-white text-[20px] md:text-[23px] font-bold leading-tight group-hover:underline decoration-white/40 line-clamp-2 max-w-[90%]" title={featuredNews.title}>
+                        <h2 className="text-on-surface text-[22px] md:text-[25px] font-black tracking-tight leading-tight group-hover:text-primary transition-colors duration-300" title={featuredNews.title}>
                           {featuredNews.title.length > 110 ? featuredNews.title.substring(0, 110) + '...' : featuredNews.title}
                         </h2>
                         {featuredNews.published_at && (
-                          <p className="text-white/80 text-xs mt-2.5 flex items-center gap-1.5">
-                            <span className="material-symbols-outlined text-[12px]">schedule</span>
-                            {formatDate(featuredNews.published_at)} • {getAuthorName(featuredNews)}
+                          <p className="text-on-surface-variant/70 text-xs mt-3 flex items-center gap-2 font-medium">
+                            <span>{formatDate(featuredNews.published_at)}</span>
+                            <span className="w-1 h-1 rounded-full bg-border" />
+                            <span>{getAuthorName(featuredNews)}</span>
                           </p>
                         )}
                       </div>

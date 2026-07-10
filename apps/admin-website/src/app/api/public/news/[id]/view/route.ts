@@ -11,8 +11,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (authError) return authError
 
   try {
-    const { id } = await params
-    await newsRepository.incrementViewCount(id)
+    const newsItem = await newsRepository.findById(id, false)
+    if (!newsItem) {
+      return NextResponse.json({ error: 'News not found' }, { status: 404, headers: corsHeaders })
+    }
+    await newsRepository.incrementViewCount(newsItem.id)
     return NextResponse.json({ success: true }, { headers: corsHeaders })
   } catch (error) {
     return NextResponse.json(

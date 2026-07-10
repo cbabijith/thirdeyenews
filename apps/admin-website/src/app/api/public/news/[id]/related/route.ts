@@ -16,9 +16,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const limit = parseInt(searchParams.get('limit') || '4', 10)
 
     const newsItem = await newsRepository.findById(id, false)
-    const categoryId = newsItem?.category_id || null
+    if (!newsItem) {
+      return NextResponse.json({ error: 'News not found' }, { status: 404, headers: corsHeaders })
+    }
+    const categoryId = newsItem.category_id || null
 
-    const related = await newsRepository.findRelatedPublished(id, categoryId, limit)
+    const related = await newsRepository.findRelatedPublished(newsItem.id, categoryId, limit)
     return NextResponse.json({ data: related }, { headers: corsHeaders })
   } catch (error) {
     return NextResponse.json(
