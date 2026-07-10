@@ -22,6 +22,8 @@ interface NewsFormProps {
     is_pinned: boolean
     published_at: string
     slug?: string | null
+    ad_image_url?: string | null
+    ad_link_url?: string | null
   }) => Promise<void> | void
   onCancel: () => void
 }
@@ -38,6 +40,7 @@ export function NewsForm({
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [draftSaved, setDraftSaved] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const adFileInputRef = useRef<HTMLInputElement>(null)
 
   const [formData, setFormData] = useState({
     category_id: '',
@@ -49,7 +52,9 @@ export function NewsForm({
     is_published: false,
     is_pinned: false,
     published_at: '',
-    slug: ''
+    slug: '',
+    ad_image_url: '',
+    ad_link_url: ''
   })
 
   const filteredSubcategories = subcategories.filter(
@@ -68,7 +73,9 @@ export function NewsForm({
         is_published: initialData.is_published || false,
         is_pinned: initialData.is_pinned || false,
         published_at: initialData.published_at || '',
-        slug: initialData.slug || ''
+        slug: initialData.slug || '',
+        ad_image_url: initialData.ad_image_url || '',
+        ad_link_url: initialData.ad_link_url || ''
       })
     }
   }, [initialData])
@@ -98,7 +105,9 @@ export function NewsForm({
             is_published: draft.is_published || false,
             is_pinned: draft.is_pinned || false,
             published_at: draft.published_at || '',
-            slug: draft.slug || ''
+            slug: draft.slug || '',
+            ad_image_url: draft.ad_image_url || '',
+            ad_link_url: draft.ad_link_url || ''
           })
         } catch (e) {
           console.error('Error loading draft:', e)
@@ -126,6 +135,27 @@ export function NewsForm({
       await deleteImage(formData.image_url)
     }
     setFormData({ ...formData, image_url: '' })
+  }
+
+  const handleAdImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (formData.ad_image_url) {
+      await deleteImage(formData.ad_image_url)
+    }
+
+    const result = await uploadImage(file, 'news')
+    if (result) {
+      setFormData(prev => ({ ...prev, ad_image_url: result }))
+    }
+  }
+
+  const handleRemoveAdImage = async () => {
+    if (formData.ad_image_url) {
+      await deleteImage(formData.ad_image_url)
+    }
+    setFormData(prev => ({ ...prev, ad_image_url: '' }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -394,6 +424,76 @@ export function NewsForm({
                     onChange={(e) => updateField('youtube_link', e.target.value)}
                     className="w-full pl-9 pr-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400"
                     placeholder="https://youtube.com/watch?v=..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* In-Article Ad card */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-4">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5" />
+                In-Article Ad (Optional)
+              </h3>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Ad Image</label>
+                <input
+                  ref={adFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAdImageUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                {formData.ad_image_url ? (
+                  <div className="relative group rounded-lg overflow-hidden border border-gray-200">
+                    <img
+                      src={formData.ad_image_url}
+                      alt="Ad Preview"
+                      className="w-full h-32 object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveAdImage}
+                      className="absolute top-2 right-2 w-7 h-7 bg-black/60 text-white rounded-full flex items-center justify-center hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100"
+                      title="Remove ad image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => adFileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full h-24 flex flex-col items-center justify-center gap-1.5 border-2 border-dashed border-gray-200 rounded-lg text-gray-400 hover:border-gray-300 hover:bg-gray-50 transition-all disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                        <span className="text-[11px] font-medium">Uploading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ImagePlus className="w-6 h-6" />
+                        <span className="text-[11px] font-medium">Click to upload ad image</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Ad Redirect Link</label>
+                <div className="relative">
+                  <LinkIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="url"
+                    value={formData.ad_link_url || ''}
+                    onChange={(e) => updateField('ad_link_url', e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400"
+                    placeholder="https://example.com"
                   />
                 </div>
               </div>

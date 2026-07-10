@@ -16,6 +16,8 @@ export interface News {
   published_at: string | null
   view_count: number
   slug: string | null
+  ad_image_url: string | null
+  ad_link_url: string | null
   created_at: string
   updated_at: string
   created_by: string | null

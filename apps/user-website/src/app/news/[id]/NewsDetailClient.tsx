@@ -28,17 +28,30 @@ interface NewsDetailClientProps {
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
-  if (!url) return ''
-  if (url.includes('embed/')) return url
-  if (url.includes('youtu.be/')) {
-    const id = url.split('youtu.be/')[1].split('?')[0]
-    return `https://www.youtube.com/embed/${id}`
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : ''
+}
+
+function renderAdHtml(imageUrl: string, linkUrl?: string | null): string {
+  const imgHtml = `<img src="${imageUrl}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
+  if (linkUrl) {
+    return `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%;">${imgHtml}</a>`
   }
-  if (url.includes('watch?v=')) {
-    const id = url.split('watch?v=')[1].split('&')[0]
-    return `https://www.youtube.com/embed/${id}`
+  return imgHtml
+}
+
+function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl?: string | null): string {
+  if (!adImageUrl) return content
+
+  const closingTag = '</p>'
+  const index = content.indexOf(closingTag)
+  if (index === -1) {
+    return content + renderAdHtml(adImageUrl, adLinkUrl)
   }
-  return url
+
+  const insertPosition = index + closingTag.length
+  return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
 }
 
 export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated }: NewsDetailClientProps) {
@@ -191,7 +204,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
             <div 
               className="!text-black [&_p]:!text-black [&_span]:!text-black [&_strong]:!text-black [&_em]:!text-black [&_a]:!text-black [&_li]:!text-black [&_ul]:!text-black [&_ol]:!text-black [&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black [&_*]:!text-black [&_*]:[color:#000000!important] [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
               style={{ color: '#000000' }}
-              dangerouslySetInnerHTML={{ __html: news.content }} 
+              dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
             />
           )}
         </article>

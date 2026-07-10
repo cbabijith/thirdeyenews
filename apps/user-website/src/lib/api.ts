@@ -77,6 +77,8 @@ export interface NewsItem {
   view_count?: number
   category_id?: string | null
   slug?: string | null
+  ad_image_url?: string | null
+  ad_link_url?: string | null
   categories?: {
     name: string
     slug: string

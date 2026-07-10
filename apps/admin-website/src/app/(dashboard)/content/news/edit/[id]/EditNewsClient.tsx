@@ -27,6 +27,8 @@ export function EditNewsClient({ newsItem, categories, subcategories }: EditNews
     if (formData.is_pinned !== undefined) updates.is_pinned = formData.is_pinned
     if (formData.published_at !== undefined) updates.published_at = formData.published_at || null
     if (formData.slug !== undefined) updates.slug = formData.slug || null
+    if (formData.ad_image_url !== undefined) updates.ad_image_url = formData.ad_image_url || null
+    if (formData.ad_link_url !== undefined) updates.ad_link_url = formData.ad_link_url || null
 
     const res = await fetch(`/api/news/${newsItem.id}`, {
       method: 'PATCH',

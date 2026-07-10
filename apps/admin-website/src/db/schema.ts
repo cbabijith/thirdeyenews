@@ -48,6 +48,8 @@ export const news = pgTable('news', {
   published_at: timestamp('published_at', { withTimezone: true }),
   view_count: integer('view_count').default(0).notNull(),
   slug: text('slug').unique(),
+  ad_image_url: text('ad_image_url'),
+  ad_link_url: text('ad_link_url'),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })

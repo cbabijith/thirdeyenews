@@ -147,6 +147,8 @@ export const newsRepository = {
         published_at: data.published_at ? new Date(data.published_at) : null,
         view_count: data.view_count || 0,
         slug: data.slug || null,
+        ad_image_url: data.ad_image_url || null,
+        ad_link_url: data.ad_link_url || null,
       })
       .returning()
     return result as unknown as News
@@ -166,6 +168,8 @@ export const newsRepository = {
     if (updates.published_at !== undefined)
       updateData.published_at = updates.published_at ? new Date(updates.published_at) : null
     if (updates.slug !== undefined) updateData.slug = updates.slug || null
+    if (updates.ad_image_url !== undefined) updateData.ad_image_url = updates.ad_image_url || null
+    if (updates.ad_link_url !== undefined) updateData.ad_link_url = updates.ad_link_url || null
 
     const [result] = await db.update(news).set(updateData).where(eq(news.id, id)).returning()
     return result as unknown as News | null
