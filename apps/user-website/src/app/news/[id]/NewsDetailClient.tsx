@@ -121,13 +121,13 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
       <main className="w-full max-w-[700px] mx-auto px-4 md:px-6 pt-3 md:pt-5 pb-8 flex flex-col gap-3 md:gap-4">
         {/* Back + Category Row */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
+          <Link
+            href="/"
             className="inline-flex items-center gap-1 text-on-surface-variant text-[13px] font-medium hover:text-on-surface transition-colors min-h-[44px]"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
             തിരികെ
-          </button>
+          </Link>
           {news.categories && (
             <span className="text-secondary text-[10px] font-semibold uppercase tracking-wide">
               {news.categories.name}
