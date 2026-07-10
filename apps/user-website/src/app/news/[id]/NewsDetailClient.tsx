@@ -153,15 +153,6 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
             <span className="material-symbols-outlined text-[13px]">person</span>
             {authorName}
           </span>
-          {news.view_count !== undefined && news.view_count > 0 && (
-            <>
-              <span className="w-1 h-1 rounded-full bg-outline"></span>
-              <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-[13px]">visibility</span>
-                {news.view_count}
-              </span>
-            </>
-          )}
         </div>
 
         {/* Featured Image */}
@@ -198,7 +189,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
           )}
           {news.content && (
             <div 
-              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
+              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_strong]:!text-black [&_em]:!text-black [&_a]:!text-black [&_li]:!text-black [&_ul]:!text-black [&_ol]:!text-black [&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black [&_*]:!text-black [&_*]:[color:#000000!important] [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
               style={{ color: '#000000' }}
               dangerouslySetInnerHTML={{ __html: news.content }} 
             />
