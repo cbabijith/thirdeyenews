@@ -5,6 +5,7 @@ import Link from 'next/link'
 interface NewsItem {
   id: string
   title: string
+  slug?: string | null
 }
 
 interface BreakingNewsTickerProps {
@@ -26,7 +27,7 @@ export function BreakingNewsTicker({ pinnedNews = [], latestNews = [] }: Breakin
       {allNews.map((item, index) => (
         <Link
           key={`${item.id}-${index}`}
-          href={`/news/${item.id}`}
+          href={`/news/${item.slug || item.id}`}
           className="hover:underline flex items-center whitespace-nowrap text-on-surface text-xs font-medium transition-all"
         >
           <span>{item.title}</span>
@@ -40,7 +41,7 @@ export function BreakingNewsTicker({ pinnedNews = [], latestNews = [] }: Breakin
     <div className="w-full flex items-center bg-background border-b border-border relative z-10">
       {/* Left Fixed Section - Red Breaking News Label */}
       <Link
-        href={`/news/${firstNews.id}`}
+        href={`/news/${firstNews.slug || firstNews.id}`}
         className="bg-primary flex items-center gap-1 px-3 py-2 shrink-0 z-10"
       >
         <span className="material-symbols-outlined text-[13px] text-on-primary">bolt</span>

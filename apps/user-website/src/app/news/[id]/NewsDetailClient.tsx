@@ -15,6 +15,7 @@ import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
 interface RelatedNews {
   id: string
   title: string
+  slug?: string | null
   image_url?: string | null
   published_at?: string | null
   categories?: {
@@ -223,7 +224,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
             </h3>
             <div className="flex flex-col">
               {relatedNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                   <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative w-14 h-14 flex-shrink-0">

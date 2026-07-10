@@ -180,7 +180,7 @@ export function HomeContent({
         {/* Hero Story Card - Featured/Pinned News */}
         {featuredNews && (
           <section className="relative overflow-hidden aspect-[16/10]">
-            <Link key={featuredNews.id} href={`/news/${featuredNews.id}`} className="block w-full h-full">
+            <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} className="block w-full h-full">
               {featuredNews.image_url ? (
                 <>
                   <div className="relative w-full h-full">
@@ -260,7 +260,7 @@ export function HomeContent({
             </div>
             <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x">
               {latestNews.slice(0, 10).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="flex flex-col snap-start" style={{ width: 115 }}>
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="flex flex-col snap-start" style={{ width: 115 }}>
                   <div className="rounded-md overflow-hidden" style={{ height: 75 }}>
                     {item.image_url ? (
                       <div className="relative w-full h-full">
@@ -307,7 +307,7 @@ export function HomeContent({
               </span>
             </div>
             {trendingNews.slice(0, 5).map((item, index) => (
-              <Link key={item.id} href={`/news/${item.id}`} className="block group">
+              <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                 <div className="flex items-center gap-3 py-3 border-b border-border">
                   <div className="bg-primary text-on-primary font-bold text-sm w-7 h-7 rounded-sm flex items-center justify-center shrink-0">
                     {index + 1}
@@ -352,7 +352,7 @@ export function HomeContent({
           <div className="flex flex-col">
             {latestNews.length > 0 ? (
               latestNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                   <div className={`flex gap-3 py-3 ${index !== latestNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative flex-shrink-0 w-[72px] h-[72px]">
@@ -416,7 +416,7 @@ export function HomeContent({
             </h3>
             <div className="flex flex-col gap-2">
               {latestNews.slice(0, 10).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                   <div className="p-3 rounded-lg hover:bg-surface-container transition-colors">
                     {item.categories && (
                       <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
@@ -440,7 +440,7 @@ export function HomeContent({
           {/* Middle Column - Featured News (6 cols) */}
           <div className="col-span-6">
             {featuredNews && (
-              <Link href={`/news/${featuredNews.id}`} className="block group">
+              <Link href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
                 {featuredNews.image_url ? (
                   <div className="relative rounded-xl overflow-hidden">
                     <div className="relative w-full h-96">
@@ -499,7 +499,7 @@ export function HomeContent({
             </h3>
             <div className="flex flex-col gap-3">
               {trendingNews.map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                   <article className="rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300 bg-surface-container">
                     {item.image_url && (
                       <div className="relative">

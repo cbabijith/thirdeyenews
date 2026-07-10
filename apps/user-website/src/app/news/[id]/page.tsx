@@ -7,6 +7,7 @@ export const revalidate = 60
 interface RelatedNews {
   id: string
   title: string
+  slug?: string | null
   image_url?: string | null
   published_at?: string | null
   categories?: {

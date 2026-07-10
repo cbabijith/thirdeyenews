@@ -172,7 +172,7 @@ export function SearchContent() {
                     {results.slice(0, 5).map((item) => (
                       <Link
                         key={item.id}
-                        href={`/news/${item.id}`}
+                        href={`/news/${item.slug || item.id}`}
                         onClick={() => setShowDropdown(false)}
                         className="block"
                       >
@@ -222,7 +222,7 @@ export function SearchContent() {
               Found {results.length}+ result{results.length !== 1 ? 's' : ''} for "{searchQuery}"
             </p>
             {results.map((item) => (
-              <Link key={item.id} href={`/news/${item.id}`} className="block">
+              <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block">
                 <article className={`flex gap-4 ${colors.surfaceContainerLowest} border ${colors.outlineVariant} p-4 rounded-xl hover:shadow-md transition-shadow`}>
                   {item.image_url && (
                     <div className="relative w-24 h-24 flex-shrink-0">
