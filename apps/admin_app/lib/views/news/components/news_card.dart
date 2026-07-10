@@ -221,6 +221,13 @@ class NewsCard extends StatelessWidget {
                     _whatsappButton(context),
                     const SizedBox(width: 4),
                     _actionButton(
+                      icon: Icons.open_in_new_outlined,
+                      color: isDark ? AppTheme.darkTextSecondary : const Color(0xFF475569), // Slate 600
+                      onTap: () => _viewOnWebsite(context),
+                      tooltip: 'View on Site',
+                    ),
+                    const SizedBox(width: 4),
+                    _actionButton(
                       icon: Icons.edit_outlined,
                       color: isDark ? AppTheme.darkTextSecondary : const Color(0xFF475569), // Slate 600
                       onTap: onEdit,
@@ -369,6 +376,20 @@ class NewsCard extends StatelessWidget {
             const SnackBar(content: Text('Could not open WhatsApp.')),
           );
         }
+      }
+    }
+  }
+
+  Future<void> _viewOnWebsite(BuildContext context) async {
+    final linkIdentifier = item.slug != null && item.slug!.trim().isNotEmpty ? item.slug!.trim() : item.id;
+    final url = Uri.parse('https://thirdeyenewslive.com/news/$linkIdentifier');
+    try {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open website.')),
+        );
       }
     }
   }
