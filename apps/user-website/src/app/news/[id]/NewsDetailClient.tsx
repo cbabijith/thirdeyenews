@@ -62,7 +62,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const newsUrl = `https://thirdeyenewslive.com/news/${news.id}`
 
-    const shareText = `*${news.title}*\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+    const boldTitle = news.title
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => `*${line}*`)
+      .join('\n')
+
+    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
