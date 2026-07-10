@@ -11,6 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (authError) return authError
 
   try {
+    const { id } = await params
     const newsItem = await newsRepository.findById(id, false)
     if (!newsItem) {
       return NextResponse.json({ error: 'News not found' }, { status: 404, headers: corsHeaders })

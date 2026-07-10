@@ -479,42 +479,49 @@ export function HomeContent({
                 <div className="flex flex-col gap-6">
                   {/* Main Hero Card */}
                   <Link href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 bg-surface-container/10 p-3 rounded-2xl border border-border/20 hover:border-border/60 hover:bg-surface-container/30 transition-all duration-300">
                       {/* Hero Image Container */}
-                      <div className="relative rounded-2xl overflow-hidden bg-surface-container shadow-md hover:shadow-lg transition-all duration-500">
+                      <div className="relative rounded-xl overflow-hidden aspect-[16/10] bg-surface-container">
                         {featuredNews.image_url ? (
-                          <div className="relative w-full h-[400px]">
-                            <Image
-                              src={featuredNews.image_url}
-                              alt={featuredNews.title}
-                              fill
-                              priority
-                              sizes="600px"
-                              className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-                            />
-                          </div>
+                          <Image
+                            src={featuredNews.image_url}
+                            alt={featuredNews.title}
+                            fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 600px"
+                            className="object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                          />
                         ) : (
-                          <div className="w-full h-[400px] flex items-center justify-center text-on-surface-variant/20">
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
                             <span className="material-symbols-outlined text-6xl">newspaper</span>
+                          </div>
+                        )}
+                        {/* Elegant overlay category tag */}
+                        {featuredNews.categories && (
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className="bg-background/80 backdrop-blur-md text-primary text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-border/40 shadow-sm">
+                              {featuredNews.categories.name}
+                            </span>
                           </div>
                         )}
                       </div>
 
                       {/* Hero Meta & Title Below Image */}
-                      <div className="px-1 py-1">
-                        {featuredNews.categories && (
-                          <span className="text-primary text-[11px] font-black uppercase tracking-[0.2em] block mb-2">
-                            {featuredNews.categories.name}
-                          </span>
-                        )}
-                        <h2 className="text-on-surface text-[22px] md:text-[25px] font-black tracking-tight leading-tight group-hover:text-primary transition-colors duration-300" title={featuredNews.title}>
+                      <div className="px-1 pb-1">
+                        <h2 className="text-on-surface text-[20px] md:text-[23px] font-black tracking-tight leading-tight group-hover:text-primary transition-colors duration-300" title={featuredNews.title}>
                           {featuredNews.title.length > 110 ? featuredNews.title.substring(0, 110) + '...' : featuredNews.title}
                         </h2>
                         {featuredNews.published_at && (
-                          <p className="text-on-surface-variant/70 text-xs mt-3 flex items-center gap-2 font-medium">
-                            <span>{formatDate(featuredNews.published_at)}</span>
+                          <p className="text-on-surface-variant/60 text-[11px] mt-3.5 flex items-center gap-2 font-medium">
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px] opacity-70">schedule</span>
+                              {formatDate(featuredNews.published_at)}
+                            </span>
                             <span className="w-1 h-1 rounded-full bg-border" />
-                            <span>{getAuthorName(featuredNews)}</span>
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px] opacity-70">person</span>
+                              {getAuthorName(featuredNews)}
+                            </span>
                           </p>
                         )}
                       </div>
