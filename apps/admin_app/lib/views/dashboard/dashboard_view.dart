@@ -107,17 +107,23 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           ? AppBar(
               title: Row(
                 children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: SvgPicture.asset(
-                      'assets/images/logo.svg',
-                      fit: BoxFit.contain,
+                  GestureDetector(
+                    onTap: _showLogoutDialog,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/logo.svg',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -215,17 +221,23 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
         children: [
           Row(
             children: [
-              Container(
-                width: 90,
-                height: 90,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  // color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SvgPicture.asset(
-                  'assets/images/logo.svg',
-                  fit: BoxFit.contain,
+              GestureDetector(
+                onTap: _showLogoutDialog,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Container(
+                    width: 90,
+                    height: 90,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      // color: AppTheme.primaryColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/logo.svg',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
