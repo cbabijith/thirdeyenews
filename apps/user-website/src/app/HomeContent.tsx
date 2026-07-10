@@ -211,8 +211,13 @@ export function HomeContent({
     )
   }
 
-  const featuredNews = pinnedNews.length > 0 ? pinnedNews[currentSlide % pinnedNews.length] : null
-  const latestNews = recentNews
+  const featuredNews = pinnedNews.length > 0 
+    ? pinnedNews[currentSlide % pinnedNews.length] 
+    : (recentNews.length > 0 ? recentNews[0] : null)
+
+  const latestNews = (pinnedNews.length === 0 && recentNews.length > 0) 
+    ? recentNews.slice(1) 
+    : recentNews
 
   const getAuthorName = (item: NewsItem) => item.profiles?.full_name || item.profiles?.email || 'ThirdEye News'
   const formatDate = (date: string) => fmtShort(date)
