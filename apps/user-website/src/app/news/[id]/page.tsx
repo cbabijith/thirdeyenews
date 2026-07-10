@@ -42,17 +42,32 @@ async function fetchRelatedNews(newsId: string, categoryId?: string | null): Pro
 }
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const news = await fetchNews(id)
+  try {
+    const { id } = await params
+    const news = await fetchNews(id)
 
-  if (!news) {
-    notFound()
+    if (!news) {
+      return (
+        <div style={{ padding: '20px', color: 'red', fontFamily: 'monospace' }}>
+          <h1>News Not Found</h1>
+          <p>id: {id}</p>
+        </div>
+      )
+    }
+
+    const [_, relatedNews] = await Promise.all([
+      Promise.resolve(news),
+      fetchRelatedNews(id, news?.category_id)
+    ])
+
+    return <NewsDetailClient news={news} relatedNews={relatedNews} />
+  } catch (err: any) {
+    return (
+      <div style={{ padding: '20px', color: 'red', fontFamily: 'monospace' }}>
+        <h1>Server Rendering Error</h1>
+        <p>{err?.message || String(err)}</p>
+        <pre>{err?.stack}</pre>
+      </div>
+    )
   }
-
-  const [_, relatedNews] = await Promise.all([
-    Promise.resolve(news),
-    fetchRelatedNews(id, news?.category_id)
-  ])
-
-  return <NewsDetailClient news={news} relatedNews={relatedNews} />
 }
