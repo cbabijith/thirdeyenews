@@ -24,7 +24,8 @@ function stripHtml(html: string): string {
 }
 
 function buildWhatsAppShareUrl(item: News): string {
-  const boldTitle = item.title
+  const title = item.title || ''
+  const boldTitle = title
     .split('\n')
     .map(line => line.trim())
     .filter(line => line.length > 0)
