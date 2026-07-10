@@ -164,7 +164,7 @@ export function NewsClient({
       </div>
 
       {/* Compact Newsroom List */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200">
         {loading && newsItems.length === 0 ? (
           <div className="divide-y divide-gray-100">
             {[...Array(8)].map((_, i) => (
@@ -188,7 +188,7 @@ export function NewsClient({
             {newsItems.map((item) => (
               <div
                 key={item.id}
-                className={`group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors ${moreMenuId === item.id ? 'relative z-30' : 'relative z-0'}`}
+                className={`group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors ${moreMenuId === item.id ? 'relative z-40' : 'relative z-0'}`}
               >
                 {/* Thumbnail - 56x42 compact */}
                 <div className="w-14 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-100">
