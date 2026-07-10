@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { api, NewsItem } from '@/lib/api'
@@ -60,7 +60,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const router = useRouter()
   const news = initialNews
   const [relatedNews] = useState<RelatedNews[]>(initialRelated || [])
+  const pathname = usePathname()
   const viewCountedRef = useRef(false)
+
+  useEffect(() => {
+    if (news.slug && pathname !== `/news/${news.slug}`) {
+      router.replace(`/news/${news.slug}`)
+    }
+  }, [news.slug, pathname, router])
 
   useEffect(() => {
     if (!viewCountedRef.current) {
