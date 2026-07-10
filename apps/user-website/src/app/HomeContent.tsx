@@ -473,15 +473,15 @@ export function HomeContent({
                         <span className="material-symbols-outlined text-6xl text-on-surface-variant/20">newspaper</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                       {featuredNews.categories && (
                         <span className="inline-block bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded mb-3">
                           {featuredNews.categories.name}
                         </span>
                       )}
-                      <h2 className="text-white text-[24px] md:text-[28px] font-bold leading-tight group-hover:underline decoration-white/40">
-                        {featuredNews.title}
+                      <h2 className="text-white text-[20px] md:text-[23px] font-bold leading-tight group-hover:underline decoration-white/40 line-clamp-2 max-w-[90%]" title={featuredNews.title}>
+                        {featuredNews.title.length > 110 ? featuredNews.title.substring(0, 110) + '...' : featuredNews.title}
                       </h2>
                       {featuredNews.published_at && (
                         <p className="text-white/80 text-xs mt-2.5 flex items-center gap-1.5">
