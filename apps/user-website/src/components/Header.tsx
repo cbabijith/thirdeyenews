@@ -80,7 +80,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
 
         {/* Logo */}
         <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
-          <img src="/thirdeye.svg" alt="ThirdEye News" className="h-8 w-auto" />
+          <img src="/thirdeye.svg" alt="ThirdEye News" className="h-10 md:h-11 w-auto" />
         </Link>
 
         <div className="flex items-center gap-3">
