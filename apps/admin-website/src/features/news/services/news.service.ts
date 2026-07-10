@@ -58,6 +58,10 @@ export const newsService = {
       const result = await newsRepository.create(data)
       return { data: result, error: null }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : ''
+      if (msg.includes('news_slug_key') || (msg.includes('duplicate key') && msg.includes('slug'))) {
+        return { data: null, error: 'This custom slug is already in use by another article. Please choose a different slug name.' }
+      }
       return { data: null, error: error instanceof Error ? error.message : 'Failed to create news' }
     }
   },
@@ -68,6 +72,10 @@ export const newsService = {
       if (!result) return { data: null, error: 'News not found' }
       return { data: result, error: null }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : ''
+      if (msg.includes('news_slug_key') || (msg.includes('duplicate key') && msg.includes('slug'))) {
+        return { data: null, error: 'This custom slug is already in use by another article. Please choose a different slug name.' }
+      }
       return { data: null, error: error instanceof Error ? error.message : 'Failed to update news' }
     }
   },
