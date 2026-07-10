@@ -233,115 +233,92 @@ export function HomeContent({
       {/* Mobile Layout */}
       <main className="md:hidden">
         {loading ? renderMobileShimmer() : (
-          <>
+          <div className="flex flex-col gap-6 pb-8">
             {/* Hero Story Card - Featured/Pinned News */}
             {featuredNews && (
-              <section className="relative overflow-hidden aspect-[16/10]">
-                <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} className="block w-full h-full">
-                  {featuredNews.image_url ? (
-                    <>
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={featuredNews.image_url}
-                          alt={featuredNews.title}
-                          fill
-                          priority
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                          className="object-cover"
-                        />
-                      </div>
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.1) 100%)',
-                        }}
-                      />
-                      <div className="absolute top-3 left-3">
-                        <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm">
+              <section className="px-4 pt-4">
+                <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
+                  <div className="relative overflow-hidden rounded-2xl aspect-[16/10] shadow-md bg-surface-container-lowest border border-border/40">
+                    {featuredNews.image_url ? (
+                      <>
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={featuredNews.image_url}
+                            alt={featuredNews.title}
+                            fill
+                            priority
+                            sizes="100vw"
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-primary text-on-primary text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                            TOP STORY
+                          </span>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          {featuredNews.categories && (
+                            <span className="text-primary text-[10px] font-bold uppercase tracking-wide block mb-1">
+                              {featuredNews.categories.name}
+                            </span>
+                          )}
+                          <h2 className="text-white font-bold leading-tight line-clamp-2 text-lg mb-1">
+                            {featuredNews.title.length > 80 ? featuredNews.title.substring(0, 80) + '...' : featuredNews.title}
+                          </h2>
+                          <span className="text-white/60 text-[10px] block">
+                            {featuredNews.published_at && formatDate(featuredNews.published_at)}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full bg-surface-container p-5 flex flex-col justify-end">
+                        <span className="bg-primary text-on-primary text-[10px] font-extrabold px-2 py-0.5 rounded self-start mb-2 tracking-wider">
                           TOP STORY
                         </span>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h2 className="text-white font-bold leading-snug mb-2" style={{ fontSize: 22 }}>
+                        <h2 className="text-on-surface font-bold leading-tight text-lg line-clamp-3">
                           {featuredNews.title}
                         </h2>
-                        <div className="flex items-center justify-between">
-                          <span className="text-white text-xs opacity-80">
-                            {featuredNews.published_at && formatDate(featuredNews.published_at)}
-                            {featuredNews.published_at && ' | '}
-                            {featuredNews.published_at && formatTime(featuredNews.published_at)}
-                          </span>
-                          {pinnedNews.length > 1 && (
-                            <div className="flex gap-1">
-                              {pinnedNews.map((_, idx) => (
-                                <div
-                                  key={idx}
-                                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                    idx === currentSlide % pinnedNews.length
-                                      ? 'bg-primary w-3'
-                                      : 'bg-white/50'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </div>
                       </div>
-                    </>
-                  ) : (
-                    <div className="bg-surface-container h-full p-4 flex flex-col justify-end">
-                      <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm self-start mb-2">
-                        TOP STORY
-                      </span>
-                      <h2 className="text-on-surface font-bold leading-snug" style={{ fontSize: 22 }}>
-                        {featuredNews.title}
-                      </h2>
-                      {featuredNews.published_at && (
-                        <p className="text-on-surface-variant text-xs mt-2">
-                          {formatDate(featuredNews.published_at)}
-                        </p>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </Link>
               </section>
             )}
 
-            {/* Latest News - Horizontal Scroll Cards (പ്രതൃക്ഷ വാർത്തകൾ) */}
+            {/* Horizontal Recent Stories */}
             {latestNews.length > 0 && (
-              <section>
-                <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-                  <h3 className="text-on-surface font-bold text-base">
-                    പ്രതൃക്ഷ വാർത്തകൾ
+              <section className="flex flex-col gap-2">
+                <div className="px-4 flex items-center justify-between">
+                  <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider">
+                    പ്രധാന വാർത്തകൾ
                   </h3>
-                  <span className="text-primary text-sm font-medium flex items-center gap-1">
-                    എല്ലാം കാണുക
-                    <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-                  </span>
                 </div>
-                <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x">
-                  {latestNews.slice(0, 10).map((item) => (
-                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="flex flex-col snap-start" style={{ width: 115 }}>
-                      <div className="rounded-md overflow-hidden" style={{ height: 75 }}>
+                <div className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x px-4 pb-2">
+                  {latestNews.slice(0, 8).map((item) => (
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="flex flex-col shrink-0 snap-start bg-surface-container/20 border border-border/40 rounded-xl overflow-hidden p-2" style={{ width: 140 }}>
+                      <div className="relative rounded-lg overflow-hidden shrink-0 aspect-[16/10] bg-surface-container">
                         {item.image_url ? (
-                          <div className="relative w-full h-full">
-                            <Image src={item.image_url} alt={item.title} fill sizes="115px" className="object-cover" />
-                          </div>
+                          <Image src={item.image_url} alt={item.title} fill sizes="140px" className="object-cover" />
                         ) : (
-                          <div className="w-full h-full bg-surface-container" />
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                            <span className="material-symbols-outlined text-xl">newspaper</span>
+                          </div>
                         )}
                       </div>
-                      <div className="pt-2">
-                        {item.categories && (
-                          <span className="bg-primary text-on-primary text-xs font-bold px-2 py-0.5 rounded-sm">
-                            {item.categories.name}
-                          </span>
-                        )}
-                        <p className="text-on-surface text-xs mt-1 leading-snug line-clamp-3">
-                          {item.title}
-                        </p>
+                      <div className="pt-2 flex-1 flex flex-col justify-between">
+                        <div>
+                          {item.categories && (
+                            <span className="text-primary text-[9px] font-bold uppercase tracking-wider block mb-1">
+                              {item.categories.name}
+                            </span>
+                          )}
+                          <p className="text-on-surface text-[11px] font-medium leading-snug line-clamp-3">
+                            {item.title}
+                          </p>
+                        </div>
                         {item.published_at && (
-                          <p className="text-on-surface-variant text-xs mt-1">
+                          <p className="text-on-surface-variant/60 text-[9px] mt-1.5">
                             {formatTime(item.published_at)}
                           </p>
                         )}
@@ -352,97 +329,79 @@ export function HomeContent({
               </section>
             )}
 
-            {/* Trending Section (ട്രെൻഡിംഗ്) */}
+            {/* Trending Section */}
             {trendingNews.length > 0 && (
-              <section className="px-4">
-                <div className="pt-2 pb-1 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[16px] text-on-surface">trending_up</span>
-                    <h3 className="text-on-surface font-bold text-base">
-                      ട്രെൻഡിംഗ്
-                    </h3>
-                  </div>
-                  <span className="text-primary text-sm font-medium flex items-center gap-1">
-                    എല്ലാം കാണുക
-                    <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-                  </span>
-                </div>
-                {trendingNews.slice(0, 5).map((item, index) => (
-                  <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
-                    <div className="flex items-center gap-3 py-3 border-b border-border">
-                      <div className="bg-primary text-on-primary font-bold text-sm w-7 h-7 rounded-sm flex items-center justify-center shrink-0">
-                        {index + 1}
-                      </div>
-                      <div className="rounded-md overflow-hidden shrink-0" style={{ width: 64, height: 52 }}>
-                        {item.image_url ? (
-                          <div className="relative w-full h-full">
+              <section className="px-4 flex flex-col gap-3">
+                <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-primary">trending_up</span>
+                  ട്രെൻഡിംഗ്
+                </h3>
+                <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
+                  {trendingNews.slice(0, 5).map((item, index) => (
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
+                      <div className="flex items-center gap-3 p-3 hover:bg-surface-container/20 transition-colors">
+                        <div className="text-xl font-black text-outline/30 group-hover:text-primary/60 transition-colors w-6 h-6 flex items-center justify-center shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="relative rounded-lg overflow-hidden shrink-0 aspect-[16/11] bg-surface-container w-16">
+                          {item.image_url ? (
                             <Image src={item.image_url} alt={item.title} fill sizes="64px" className="object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full bg-surface-container" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-on-surface text-sm leading-snug line-clamp-2">
-                          {item.title}
-                        </p>
-                        {item.published_at && (
-                          <p className="text-on-surface-variant text-xs mt-1" suppressHydrationWarning>
-                            {getTimeAgo(item.published_at)}
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                              <span className="material-symbols-outlined text-lg">newspaper</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-on-surface text-[12.5px] font-medium leading-snug line-clamp-2">
+                            {item.title}
                           </p>
-                        )}
+                        </div>
                       </div>
-                      <span className="material-symbols-outlined text-[16px] text-primary shrink-0">trending_up</span>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))}
+                </div>
               </section>
             )}
 
             {/* Ad Banner */}
-            <section className="px-4 pt-4 pb-2">
-              <AdBanner maxAds={3} />
+            <section className="px-4">
+              <AdBanner maxAds={2} />
             </section>
 
-            {/* Latest News List */}
-            <section className="px-4 pb-8">
-              <h3 className="text-on-surface font-bold text-base mb-4 flex items-center gap-2">
-                <span className="w-1 h-5 bg-primary rounded-full"></span>
+            {/* Latest News Timeline List */}
+            <section className="px-4 flex flex-col gap-4">
+              <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider flex items-center gap-2">
+                <span className="w-1.5 h-4 bg-primary rounded-full"></span>
                 ഏറ്റവും പുതിയ വാർത്തകൾ
               </h3>
-              <div className="flex flex-col">
+              <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
                 {latestNews.length > 0 ? (
                   latestNews.map((item, index) => (
                     <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
-                      <div className={`flex gap-3 py-3 ${index !== latestNews.length - 1 ? 'border-b border-border' : ''}`}>
+                      <div className="flex gap-3 p-3 hover:bg-surface-container/20 transition-colors">
                         {item.image_url && (
-                          <div className="relative flex-shrink-0 w-[72px] h-[72px]">
+                          <div className="relative flex-shrink-0 w-20 aspect-[4/3] rounded-lg overflow-hidden bg-surface-container">
                             <Image
                               src={item.image_url}
                               alt={item.title}
                               fill
-                              sizes="72px"
-                              className="object-cover rounded-md"
+                              sizes="80px"
+                              className="object-cover"
                             />
-                            {item.youtube_link && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                                <span className="material-symbols-outlined text-white text-2xl">play_circle</span>
-                              </div>
-                            )}
                           </div>
                         )}
-                        <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
+                        <div className="flex flex-col justify-center flex-1 min-w-0 gap-0.5">
                           {item.categories && (
-                            <span className="text-primary text-[10px] font-bold uppercase tracking-wide">
+                            <span className="text-primary text-[9px] font-bold uppercase tracking-wider">
                               {item.categories.name}
                             </span>
                           )}
-                          <h4 className="text-[14px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                          <h4 className="text-[12.5px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                             {item.title}
                           </h4>
                           {item.published_at && (
-                            <span className="text-on-surface-variant text-[10px] flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[11px]">schedule</span>
+                            <span className="text-on-surface-variant/60 text-[9px] mt-0.5">
                               {formatDate(item.published_at)}
                             </span>
                           )}
@@ -458,13 +417,13 @@ export function HomeContent({
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="w-full py-3 mt-4 bg-surface-container text-on-surface rounded-md font-medium text-sm hover:bg-surface-container-high transition-colors disabled:opacity-50"
+                  className="w-full py-3 bg-surface-container text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-high transition-colors disabled:opacity-50 tracking-wider uppercase"
                 >
                   {loadingMore ? 'ലോഡിംഗ്...' : 'കൂടുതൽ വാർത്തകൾ കാണാൻ'}
                 </button>
               )}
             </section>
-          </>
+          </div>
         )}
       </main>
 
