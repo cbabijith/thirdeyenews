@@ -18,14 +18,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   useEffect(() => {
     if (!loading && profile) {
-      const isSuperAdminOnlyRoute = pathname === '/' || pathname.startsWith('/content/categories') || pathname.startsWith('/content/ads')
+      const isSuperAdminOnlyRoute = pathname === '/'
       if (isSuperAdminOnlyRoute && !hasRole('superadmin')) {
         router.push('/content/news')
       }
     }
   }, [profile, loading, pathname, router, hasRole])
 
-  const isSuperAdminOnlyRoute = pathname === '/' || pathname.startsWith('/content/categories') || pathname.startsWith('/content/ads')
+  const isSuperAdminOnlyRoute = pathname === '/'
   const shouldBlock = isSuperAdminOnlyRoute && !loading && profile && !hasRole('superadmin')
 
   return (

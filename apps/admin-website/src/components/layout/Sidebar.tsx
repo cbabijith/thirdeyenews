@@ -16,10 +16,8 @@ export function Sidebar() {
   const navItems = [
     ...(hasRole('superadmin') ? [{ href: '/', label: 'Dashboard', icon: LayoutDashboard }] : []),
     { href: '/content/news', label: 'News', icon: Newspaper },
-    ...(hasRole('superadmin') ? [
-      { href: '/content/categories', label: 'Categories', icon: Folder },
-      { href: '/content/ads', label: 'Ads', icon: Megaphone },
-    ] : []),
+    { href: '/content/categories', label: 'Categories', icon: Folder },
+    { href: '/content/ads', label: 'Ads', icon: Megaphone },
   ]
 
   const handleNavClick = (href: string) => {
