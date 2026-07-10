@@ -8,10 +8,8 @@ import { api, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
-import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
-import DOMPurify from 'isomorphic-dompurify'
 import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
 
 interface RelatedNews {
@@ -115,7 +113,6 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const authorName = news.profiles?.full_name || 'സ്റ്റാഫ് റിപ്പോർട്ടർ'
   const formatDateShort = (date: string) => formatShortDate(date)
 
-  const sanitizedContent = news.content ? DOMPurify.sanitize(news.content) : ''
 
   return (
     <div className={`min-h-screen ${colors.background}`}>
@@ -199,11 +196,11 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
               <p className="font-semibold !text-black text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em', color: '#000000' }}>{news.description}</p>
             </div>
           )}
-          {sanitizedContent && (
+          {news.content && (
             <div 
               className="!text-black [&_p]:!text-black [&_span]:!text-black [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
               style={{ color: '#000000' }}
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }} 
+              dangerouslySetInnerHTML={{ __html: news.content }} 
             />
           )}
         </article>
