@@ -81,14 +81,24 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const newsUrl = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
 
-    const boldTitle = news.title
+    const normalizeMalayalam = (text: string) => {
+      if (!text) return text
+      return text
+        .replace(/\u0D23\u0D4D\u200D/g, '\u0D7A') // ണ + ് + ZWJ -> ൺ
+        .replace(/\u0D28\u0D4D\u200D/g, '\u0D7B') // ന + ് + ZWJ -> ൻ
+        .replace(/\u0D30\u0D4D\u200D/g, '\u0D7C') // ര + ് + ZWJ -> ർ
+        .replace(/\u0D32\u0D4D\u200D/g, '\u0D7D') // ല + ് + ZWJ -> ൽ
+        .replace(/\u0D33\u0D4D\u200D/g, '\u0D7E') // ള + ് + ZWJ -> ൾ
+    }
+
+    const boldTitle = normalizeMalayalam(news.title)
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0)
       .map(line => `*${line}*`)
       .join('\n')
 
-    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
