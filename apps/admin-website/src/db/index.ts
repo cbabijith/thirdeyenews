@@ -7,12 +7,12 @@ const connectionString = process.env.DATABASE_URL!
 const globalForDb = globalThis as unknown as { db: ReturnType<typeof createDb> }
 
 function createDb() {
-  // In serverless/production environments, limit the connection pool size to 1.
-  // Serverless functions process one request at a time, so max: 1 is recommended
-  // to avoid saturating connection limits and raising compute CPU load.
+  // Use a small but safe pool size in production (max: 5) to prevent
+  // connection starvation during parallel queries (Promise.all) while keeping
+  // the overall footprint low.
   const isProd = process.env.NODE_ENV === 'production'
   const client = postgres(connectionString, {
-    max: isProd ? 1 : 10,
+    max: isProd ? 5 : 10,
     prepare: false,
     idle_timeout: 20,
     connect_timeout: 10,
