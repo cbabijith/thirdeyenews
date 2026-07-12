@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const result = await newsService.createNews(body)
   if (result.error) {
+    console.error('Error in POST /api/news:', result.error)
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
   if (result.data) {
