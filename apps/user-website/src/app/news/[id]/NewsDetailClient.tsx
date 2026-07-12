@@ -70,9 +70,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   }, [news.slug, pathname, router])
 
   useEffect(() => {
-    if (!viewCountedRef.current) {
+    if (typeof window !== 'undefined' && !viewCountedRef.current) {
       viewCountedRef.current = true
-      api.incrementView(initialNews.id)
+      const storageKey = `viewed_${initialNews.id}`
+      const hasViewed = sessionStorage.getItem(storageKey)
+      if (!hasViewed) {
+        sessionStorage.setItem(storageKey, 'true')
+        api.incrementView(initialNews.id)
+      }
     }
   }, [initialNews.id])
 

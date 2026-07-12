@@ -16,7 +16,12 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '3', 10)
 
     const ads = await adsRepository.findActiveByPosition(position as any)
-    return NextResponse.json({ data: ads.slice(0, limit) }, { headers: corsHeaders })
+    return NextResponse.json({ data: ads.slice(0, limit) }, {
+      headers: {
+        ...corsHeaders,
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch ads' },
