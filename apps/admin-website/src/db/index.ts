@@ -7,12 +7,12 @@ const connectionString = process.env.DATABASE_URL!
 const globalForDb = globalThis as unknown as { db: ReturnType<typeof createDb> }
 
 function createDb() {
-  // Use a small but safe pool size in production (max: 5) to prevent
+  // Use a small but safe pool size in production (max: 15) to prevent
   // connection starvation during parallel queries (Promise.all) while keeping
   // the overall footprint low.
   const isProd = process.env.NODE_ENV === 'production'
   const client = postgres(connectionString, {
-    max: isProd ? 5 : 10,
+    max: isProd ? 15 : 10,
     prepare: false,
     idle_timeout: 20,
     connect_timeout: 10,
