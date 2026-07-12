@@ -25,7 +25,17 @@ function stripHtml(html: string): string {
 }
 
 function buildWhatsAppShareUrl(item: News): string {
-  const title = item.title || ''
+  const normalizeMalayalam = (text: string) => {
+    if (!text) return text
+    return text
+      .replace(/\u0D23\u0D4D\u200D/g, '\u0D7A') // ണ + ് + ZWJ -> ൺ
+      .replace(/\u0D28\u0D4D\u200D/g, '\u0D7B') // ന + ് + ZWJ -> ൻ
+      .replace(/\u0D30\u0D4D\u200D/g, '\u0D7C') // ര + ് + ZWJ -> ർ
+      .replace(/\u0D32\u0D4D\u200D/g, '\u0D7D') // ല + ് + ZWJ -> ൽ
+      .replace(/\u0D33\u0D4D\u200D/g, '\u0D7E') // ള + ് + ZWJ -> ൾ
+  }
+
+  const title = normalizeMalayalam(item.title || '')
   const boldTitle = title
     .split('\n')
     .map(line => line.trim())
@@ -35,7 +45,7 @@ function buildWhatsAppShareUrl(item: News): string {
   const linkIdentifier = item.slug || item.id
   const link = `https://thirdeyenewslive.com/news/${linkIdentifier}`
 
-  const text = `${boldTitle}\n\n${link}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+  const text = `${boldTitle}\n\n${link}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 
