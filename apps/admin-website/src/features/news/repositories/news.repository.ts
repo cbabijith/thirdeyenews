@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
+import { eq, ne, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { news } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
@@ -282,6 +282,20 @@ export const newsRepository = {
       offset,
     })
     return result as unknown as News[]
+  },
+
+  async isSlugExists(slug: string, excludeId?: string): Promise<boolean> {
+    const conditions = excludeId 
+      ? and(eq(news.slug, slug), ne(news.id, excludeId))
+      : eq(news.slug, slug)
+    
+    const [result] = await db
+      .select({ id: news.id })
+      .from(news)
+      .where(conditions)
+      .limit(1)
+    
+    return !!result
   },
 
   async incrementViewCount(id: string): Promise<void> {

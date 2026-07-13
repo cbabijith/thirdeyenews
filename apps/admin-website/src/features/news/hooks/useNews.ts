@@ -44,7 +44,7 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
           search: debouncedSearchQuery,
           ...(filterCategory && { categoryId: filterCategory }),
           sortBy,
-          limit: '10',
+          limit: '20',
           offset: '0',
         })
         const res = await fetch(`/api/news?${params}`)
@@ -84,7 +84,7 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
         search: debouncedSearchQuery,
         ...(filterCategory && { categoryId: filterCategory }),
         sortBy,
-        limit: '10',
+        limit: '20',
         offset: newsItems.length.toString(),
       })
       const res = await fetch(`/api/news?${params}`)
@@ -128,7 +128,7 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
 
   const refreshNews = useCallback(async () => {
     try {
-      const currentLimit = Math.max(10, newsItems.length)
+      const currentLimit = Math.max(20, newsItems.length)
       const params = new URLSearchParams({
         search: debouncedSearchQuery,
         ...(filterCategory && { categoryId: filterCategory }),

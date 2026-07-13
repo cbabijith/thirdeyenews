@@ -81,6 +81,8 @@ export function NewsClient({
     count,
     loading,
     loadingMore,
+    hasMore,
+    loadMore,
     deleteItemId,
     setDeleteItemId,
     searchQuery,
@@ -337,6 +339,17 @@ export function NewsClient({
                   <div className="w-3.5 h-3.5 border-2 border-gray-200 border-t-gray-400 rounded-full animate-spin" />
                   Loading more...
                 </div>
+              </div>
+            )}
+            {hasMore && !loadingMore && !loading && (
+              <div className="text-center py-3">
+                <button
+                  type="button"
+                  onClick={loadMore}
+                  className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-all active:scale-95 cursor-pointer"
+                >
+                  Load More
+                </button>
               </div>
             )}
           </div>
