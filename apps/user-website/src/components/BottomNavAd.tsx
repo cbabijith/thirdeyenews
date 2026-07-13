@@ -11,7 +11,7 @@ export function BottomNavAd() {
     async function fetchAd() {
       try {
         const data = await api.getAds('bottom_nav', 1)
-        if (data.length > 0) {
+        if (data && data.length > 0) {
           setAd(data[0])
         }
       } catch (err) {
