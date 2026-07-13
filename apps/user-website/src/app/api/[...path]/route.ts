@@ -5,7 +5,7 @@ function getAdminBaseUrl(): string {
 }
 
 function getToken(): string {
-  return process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
+  return process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
 }
 
 async function proxyRequest(req: NextRequest, pathSegments: string[]): Promise<NextResponse> {

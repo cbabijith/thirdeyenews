@@ -9,7 +9,7 @@ function getHeaders(): Record<string, string> {
   if (typeof window !== 'undefined') {
     return { 'Content-Type': 'application/json' }
   }
-  const token = process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
+  const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
   return {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
