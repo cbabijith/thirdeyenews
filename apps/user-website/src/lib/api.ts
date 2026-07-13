@@ -39,6 +39,12 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   const json = await res.json()
+  if (json.error) {
+    throw new Error(json.error)
+  }
+  if (json.data === undefined || json.data === null) {
+    return [] as unknown as T
+  }
   return json.data as T
 }
 

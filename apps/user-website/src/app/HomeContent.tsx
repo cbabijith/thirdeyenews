@@ -83,9 +83,9 @@ export function HomeContent({
           withTimeout(api.getRecentNews(selectedCategory || undefined, PAGE_SIZE, 0), 8000),
         ])
 
-        setPinnedNews(pinnedData)
-        setRecentNews(recentData)
-        setHasMore(recentData.length === PAGE_SIZE)
+        setPinnedNews(pinnedData || [])
+        setRecentNews(recentData || [])
+        setHasMore((recentData || []).length === PAGE_SIZE)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
@@ -106,8 +106,8 @@ export function HomeContent({
         8000
       )
 
-      setRecentNews(prev => [...prev, ...newsData])
-      setHasMore(newsData.length === PAGE_SIZE)
+      setRecentNews(prev => [...prev, ...(newsData || [])])
+      setHasMore((newsData || []).length === PAGE_SIZE)
     } catch (err) {
       console.error('Failed to load more:', err)
     } finally {

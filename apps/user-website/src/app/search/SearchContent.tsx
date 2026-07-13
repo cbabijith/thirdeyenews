@@ -63,8 +63,8 @@ export function SearchContent() {
           8000
         )
 
-        setResults(newsData)
-        setHasMore(newsData.length === PAGE_SIZE)
+        setResults(newsData || [])
+        setHasMore((newsData || []).length === PAGE_SIZE)
       } catch (err) {
         console.error('Search failed:', err)
         setError(err instanceof Error ? err.message : 'Search failed. Please try again.')
@@ -87,8 +87,8 @@ export function SearchContent() {
         8000
       )
 
-      setResults(prev => [...prev, ...newsData])
-      setHasMore(newsData.length === PAGE_SIZE)
+      setResults(prev => [...prev, ...(newsData || [])])
+      setHasMore((newsData || []).length === PAGE_SIZE)
     } catch (err) {
       console.error('Load more failed:', err)
     } finally {

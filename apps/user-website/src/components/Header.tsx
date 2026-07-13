@@ -59,7 +59,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
     async function fetchCategories() {
       try {
         const data = await api.getCategories()
-        setCategories(data)
+        setCategories(data || [])
       } catch (err) {
         console.error('Error fetching categories for header:', err)
       }

@@ -16,7 +16,7 @@ export function AdBanner({ maxAds = 3, className = '' }: AdBannerProps) {
     async function fetchAds() {
       try {
         const data = await api.getAds('main_banner', maxAds)
-        setAds(data)
+        setAds(data || [])
       } catch (err) {
         console.error('Failed to load ads:', err)
       } finally {
