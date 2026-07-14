@@ -5,7 +5,7 @@ import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useStorage } from '@/hooks/useStorage'
 import dynamic from 'next/dynamic'
-import { ArrowLeft, ImagePlus, X, Link as LinkIcon, Pin, Globe, FileText, Sparkles, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ImagePlus, X, Link as LinkIcon, Pin, Globe, FileText, Sparkles, ChevronDown, Loader2 } from 'lucide-react'
 
 const RichTextEditor = dynamic(
   () => import('@/components/editor/RichTextEditor').then((mod) => mod.RichTextEditor),
@@ -50,7 +50,9 @@ export function NewsForm({
   const { uploading, uploadImage, deleteImage } = useStorage()
   const [submitting, setSubmitting] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-  const [draftSaved, setDraftSaved] = useState(false)
+  const [isAutosaving, setIsAutosaving] = useState(false)
+  const [autosaveError, setAutosaveError] = useState<string | null>(null)
+  const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const adFileInputRef = useRef<HTMLInputElement>(null)
 
@@ -92,41 +94,60 @@ export function NewsForm({
     }
   }, [initialData])
 
-  useEffect(() => {
-    if (!initialData) {
-      localStorage.setItem('news-draft', JSON.stringify(formData))
-      setDraftSaved(true)
-      const t = setTimeout(() => setDraftSaved(false), 2000)
-      return () => clearTimeout(t)
-    }
-  }, [formData, initialData])
+  const isFirstMount = useRef(true)
+  const lastSavedDataRef = useRef<any>(null)
 
   useEffect(() => {
-    if (!initialData) {
-      const savedDraft = localStorage.getItem('news-draft')
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft)
-          setFormData({
-            category_id: draft.category_id || '',
-            subcategory_id: draft.subcategory_id || '',
-            title: draft.title || '',
-            content: draft.content || '',
-            image_url: draft.image_url || '',
-            youtube_link: draft.youtube_link || '',
-            is_published: draft.is_published || false,
-            is_pinned: draft.is_pinned || false,
-            published_at: draft.published_at || '',
-            slug: draft.slug || '',
-            ad_image_url: draft.ad_image_url || '',
-            ad_link_url: draft.ad_link_url || ''
-          })
-        } catch (e) {
-          console.error('Error loading draft:', e)
-        }
+    if (initialData && isFirstMount.current) {
+      isFirstMount.current = false
+      lastSavedDataRef.current = {
+        category_id: initialData.category_id || '',
+        subcategory_id: initialData.subcategory_id || '',
+        title: initialData.title || '',
+        content: initialData.content || '',
+        image_url: initialData.image_url || '',
+        youtube_link: initialData.youtube_link || '',
+        is_published: initialData.is_published || false,
+        is_pinned: initialData.is_pinned || false,
+        published_at: initialData.published_at || '',
+        slug: initialData.slug || '',
+        ad_image_url: initialData.ad_image_url || '',
+        ad_link_url: initialData.ad_link_url || ''
       }
+      return
     }
-  }, [initialData])
+
+    if (!initialData) return
+
+    const hasChanged = JSON.stringify(formData) !== JSON.stringify(lastSavedDataRef.current)
+    if (!hasChanged) return
+
+    const delayDebounce = setTimeout(async () => {
+      setIsAutosaving(true)
+      setAutosaveError(null)
+      try {
+        const res = await fetch(`/api/news/${initialData.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        })
+        const json = await res.json()
+        if (json.error) {
+          setAutosaveError(json.error)
+        } else {
+          lastSavedDataRef.current = formData
+          setLastSavedTime(new Date())
+        }
+      } catch (err) {
+        setAutosaveError('Failed to autosave')
+      } finally {
+        setIsAutosaving(false)
+      }
+    }, 1500)
+
+    return () => clearTimeout(delayDebounce)
+  }, [formData, initialData])
+
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -524,10 +545,28 @@ export function NewsForm({
               <ArrowLeft className="w-4 h-4" />
               Cancel
             </button>
-            {draftSaved && !initialData && (
+            {isAutosaving && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />
+                Autosaving...
+              </span>
+            )}
+            {!isAutosaving && lastSavedTime && !autosaveError && (
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                Saved draft to database ({lastSavedTime.toLocaleTimeString()})
+              </span>
+            )}
+            {!isAutosaving && !lastSavedTime && !autosaveError && initialData && (
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
-                Draft saved
+                Draft loaded
+              </span>
+            )}
+            {autosaveError && (
+              <span className="text-xs text-red-500 flex items-center gap-1 font-medium">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                Autosave failed: {autosaveError}
               </span>
             )}
           </div>
@@ -551,9 +590,9 @@ export function NewsForm({
       {showCancelConfirm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full mx-auto">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Discard changes?</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Exit editor?</h3>
             <p className="text-sm text-gray-500 mb-6">
-              Your draft and all changes will be permanently lost.
+              Any unsaved changes will be lost. The draft article is already stored in the database.
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -566,7 +605,7 @@ export function NewsForm({
                 onClick={confirmCancel}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-all"
               >
-                Discard
+                Exit
               </button>
             </div>
           </div>

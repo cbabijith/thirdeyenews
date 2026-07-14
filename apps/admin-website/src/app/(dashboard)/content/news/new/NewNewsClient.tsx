@@ -1,10 +1,9 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Category, Subcategory, News } from '@/types'
-import { NewsForm } from '@/features/news'
-import Link from 'next/link'
-import { ChevronRight } from 'lucide-react'
+import { Category, Subcategory } from '@/types'
+import { Loader2 } from 'lucide-react'
 
 interface NewNewsClientProps {
   categories: Category[]
@@ -13,60 +12,68 @@ interface NewNewsClientProps {
 
 export function NewNewsClient({ categories, subcategories }: NewNewsClientProps) {
   const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = async (formData: any) => {
-    const res = await fetch('/api/news', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: formData.title,
-        description: null,
-        content: formData.content || '',
-        image_url: formData.image_url || null,
-        youtube_link: formData.youtube_link || null,
-        category_id: formData.category_id || null,
-        subcategory_id: formData.subcategory_id || null,
-        created_by: null,
-        is_published: formData.is_published || false,
-        is_pinned: formData.is_pinned || false,
-        published_at: formData.is_published ? (formData.published_at || new Date().toISOString()) : null,
-        view_count: 0,
-        slug: formData.slug || null,
-        ad_image_url: formData.ad_image_url || null,
-        ad_link_url: formData.ad_link_url || null,
-      } as Omit<News, 'id' | 'created_at' | 'updated_at'>),
-    })
-    const json = await res.json()
+  useEffect(() => {
+    let active = true
 
-    if (json.error) {
-      alert(json.error)
-      return
+    const createDraft = async () => {
+      try {
+        const res = await fetch('/api/news', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Untitled Article',
+            content: ' ',
+            is_published: false,
+          }),
+        })
+        const json = await res.json()
+        if (!active) return
+
+        if (json.error) {
+          setError(json.error)
+          return
+        }
+
+        if (json.data?.id) {
+          router.replace(`/content/news/edit/${json.data.id}`)
+        } else {
+          setError('Failed to initialize draft article ID.')
+        }
+      } catch (err) {
+        if (active) {
+          setError('An unexpected error occurred while creating draft.')
+        }
+      }
     }
 
-    router.push('/content/news')
-    router.refresh()
-  }
+    createDraft()
 
-  const handleCancel = () => {
-    router.push('/content/news')
-  }
+    return () => {
+      active = false
+    }
+  }, [router])
 
   return (
-    <div className="px-4 sm:px-6 py-6">
-      <div className="mb-6">
-        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
-          <Link href="/content/news" className="hover:text-gray-600 transition-colors">News</Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-gray-900 font-medium">New Article</span>
-        </nav>
-        <h1 className="text-2xl font-bold text-gray-900">Create News Article</h1>
-      </div>
-      <NewsForm
-        categories={categories}
-        subcategories={subcategories}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
+    <div className="min-h-[400px] flex flex-col items-center justify-center gap-3">
+      {error ? (
+        <div className="text-center">
+          <p className="text-red-500 font-medium mb-2">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all"
+          >
+            Retry
+          </button>
+        </div>
+      ) : (
+        <>
+          <Loader2 className="w-8 h-8 text-gray-500 animate-spin" />
+          <p className="text-sm text-gray-500 font-medium">Initializing draft article...</p>
+        </>
+      )}
     </div>
   )
 }
+

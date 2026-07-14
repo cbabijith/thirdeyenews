@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useNews } from '../hooks/useNews'
 import { usePermissions } from '@/hooks/usePermissions'
-import { Search, Plus, Pin, Globe, Eye, Pencil, Trash2, Video, ChevronDown, X, Folder, ArrowUpDown, MoreVertical, ExternalLink, Newspaper } from 'lucide-react'
+import { Search, Plus, Pin, Globe, Eye, Pencil, Trash2, Video, ChevronDown, X, Folder, ArrowUpDown, MoreVertical, ExternalLink, Newspaper, Loader2 } from 'lucide-react'
+
 
 function stripHtml(html: string): string {
   return html
@@ -75,6 +77,8 @@ export function NewsClient({
   initialCategories,
   initialCount
 }: NewsClientProps) {
+  const router = useRouter()
+  const [isCreating, setIsCreating] = useState(false)
   const {
     newsItems,
     categories,
@@ -99,6 +103,35 @@ export function NewsClient({
   const [moreMenuId, setMoreMenuId] = useState<string | null>(null)
   const { hasRole } = usePermissions()
 
+  const handleCreateDraft = async () => {
+    if (isCreating) return
+    setIsCreating(true)
+    try {
+      const res = await fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Untitled Article',
+          content: ' ',
+          is_published: false,
+        }),
+      })
+      const json = await res.json()
+      if (json.error) {
+        alert(json.error)
+        return
+      }
+      if (json.data?.id) {
+        router.push(`/content/news/edit/${json.data.id}`)
+      }
+    } catch (e) {
+      console.error(e)
+      alert('Failed to create draft article')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       {/* Header */}
@@ -107,13 +140,23 @@ export function NewsClient({
           <h1 className="text-lg font-bold text-gray-900">News</h1>
           <p className="text-xs text-gray-500 mt-0.5">{count} articles total</p>
         </div>
-        <Link
-          href="/content/news/new"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all whitespace-nowrap"
+        <button
+          onClick={handleCreateDraft}
+          disabled={isCreating}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all whitespace-nowrap disabled:opacity-50"
         >
-          <Plus className="w-4 h-4" />
-          <span>New Article</span>
-        </Link>
+          {isCreating ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Creating...</span>
+            </>
+          ) : (
+            <>
+              <Plus className="w-4 h-4" />
+              <span>New Article</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Toolbar */}
