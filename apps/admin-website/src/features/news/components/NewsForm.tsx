@@ -38,6 +38,7 @@ interface NewsFormProps {
     ad_link_url?: string | null
   }) => Promise<void> | void
   onCancel: () => void
+  onDraftCreated?: (id: string) => void
 }
 
 export function NewsForm({
@@ -45,7 +46,8 @@ export function NewsForm({
   subcategories = [],
   initialData = null,
   onSubmit,
-  onCancel
+  onCancel,
+  onDraftCreated
 }: NewsFormProps) {
   const { uploading, uploadImage, deleteImage } = useStorage()
   const [submitting, setSubmitting] = useState(false)
@@ -94,30 +96,81 @@ export function NewsForm({
     }
   }, [initialData])
 
+  const [activeId, setActiveId] = useState<string | null>(initialData?.id || null)
+  const isCreatingDraftRef = useRef(false)
   const isFirstMount = useRef(true)
   const lastSavedDataRef = useRef<any>(null)
 
   useEffect(() => {
-    if (initialData && isFirstMount.current) {
+    if (initialData) {
+      setActiveId(initialData.id)
+    }
+  }, [initialData])
+
+  const isFormDirty = () => {
+    return (
+      formData.title.trim() !== '' ||
+      formData.content.trim() !== '' ||
+      formData.category_id !== '' ||
+      formData.subcategory_id !== '' ||
+      formData.image_url !== '' ||
+      formData.youtube_link !== '' ||
+      formData.slug !== '' ||
+      formData.ad_image_url !== '' ||
+      formData.ad_link_url !== ''
+    )
+  }
+
+  useEffect(() => {
+    if (activeId && isFirstMount.current) {
       isFirstMount.current = false
-      lastSavedDataRef.current = {
-        category_id: initialData.category_id || '',
-        subcategory_id: initialData.subcategory_id || '',
-        title: initialData.title || '',
-        content: initialData.content || '',
-        image_url: initialData.image_url || '',
-        youtube_link: initialData.youtube_link || '',
-        is_published: initialData.is_published || false,
-        is_pinned: initialData.is_pinned || false,
-        published_at: initialData.published_at || '',
-        slug: initialData.slug || '',
-        ad_image_url: initialData.ad_image_url || '',
-        ad_link_url: initialData.ad_link_url || ''
-      }
+      lastSavedDataRef.current = { ...formData }
       return
     }
 
-    if (!initialData) return
+    if (!activeId) {
+      if (!isFormDirty()) return
+      if (isCreatingDraftRef.current) return
+
+      isCreatingDraftRef.current = true
+      setIsAutosaving(true)
+      setAutosaveError(null)
+
+      const createDraft = async () => {
+        try {
+          const res = await fetch('/api/news', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...formData,
+              title: formData.title || 'Untitled Article',
+              content: formData.content || ' ',
+              is_published: false,
+            }),
+          })
+          const json = await res.json()
+          if (json.error) {
+            setAutosaveError(json.error)
+            isCreatingDraftRef.current = false
+          } else if (json.data?.id) {
+            setActiveId(json.data.id)
+            lastSavedDataRef.current = { ...formData }
+            setLastSavedTime(new Date())
+            if (onDraftCreated) {
+              onDraftCreated(json.data.id)
+            }
+          }
+        } catch (err) {
+          setAutosaveError('Failed to create draft in background')
+          isCreatingDraftRef.current = false
+        } finally {
+          setIsAutosaving(false)
+        }
+      }
+
+      createDraft()
+      return
+    }
 
     const hasChanged = JSON.stringify(formData) !== JSON.stringify(lastSavedDataRef.current)
     if (!hasChanged) return
@@ -126,7 +179,7 @@ export function NewsForm({
       setIsAutosaving(true)
       setAutosaveError(null)
       try {
-        const res = await fetch(`/api/news/${initialData.id}`, {
+        const res = await fetch(`/api/news/${activeId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
@@ -135,7 +188,7 @@ export function NewsForm({
         if (json.error) {
           setAutosaveError(json.error)
         } else {
-          lastSavedDataRef.current = formData
+          lastSavedDataRef.current = { ...formData }
           setLastSavedTime(new Date())
         }
       } catch (err) {
@@ -146,7 +199,7 @@ export function NewsForm({
     }, 1500)
 
     return () => clearTimeout(delayDebounce)
-  }, [formData, initialData])
+  }, [formData, activeId, onDraftCreated])
 
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,10 +249,27 @@ export function NewsForm({
     if (submitting) return
     setSubmitting(true)
     try {
-      await onSubmit(formData)
-      if (!initialData) {
-        localStorage.removeItem('news-draft')
+      if (activeId && !initialData) {
+        const res = await fetch(`/api/news/${activeId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            is_published: true,
+            published_at: new Date().toISOString()
+          }),
+        })
+        const json = await res.json()
+        if (json.error) {
+          alert(json.error)
+          return
+        }
+        onCancel()
+      } else {
+        await onSubmit(formData)
       }
+    } catch (err) {
+      console.error(err)
     } finally {
       setSubmitting(false)
     }
@@ -211,9 +281,6 @@ export function NewsForm({
 
   const confirmCancel = () => {
     setShowCancelConfirm(false)
-    if (!initialData) {
-      localStorage.removeItem('news-draft')
-    }
     onCancel()
   }
 
