@@ -26,6 +26,7 @@ export function BreakingNewsTicker({ pinnedNews = [], latestNews = [] }: Breakin
         <Link
           key={`${item.id}-${index}`}
           href={`/news/${item.slug || item.id}`}
+          prefetch={false}
           className="hover:text-primary flex items-center whitespace-nowrap text-on-surface text-[12px] font-semibold transition-colors"
         >
           <span>{item.title}</span>

@@ -30,6 +30,7 @@ export function BottomNavBar() {
             <Link
               key={tab.label}
               href={tab.href}
+              prefetch={false}
               className={`flex flex-col items-center gap-0.5 min-w-[44px] min-h-[44px] justify-center px-2 py-1 ${isActive ? 'text-primary' : 'text-on-surface-variant'}`}
             >
               <span className="material-symbols-outlined text-[22px]">{tab.icon}</span>

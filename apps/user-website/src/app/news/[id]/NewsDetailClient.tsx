@@ -159,6 +159,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <div className="flex items-center justify-between">
           <Link
             href="/"
+            prefetch={false}
             className="inline-flex items-center gap-1 text-on-surface-variant text-[13px] font-medium hover:text-on-surface transition-colors min-h-[44px]"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -276,7 +277,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
             </h3>
             <div className="flex flex-col">
               {relatedNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
                   <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative w-14 h-14 flex-shrink-0">

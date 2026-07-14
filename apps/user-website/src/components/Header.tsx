@@ -79,7 +79,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
         </button>
 
         {/* Logo */}
-        <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
+        <Link href="/" prefetch={false} className="hover:opacity-90 transition-opacity flex items-center">
           <img src="/thirdeye.svg" alt="ThirdEye News" className="h-[60px] md:h-[66px] w-auto" />
         </Link>
 

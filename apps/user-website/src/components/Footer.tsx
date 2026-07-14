@@ -9,7 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 pb-12 border-b border-border/30">
           {/* Brand Column (Col Span 5) */}
           <div className="md:col-span-5 flex flex-col gap-4">
-            <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+            <Link href="/" prefetch={false} className="inline-block hover:opacity-90 transition-opacity">
               <img src="/thirdeye.svg" alt="ThirdEye News" className="h-9 w-auto" />
             </Link>
             <p className="text-on-surface-variant/80 text-[13px] leading-relaxed max-w-sm">
@@ -51,7 +51,7 @@ export function Footer() {
             </h4>
             <ul className="flex flex-col gap-3">
               <li>
-                <Link href="/" className="text-on-surface-variant/80 hover:text-primary text-[13px] transition-colors duration-200">
+                <Link href="/" prefetch={false} className="text-on-surface-variant/80 hover:text-primary text-[13px] transition-colors duration-200">
                   ഹോം (Home)
                 </Link>
               </li>
