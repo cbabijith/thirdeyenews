@@ -21,6 +21,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/react": "^3.23.6",
     "@tiptap/starter-kit": "^3.23.6",
+    "@tiptap/extension-link": "^3.23.6",
     "autoprefixer": "^10.4.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
