@@ -231,11 +231,27 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
                   color: #000000 !important;
                   text-align: left !important;
                 }
+                .news-content-area a {
+                  color: #2563eb !important;
+                  text-decoration: underline;
+                  cursor: pointer;
+                }
+                .news-content-area a:hover {
+                  color: #1d4ed8 !important;
+                }
                 html.dark .news-content-area,
                 html.dark .news-content-area *,
                 .dark .news-content-area,
                 .dark .news-content-area * {
                   color: #ffffff !important;
+                }
+                html.dark .news-content-area a,
+                .dark .news-content-area a {
+                  color: #60a5fa !important;
+                }
+                html.dark .news-content-area a:hover,
+                .dark .news-content-area a:hover {
+                  color: #93c5fd !important;
                 }
               ` }} />
               <div 
