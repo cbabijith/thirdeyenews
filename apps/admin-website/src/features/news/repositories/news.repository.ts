@@ -161,8 +161,8 @@ export const newsRepository = {
     if (updates.content !== undefined) updateData.content = updates.content
     if (updates.image_url !== undefined) updateData.image_url = updates.image_url
     if (updates.youtube_link !== undefined) updateData.youtube_link = updates.youtube_link
-    if (updates.category_id !== undefined) updateData.category_id = updates.category_id
-    if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id
+    if (updates.category_id !== undefined) updateData.category_id = updates.category_id || null
+    if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id || null
     if (updates.is_published !== undefined) updateData.is_published = updates.is_published
     if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
     if (updates.published_at !== undefined)
