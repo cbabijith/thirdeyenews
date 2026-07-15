@@ -32,6 +32,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
       ...getHeaders(),
       ...options?.headers,
     },
+    next: {
+      revalidate: 60,
+      ...options?.next,
+    },
   })
 
   if (!res.ok) {
