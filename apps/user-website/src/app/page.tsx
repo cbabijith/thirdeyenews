@@ -5,7 +5,6 @@ import { ShimmerBox } from '@/components/Shimmer'
 import { HomeContent } from './HomeContent'
 
 export const revalidate = 60
-export const dynamic = 'force-dynamic'
 
 async function fetchHomeData() {
   try {
