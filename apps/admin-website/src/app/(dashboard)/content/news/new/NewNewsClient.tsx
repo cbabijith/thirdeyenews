@@ -47,7 +47,7 @@ export function NewNewsClient({ categories, subcategories }: NewNewsClientProps)
     <div className="px-4 sm:px-6 py-6">
       <div className="mb-6">
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-3">
-          <Link href="/content/news" className="hover:text-gray-600 transition-colors">News</Link>
+          <Link href="/content/news" prefetch={false} className="hover:text-gray-600 transition-colors">News</Link>
           <ChevronRight className="w-3.5 h-3.5" />
           <span className="text-gray-900 font-medium">New Article</span>
         </nav>

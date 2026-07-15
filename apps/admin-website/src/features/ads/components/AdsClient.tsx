@@ -62,6 +62,7 @@ export function AdsClient() {
         </div>
         <Link
           href="/content/ads/new"
+          prefetch={false}
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all"
         >
           <Plus className="w-4 h-4" />
@@ -142,6 +143,7 @@ export function AdsClient() {
                     </button>
                     <Link
                       href={`/content/ads/edit/${ad.id}`}
+                      prefetch={false}
                       className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                       title="Edit"
                     >

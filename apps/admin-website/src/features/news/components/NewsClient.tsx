@@ -112,6 +112,7 @@ export function NewsClient({
         </div>
         <Link
           href="/content/news/new"
+          prefetch={false}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
@@ -291,6 +292,7 @@ export function NewsClient({
                       <div className="absolute right-0 top-9 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]">
                         <Link
                           href={`/content/news/edit/${item.id}`}
+                          prefetch={false}
                           onClick={() => setMoreMenuId(null)}
                           className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
                         >
