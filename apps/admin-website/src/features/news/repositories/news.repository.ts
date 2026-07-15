@@ -53,6 +53,9 @@ export const newsRepository = {
   async findPublishedWithRelations(limit: number, offset: number): Promise<News[]> {
     const result = await db.query.news.findMany({
       where: eq(news.is_published, true),
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.published_at), desc(news.created_at)],
       limit,
@@ -63,6 +66,9 @@ export const newsRepository = {
 
   async findAllWithRelations(limit: number, offset: number): Promise<News[]> {
     const result = await db.query.news.findMany({
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.created_at)],
       limit,
@@ -194,6 +200,9 @@ export const newsRepository = {
   async findTopViewed(limit: number = 5): Promise<News[]> {
     const result = await db.query.news.findMany({
       where: eq(news.is_published, true),
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.view_count)],
       limit,
@@ -230,6 +239,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), eq(news.is_pinned, true))
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: desc(news.published_at),
       limit,
@@ -243,6 +255,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), eq(news.is_pinned, false))
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.published_at), desc(news.created_at)],
       limit,
@@ -257,6 +272,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), sql`${news.id} != ${newsId}`)
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true },
       orderBy: desc(news.published_at),
       limit,
@@ -276,6 +294,9 @@ export const newsRepository = {
     )
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: desc(news.published_at),
       limit,
