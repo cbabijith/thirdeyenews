@@ -301,7 +301,7 @@ export const newsRepository = {
   async incrementViewCount(id: string): Promise<void> {
     await db
       .update(news)
-      .set({ view_count: sql`${news.view_count} + 1` })
+      .set({ view_count: sql`${news.view_count} + 20` })
       .where(eq(news.id, id))
   },
 }
