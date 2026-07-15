@@ -105,9 +105,22 @@ export interface Ad {
   display_order: number
 }
 
+const memoryCache = new Map<string, { data: any; ts: number }>()
+const DEFAULT_CACHE_TTL = 300_000 // 5 minutes cache
+
+async function cachedFetch<T>(key: string, fetchFn: () => Promise<T>, ttl = DEFAULT_CACHE_TTL): Promise<T> {
+  const cached = memoryCache.get(key)
+  if (cached && Date.now() - cached.ts < ttl) {
+    return cached.data
+  }
+  const data = await fetchFn()
+  memoryCache.set(key, { data, ts: Date.now() })
+  return data
+}
+
 export const api = {
   async getCategories(): Promise<Category[]> {
-    return apiFetch<Category[]>('/api/categories')
+    return cachedFetch('categories', () => apiFetch<Category[]>('/api/categories'))
   },
 
   async getPinnedNews(categoryId?: string, limit: number = 5): Promise<NewsItem[]> {
@@ -153,6 +166,7 @@ export const api = {
   },
 
   async getAds(position: string = 'main_banner', limit: number = 3): Promise<Ad[]> {
-    return apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`)
+    const key = `ads_${position}_${limit}`
+    return cachedFetch(key, () => apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`))
   },
 }
