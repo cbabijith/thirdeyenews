@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { api, NewsItem } from '@/lib/api'
 import { NewsDetailClient } from './NewsDetailClient'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 interface RelatedNews {
   id: string

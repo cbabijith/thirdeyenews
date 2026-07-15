@@ -4,7 +4,7 @@ import { Header } from '@/components/Header'
 import { ShimmerBox } from '@/components/Shimmer'
 import { HomeContent } from './HomeContent'
 
-export const revalidate = 60
+export const revalidate = 600
 
 async function fetchHomeData() {
   try {
