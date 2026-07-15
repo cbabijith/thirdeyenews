@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 let categoriesCache: { data: any; ts: number } | null = null
 const CATEGORIES_CACHE_TTL = 300_000 // 5 minutes cache

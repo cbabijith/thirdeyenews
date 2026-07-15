@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 const newsCache = new Map<string, { data: any; ts: number }>()
 const NEWS_CACHE_TTL = 15_000 // 15 seconds cache for active feeds
