@@ -22,13 +22,23 @@ export async function GET(req: NextRequest) {
     })
     const json = await res.json()
     newsCache.set(path, { data: json, ts: Date.now() })
-    return NextResponse.json(json)
+    return NextResponse.json(json, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+      },
+    })
   } catch (err) {
     console.error('News proxy error:', err)
     const { searchParams } = new URL(req.url)
     const path = searchParams.toString()
     const cached = newsCache.get(path)
-    if (cached) return NextResponse.json(cached.data)
+    if (cached) {
+      return NextResponse.json(cached.data, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
+        },
+      })
+    }
     return NextResponse.json({ data: [] })
   }
 }

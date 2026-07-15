@@ -11,7 +11,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
     const json = await res.json()
-    return NextResponse.json(json, { status: res.status })
+    return NextResponse.json(json, {
+      status: res.status,
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      },
+    })
   } catch (err) {
     console.error('News by ID proxy error:', err)
     return NextResponse.json({ data: null }, { status: 404 })

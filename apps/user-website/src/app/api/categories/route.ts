@@ -18,11 +18,21 @@ export async function GET() {
     })
     const json = await res.json()
     categoriesCache = { data: json, ts: Date.now() }
-    return NextResponse.json(json)
+    return NextResponse.json(json, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+      },
+    })
   } catch (err) {
     console.error('Categories proxy error:', err)
     // Return stale cache if available on error, otherwise fallback
-    if (categoriesCache) return NextResponse.json(categoriesCache.data)
+    if (categoriesCache) {
+      return NextResponse.json(categoriesCache.data, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+        },
+      })
+    }
     return NextResponse.json({ data: [] })
   }
 }
