@@ -4,6 +4,7 @@ import '../../viewmodels/category_viewmodel.dart';
 import '../../models/category.dart';
 import '../../config/theme.dart';
 import '../components/shimmer_container.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 
 class CategoryView extends ConsumerWidget {
   const CategoryView({super.key});
@@ -98,6 +99,8 @@ class CategoryView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final categoryState = ref.watch(categoryViewModelProvider);
     final notifier = ref.read(categoryViewModelProvider.notifier);
+    final userProfile = ref.watch(authViewModelProvider).profile;
+    final isSuperAdmin = userProfile?.isSuperAdmin ?? false;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
     final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
@@ -215,20 +218,21 @@ class CategoryView extends ConsumerWidget {
                                       _showCategoryDialog(context, ref, category),
                                   tooltip: 'Edit',
                                 ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete_outline_rounded,
-                                    color: AppTheme.dangerColor,
-                                    size: 20,
+                                if (isSuperAdmin)
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline_rounded,
+                                      color: AppTheme.dangerColor,
+                                      size: 20,
+                                    ),
+                                    onPressed: () => _confirmDelete(
+                                      context,
+                                      'Delete Category',
+                                      'Are you sure you want to delete "${category.name}"?',
+                                      () => notifier.deleteCategory(category.id),
+                                    ),
+                                    tooltip: 'Delete',
                                   ),
-                                  onPressed: () => _confirmDelete(
-                                    context,
-                                    'Delete Category',
-                                    'Are you sure you want to delete "${category.name}"?',
-                                    () => notifier.deleteCategory(category.id),
-                                  ),
-                                  tooltip: 'Delete',
-                                ),
                               ],
                             ),
                           ),

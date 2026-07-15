@@ -6,6 +6,7 @@ import '../../viewmodels/ad_viewmodel.dart';
 import '../../config/theme.dart';
 import 'ad_form_view.dart';
 import '../components/shimmer_container.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 
 class AdListView extends ConsumerWidget {
   const AdListView({super.key});
@@ -34,6 +35,8 @@ class AdListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final adState = ref.watch(adViewModelProvider);
     final notifier = ref.read(adViewModelProvider.notifier);
+    final userProfile = ref.watch(authViewModelProvider).profile;
+    final isSuperAdmin = userProfile?.isSuperAdmin ?? false;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
     final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
@@ -366,27 +369,29 @@ class AdListView extends ConsumerWidget {
                                         );
                                       },
                                     ),
-                                    const SizedBox(width: 8),
-                                    TextButton.icon(
-                                      icon: const Icon(
-                                        Icons.delete_outline_rounded,
-                                        size: 16,
-                                        color: AppTheme.dangerColor,
-                                      ),
-                                      label: const Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                          fontSize: 12,
+                                    if (isSuperAdmin) ...[
+                                      const SizedBox(width: 8),
+                                      TextButton.icon(
+                                        icon: const Icon(
+                                          Icons.delete_outline_rounded,
+                                          size: 16,
                                           color: AppTheme.dangerColor,
-                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        label: const Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppTheme.dangerColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        onPressed: () => _confirmDelete(
+                                          context,
+                                          ad.title,
+                                          () => notifier.deleteAd(ad.id),
                                         ),
                                       ),
-                                      onPressed: () => _confirmDelete(
-                                        context,
-                                        ad.title,
-                                        () => notifier.deleteAd(ad.id),
-                                      ),
-                                    ),
+                                    ],
                                   ],
                                 ),
                               ],

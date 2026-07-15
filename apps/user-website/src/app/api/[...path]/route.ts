@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 function getAdminBaseUrl(): string {
-  return process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
+  return process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://admin.thirdeyenewslive.com'
 }
 
 function getToken(): string {

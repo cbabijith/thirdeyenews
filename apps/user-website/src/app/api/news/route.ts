@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
 
     const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'}/api/public/news?${path}`, {
+    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://admin.thirdeyenewslive.com'}/api/public/news?${path}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

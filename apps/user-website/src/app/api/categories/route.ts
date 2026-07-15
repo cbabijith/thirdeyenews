@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'}/api/public/categories`, {
+    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://admin.thirdeyenewslive.com'}/api/public/categories`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

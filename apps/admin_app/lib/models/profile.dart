@@ -2,7 +2,7 @@ class Profile {
   final String id;
   final String? fullName;
   final String? email;
-  final String role; // 'admin' | 'staff' | 'user'
+  final String role; // 'superadmin' | 'admin' | 'staff' | 'user'
 
   Profile({
     required this.id,
@@ -29,7 +29,8 @@ class Profile {
     };
   }
 
+  bool get isSuperAdmin => role == 'superadmin';
   bool get isAdmin => role == 'admin';
   bool get isStaff => role == 'staff';
-  bool get isAuthorized => isAdmin || isStaff;
+  bool get isAuthorized => isSuperAdmin || isAdmin || isStaff;
 }

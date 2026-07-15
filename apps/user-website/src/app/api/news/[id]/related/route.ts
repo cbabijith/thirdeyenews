@@ -8,7 +8,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const { searchParams } = new URL(req.url)
     const limit = searchParams.get('limit') || '4'
     const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'}/api/public/news/${id}/related?limit=${limit}`, {
+    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://admin.thirdeyenewslive.com'}/api/public/news/${id}/related?limit=${limit}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

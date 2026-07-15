@@ -12,6 +12,7 @@ class NewsCard extends StatelessWidget {
   final VoidCallback onTogglePin;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final bool showDelete;
 
   const NewsCard({
     super.key,
@@ -20,6 +21,7 @@ class NewsCard extends StatelessWidget {
     required this.onTogglePin,
     required this.onEdit,
     required this.onDelete,
+    this.showDelete = true,
   });
 
   @override
@@ -233,13 +235,15 @@ class NewsCard extends StatelessWidget {
                       onTap: onEdit,
                       tooltip: 'Edit Article',
                     ),
-                    const SizedBox(width: 4),
-                    _actionButton(
-                      icon: Icons.delete_outline,
-                      color: AppTheme.dangerColor,
-                      onTap: onDelete,
-                      tooltip: 'Delete Article',
-                    ),
+                    if (showDelete) ...[
+                      const SizedBox(width: 4),
+                      _actionButton(
+                        icon: Icons.delete_outline,
+                        color: AppTheme.dangerColor,
+                        onTap: onDelete,
+                        tooltip: 'Delete Article',
+                      ),
+                    ],
                   ],
                 ),
               ],
@@ -345,8 +349,17 @@ class NewsCard extends StatelessWidget {
     );
   }
 
+  String _normalizeMalayalam(String text) {
+    return text
+        .replaceAll('\u0D23\u0D4D\u200D', '\u0D7A') // ണ + ് + ZWJ -> ൺ
+        .replaceAll('\u0D28\u0D4D\u200D', '\u0D7B') // ന + ് + ZWJ -> ൻ
+        .replaceAll('\u0D30\u0D4D\u200D', '\u0D7C') // ര + ് + ZWJ -> ർ
+        .replaceAll('\u0D32\u0D4D\u200D', '\u0D7D') // ല + ് + ZWJ -> ൽ
+        .replaceAll('\u0D33\u0D4D\u200D', '\u0D7E'); // ള + ് + ZWJ -> ൾ
+  }
+
   Future<void> _shareToWhatsApp(BuildContext context) async {
-    final title = item.title;
+    final title = _normalizeMalayalam(item.title);
     final boldTitle = title
         .split('\n')
         .map((line) => line.trim())
@@ -357,7 +370,7 @@ class NewsCard extends StatelessWidget {
     final linkIdentifier = item.slug != null && item.slug!.trim().isNotEmpty ? item.slug!.trim() : item.id;
     final newsUrl = 'https://thirdeyenewslive.com/news/$linkIdentifier';
 
-    final shareText = '$boldTitle\n\n$newsUrl\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9';
+    final shareText = '$boldTitle\n\n$newsUrl\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9';
 
     final whatsappUrl = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(shareText)}');
     try {

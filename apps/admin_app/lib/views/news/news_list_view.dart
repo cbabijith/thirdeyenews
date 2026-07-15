@@ -4,6 +4,7 @@ import '../../viewmodels/news_viewmodel.dart';
 import '../../viewmodels/category_viewmodel.dart';
 import 'components/news_card.dart';
 import 'news_form_view.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 import '../../config/theme.dart';
 import '../components/shimmer_container.dart';
 
@@ -234,9 +235,12 @@ class _NewsListViewState extends ConsumerState<NewsListView> {
                                   ),
                                 );
                               }
+                              final userProfile = ref.watch(authViewModelProvider).profile;
+                              final isSuperAdmin = userProfile?.isSuperAdmin ?? false;
                               final item = newsState.newsItems[index];
                               return NewsCard(
                                 item: item,
+                                showDelete: isSuperAdmin,
                                 onTogglePublish: () => newsNotifier.togglePublish(item),
                                 onTogglePin: () => newsNotifier.togglePin(item),
                                 onEdit: () {
