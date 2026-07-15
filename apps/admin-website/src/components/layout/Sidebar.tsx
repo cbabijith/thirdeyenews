@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useNavigationStore } from '@/store/navigationStore'
 import { LayoutDashboard, Newspaper, Folder, Megaphone, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 
@@ -10,9 +11,10 @@ export function Sidebar() {
   const pathname = usePathname()
   const { sidebarOpen, toggleSidebar, setCurrentPath } = useNavigationStore()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const { hasRole } = usePermissions()
 
   const navItems = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+    ...(hasRole('superadmin') ? [{ href: '/', label: 'Dashboard', icon: LayoutDashboard }] : []),
     { href: '/content/news', label: 'News', icon: Newspaper },
     { href: '/content/categories', label: 'Categories', icon: Folder },
     { href: '/content/ads', label: 'Ads', icon: Megaphone },
@@ -67,6 +69,7 @@ export function Sidebar() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    prefetch={false}
                     onClick={() => handleNavClick(item.href)}
                     className={`flex items-center rounded-lg transition-all duration-200 ${
                       sidebarOpen ? 'px-3 py-2 gap-3' : 'p-2.5 justify-center'
@@ -142,6 +145,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               onClick={() => handleNavClick(item.href)}
               className={`flex flex-col items-center justify-center flex-1 h-full py-1.5 text-xs transition-colors ${
                 isActive ? 'text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-900'

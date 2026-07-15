@@ -1,8 +1,10 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { useNavigationStore } from '@/store/navigationStore'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -10,6 +12,21 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { sidebarOpen } = useNavigationStore()
+  const { profile, loading, hasRole } = usePermissions()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && profile) {
+      const isSuperAdminOnlyRoute = pathname === '/'
+      if (isSuperAdminOnlyRoute && !hasRole('superadmin')) {
+        router.push('/content/news')
+      }
+    }
+  }, [profile, loading, pathname, router, hasRole])
+
+  const isSuperAdminOnlyRoute = pathname === '/'
+  const shouldBlock = isSuperAdminOnlyRoute && !loading && profile && !hasRole('superadmin')
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -32,7 +49,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         } ml-0 pb-20 md:pb-0`}
       >
         <div className="p-4 sm:p-6 lg:p-8">
-          {children}
+          {shouldBlock || loading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </div>
     </div>

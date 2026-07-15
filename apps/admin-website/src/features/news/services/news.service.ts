@@ -2,6 +2,28 @@ import { newsRepository } from '../repositories/news.repository'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
 import { ApiResponse } from '@/types'
 
+async function resolveUniqueSlug(slug: string, excludeId?: string): Promise<string> {
+  let baseSlug = slug
+  let suffix = 0
+
+  // If the slug already ends with -<number>, parse it
+  const match = slug.match(/(.*)-(\d+)$/)
+  if (match) {
+    baseSlug = match[1]
+    suffix = parseInt(match[2], 10)
+  }
+
+  let currentSlug = slug
+  while (true) {
+    const exists = await newsRepository.isSlugExists(currentSlug, excludeId)
+    if (!exists) {
+      return currentSlug
+    }
+    suffix++
+    currentSlug = `${baseSlug}-${suffix}`
+  }
+}
+
 export const newsService = {
   async getAllNews(includeCategory = true): Promise<ApiResponse<News[]>> {
     try {
@@ -55,19 +77,35 @@ export const newsService = {
 
   async createNews(data: Omit<News, 'id' | 'created_at' | 'updated_at'>): Promise<ApiResponse<News>> {
     try {
-      const result = await newsRepository.create(data)
+      const finalData = { ...data }
+      if (finalData.slug) {
+        finalData.slug = await resolveUniqueSlug(finalData.slug)
+      }
+      const result = await newsRepository.create(finalData)
       return { data: result, error: null }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : ''
+      if (msg.includes('news_slug_key') || (msg.includes('duplicate key') && msg.includes('slug'))) {
+        return { data: null, error: 'This custom slug is already in use by another article. Please choose a different slug name.' }
+      }
       return { data: null, error: error instanceof Error ? error.message : 'Failed to create news' }
     }
   },
 
   async updateNews(id: string, updates: Partial<News>): Promise<ApiResponse<News>> {
     try {
-      const result = await newsRepository.update(id, updates)
+      const finalUpdates = { ...updates }
+      if (finalUpdates.slug) {
+        finalUpdates.slug = await resolveUniqueSlug(finalUpdates.slug, id)
+      }
+      const result = await newsRepository.update(id, finalUpdates)
       if (!result) return { data: null, error: 'News not found' }
       return { data: result, error: null }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : ''
+      if (msg.includes('news_slug_key') || (msg.includes('duplicate key') && msg.includes('slug'))) {
+        return { data: null, error: 'This custom slug is already in use by another article. Please choose a different slug name.' }
+      }
       return { data: null, error: error instanceof Error ? error.message : 'Failed to update news' }
     }
   },

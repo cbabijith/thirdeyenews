@@ -13,7 +13,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const categories = await categoriesRepository.findAll()
-    return NextResponse.json({ data: categories }, { headers: corsHeaders })
+    return NextResponse.json({ data: categories }, {
+      headers: {
+        ...corsHeaders,
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch categories' },

@@ -83,9 +83,9 @@ export function HomeContent({
           withTimeout(api.getRecentNews(selectedCategory || undefined, PAGE_SIZE, 0), 8000),
         ])
 
-        setPinnedNews(pinnedData)
-        setRecentNews(recentData)
-        setHasMore(recentData.length === PAGE_SIZE)
+        setPinnedNews(pinnedData || [])
+        setRecentNews(recentData || [])
+        setHasMore((recentData || []).length === PAGE_SIZE)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
@@ -106,8 +106,8 @@ export function HomeContent({
         8000
       )
 
-      setRecentNews(prev => [...prev, ...newsData])
-      setHasMore(newsData.length === PAGE_SIZE)
+      setRecentNews(prev => [...prev, ...(newsData || [])])
+      setHasMore((newsData || []).length === PAGE_SIZE)
     } catch (err) {
       console.error('Failed to load more:', err)
     } finally {
@@ -115,54 +115,109 @@ export function HomeContent({
     }
   }
 
-  if (loading) {
-    return (
-      <div className={`min-h-screen ${colors.background}`}>
-        <Header categories={categories} />
-        <BreakingNewsTicker />
-        <div className="flex gap-2 px-4 py-3 overflow-hidden no-scrollbar">
-          {[1,2,3,4,5].map(i => <ShimmerBox key={i} className="h-7 w-20 rounded-full flex-shrink-0" />)}
-        </div>
-        <main className="px-4 py-4 flex flex-col gap-4">
-          <ShimmerBox className="w-full aspect-[16/9] rounded-xl" />
-          <div className="flex flex-col gap-3">
-            <ShimmerBox className="h-5 w-3/4 rounded" />
-            <ShimmerBox className="h-3 w-1/2 rounded" />
-          </div>
-          <div className="flex flex-col gap-3 mt-2">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="flex gap-3">
-                <ShimmerBox className="w-20 h-20 rounded-lg flex-shrink-0" />
-                <div className="flex-1 flex flex-col gap-2">
-                  <ShimmerBox className="h-3 w-1/4 rounded" />
-                  <ShimmerBox className="h-4 w-full rounded" />
-                  <ShimmerBox className="h-3 w-1/3 rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </main>
+  const renderMobileShimmer = () => (
+    <div className="flex flex-col gap-4 px-4 py-4 animate-pulse">
+      <div className="w-full aspect-[16/9] bg-surface-container rounded-xl" />
+      <div className="space-y-2">
+        <div className="h-5 bg-surface-container rounded w-3/4" />
+        <div className="h-3 bg-surface-container rounded w-1/2" />
       </div>
-    )
-  }
+      <div className="flex flex-col gap-3 mt-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex gap-3">
+            <div className="w-20 h-20 bg-surface-container rounded-lg shrink-0" />
+            <div className="flex-1 space-y-2 py-1">
+              <div className="h-3 bg-surface-container rounded w-1/4" />
+              <div className="h-4 bg-surface-container rounded w-full" />
+              <div className="h-3 bg-surface-container rounded w-1/3" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderDesktopShimmer = () => (
+    <div className="grid grid-cols-12 gap-8 animate-pulse">
+      {/* Left Column Shimmer */}
+      <div className="col-span-3 border-r border-border/60 pr-6">
+        <div className="h-5 bg-surface-container rounded w-1/2 mb-5" />
+        <div className="flex flex-col gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex gap-3 items-start">
+              <div className="w-14 h-14 bg-surface-container rounded-md shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3.5 bg-surface-container rounded w-3/4" />
+                <div className="h-3 bg-surface-container rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Middle Column Shimmer */}
+      <div className="col-span-6">
+        <div className="w-full h-[400px] bg-surface-container rounded-2xl mb-6" />
+        <div className="h-5 bg-surface-container rounded w-1/3 mb-4" />
+        <div className="grid grid-cols-2 gap-5">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex flex-col bg-surface-container/20 rounded-xl overflow-hidden border border-border/40">
+              <div className="w-full aspect-[16/10] bg-surface-container" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 bg-surface-container rounded w-1/4" />
+                <div className="h-4 bg-surface-container rounded w-full" />
+                <div className="h-3 bg-surface-container rounded w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right Column Shimmer */}
+      <div className="col-span-3 border-l border-border/60 pl-6">
+        <div className="h-5 bg-surface-container rounded w-1/2 mb-5" />
+        <div className="flex flex-col gap-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-3 py-2 border-b border-border/60">
+              <div className="w-8 h-8 bg-surface-container rounded shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-surface-container rounded w-1/4" />
+                <div className="h-3.5 bg-surface-container rounded w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center gap-4">
-        <span className="material-symbols-outlined text-6xl text-on-surface-variant opacity-40">error_outline</span>
-        <p className="text-on-surface-variant max-w-md text-sm">{error}</p>
-        <button
-          onClick={() => setRetryTrigger(prev => prev + 1)}
-          className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-button-hover transition-all text-sm"
-        >
-          Retry
-        </button>
+      <div className={`min-h-screen ${colors.background}`}>
+        <Header pinnedNews={pinnedNews} categories={categories} />
+        <BreakingNewsTicker pinnedNews={pinnedNews} latestNews={recentNews} />
+        <CategoryBar categories={categories} selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
+        <div className="flex flex-col items-center justify-center p-12 text-center gap-4">
+          <span className="material-symbols-outlined text-6xl text-on-surface-variant opacity-40">error_outline</span>
+          <p className="text-on-surface-variant max-w-md text-sm">{error}</p>
+          <button
+            onClick={() => setRetryTrigger(prev => prev + 1)}
+            className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-button-hover transition-all text-sm"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
-  const featuredNews = pinnedNews.length > 0 ? pinnedNews[currentSlide % pinnedNews.length] : null
-  const latestNews = recentNews
+  const featuredNews = pinnedNews.length > 0 
+    ? pinnedNews[currentSlide % pinnedNews.length] 
+    : (recentNews.length > 0 ? recentNews[0] : null)
+
+  const latestNews = (pinnedNews.length === 0 && recentNews.length > 0) 
+    ? recentNews.slice(1) 
+    : recentNews
 
   const getAuthorName = (item: NewsItem) => item.profiles?.full_name || item.profiles?.email || 'ThirdEye News'
   const formatDate = (date: string) => fmtShort(date)
@@ -177,367 +232,392 @@ export function HomeContent({
 
       {/* Mobile Layout */}
       <main className="md:hidden">
-        {/* Hero Story Card - Featured/Pinned News */}
-        {featuredNews && (
-          <section className="relative overflow-hidden aspect-[16/10]">
-            <Link key={featuredNews.id} href={`/news/${featuredNews.id}`} className="block w-full h-full">
-              {featuredNews.image_url ? (
-                <>
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={featuredNews.image_url}
-                      alt={featuredNews.title}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0.1) 100%)',
-                    }}
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm">
-                      TOP STORY
-                    </span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h2 className="text-white font-bold leading-snug mb-2" style={{ fontSize: 22 }}>
-                      {featuredNews.title}
-                    </h2>
-                    <div className="flex items-center justify-between">
-                      <span className="text-white text-xs opacity-80">
-                        {featuredNews.published_at && formatDate(featuredNews.published_at)}
-                        {featuredNews.published_at && ' | '}
-                        {featuredNews.published_at && formatTime(featuredNews.published_at)}
-                      </span>
-                      {pinnedNews.length > 1 && (
-                        <div className="flex gap-1">
-                          {pinnedNews.map((_, idx) => (
-                            <div
-                              key={idx}
-                              className={`w-2 h-2 rounded-full ${idx === currentSlide ? 'bg-primary' : 'bg-white opacity-50'}`}
-                            />
-                          ))}
+        {loading ? renderMobileShimmer() : (
+          <div className="flex flex-col gap-6 pb-8">
+            {/* Hero Story Card - Featured/Pinned News */}
+            {featuredNews && (
+              <section className="px-4 pt-4">
+                <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} prefetch={false} className="block group">
+                  <div className="relative overflow-hidden rounded-2xl aspect-[16/10] shadow-md bg-surface-container-lowest border border-border/40">
+                    {featuredNews.image_url ? (
+                      <>
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={featuredNews.image_url}
+                            alt={featuredNews.title}
+                            fill
+                            priority
+                            sizes="100vw"
+                            className="object-cover"
+                          />
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="bg-surface-container h-full p-4 flex flex-col justify-center">
-                  <span className="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-sm self-start mb-2">
-                    TOP STORY
-                  </span>
-                  <h2 className="text-on-surface font-bold leading-snug" style={{ fontSize: 22 }}>
-                    {featuredNews.title}
-                  </h2>
-                  {featuredNews.published_at && (
-                    <p className="text-on-surface-variant text-xs mt-2">
-                      {formatDate(featuredNews.published_at)}
-                    </p>
-                  )}
-                </div>
-              )}
-            </Link>
-          </section>
-        )}
-
-        {/* Latest News - Horizontal Scroll Cards (പ്രതൃക്ഷ വാർത്തകൾ) */}
-        {latestNews.length > 0 && (
-          <section>
-            <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-              <h3 className="text-on-surface font-bold text-base">
-                പ്രതൃക്ഷ വാർത്തകൾ
-              </h3>
-              <span className="text-primary text-sm font-medium flex items-center gap-1">
-                എല്ലാം കാണുക
-                <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-            <div className="px-4 pb-4 flex gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x">
-              {latestNews.slice(0, 10).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="flex flex-col snap-start" style={{ width: 115 }}>
-                  <div className="rounded-md overflow-hidden" style={{ height: 75 }}>
-                    {item.image_url ? (
-                      <div className="relative w-full h-full">
-                        <Image src={item.image_url} alt={item.title} fill sizes="115px" className="object-cover" />
-                      </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-primary text-on-primary text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                            TOP STORY
+                          </span>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          {featuredNews.categories && (
+                            <span className="text-primary text-[10px] font-bold uppercase tracking-wide block mb-1">
+                              {featuredNews.categories.name}
+                            </span>
+                          )}
+                          <h2 className="text-white font-bold leading-tight line-clamp-2 text-lg mb-1">
+                            {featuredNews.title.length > 80 ? featuredNews.title.substring(0, 80) + '...' : featuredNews.title}
+                          </h2>
+                          <span className="text-white/60 text-[10px] block">
+                            {featuredNews.published_at && formatDate(featuredNews.published_at)}
+                          </span>
+                        </div>
+                      </>
                     ) : (
-                      <div className="w-full h-full bg-surface-container" />
-                    )}
-                  </div>
-                  <div className="pt-2">
-                    {item.categories && (
-                      <span className="bg-primary text-on-primary text-xs font-bold px-2 py-0.5 rounded-sm">
-                        {item.categories.name}
-                      </span>
-                    )}
-                    <p className="text-on-surface text-xs mt-1 leading-snug line-clamp-3">
-                      {item.title}
-                    </p>
-                    {item.published_at && (
-                      <p className="text-on-surface-variant text-xs mt-1">
-                        {formatTime(item.published_at)}
-                      </p>
+                      <div className="w-full h-full bg-surface-container p-5 flex flex-col justify-end">
+                        <span className="bg-primary text-on-primary text-[10px] font-extrabold px-2 py-0.5 rounded self-start mb-2 tracking-wider">
+                          TOP STORY
+                        </span>
+                        <h2 className="text-on-surface font-bold leading-tight text-lg line-clamp-3">
+                          {featuredNews.title}
+                        </h2>
+                      </div>
                     )}
                   </div>
                 </Link>
-              ))}
-            </div>
-          </section>
-        )}
+              </section>
+            )}
 
-        {/* Trending Section (ട്രെൻഡിംഗ്) */}
-        {trendingNews.length > 0 && (
-          <section className="px-4">
-            <div className="pt-2 pb-1 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px] text-on-surface">trending_up</span>
-                <h3 className="text-on-surface font-bold text-base">
-                  ട്രെൻഡിംഗ്
-                </h3>
-              </div>
-              <span className="text-primary text-sm font-medium flex items-center gap-1">
-                എല്ലാം കാണുക
-                <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-            {trendingNews.slice(0, 5).map((item, index) => (
-              <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                <div className="flex items-center gap-3 py-3 border-b border-border">
-                  <div className="bg-primary text-on-primary font-bold text-sm w-7 h-7 rounded-sm flex items-center justify-center shrink-0">
-                    {index + 1}
-                  </div>
-                  <div className="rounded-md overflow-hidden shrink-0" style={{ width: 64, height: 52 }}>
-                    {item.image_url ? (
-                      <div className="relative w-full h-full">
-                        <Image src={item.image_url} alt={item.title} fill sizes="64px" className="object-cover" />
-                      </div>
-                    ) : (
-                      <div className="w-full h-full bg-surface-container" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-on-surface text-sm leading-snug line-clamp-2">
-                      {item.title}
-                    </p>
-                    {item.published_at && (
-                      <p className="text-on-surface-variant text-xs mt-1" suppressHydrationWarning>
-                        {getTimeAgo(item.published_at)}
-                      </p>
-                    )}
-                  </div>
-                  <span className="material-symbols-outlined text-[16px] text-primary shrink-0">trending_up</span>
+            {/* Horizontal Recent Stories */}
+            {latestNews.length > 0 && (
+              <section className="flex flex-col gap-2">
+                <div className="px-4 flex items-center justify-between">
+                  <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider">
+                    പ്രധാന വാർത്തകൾ
+                  </h3>
                 </div>
-              </Link>
-            ))}
-          </section>
-        )}
-
-        {/* Ad Banner */}
-        <section className="px-4 pt-4 pb-2">
-          <AdBanner maxAds={3} />
-        </section>
-
-        {/* Latest News List */}
-        <section className="px-4 pb-8">
-          <h3 className="text-on-surface font-bold text-base mb-4 flex items-center gap-2">
-            <span className="w-1 h-5 bg-primary rounded-full"></span>
-            ഏറ്റവും പുതിയ വാർത്തകൾ
-          </h3>
-          <div className="flex flex-col">
-            {latestNews.length > 0 ? (
-              latestNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                  <div className={`flex gap-3 py-3 ${index !== latestNews.length - 1 ? 'border-b border-border' : ''}`}>
-                    {item.image_url && (
-                      <div className="relative flex-shrink-0 w-[72px] h-[72px]">
-                        <Image
-                          src={item.image_url}
-                          alt={item.title}
-                          fill
-                          sizes="72px"
-                          className="object-cover rounded-md"
-                        />
-                        {item.youtube_link && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md">
-                            <span className="material-symbols-outlined text-white text-2xl">play_circle</span>
+                <div className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x px-4 pb-2">
+                  {latestNews.slice(0, 8).map((item) => (
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="flex flex-col shrink-0 snap-start bg-surface-container/20 border border-border/40 rounded-xl overflow-hidden p-2" style={{ width: 140 }}>
+                      <div className="relative rounded-lg overflow-hidden shrink-0 aspect-[16/10] bg-surface-container">
+                        {item.image_url ? (
+                          <Image src={item.image_url} alt={item.title} fill sizes="140px" className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                            <span className="material-symbols-outlined text-xl">newspaper</span>
                           </div>
                         )}
                       </div>
-                    )}
-                    <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
-                      {item.categories && (
-                        <span className="text-primary text-[10px] font-bold uppercase tracking-wide">
-                          {item.categories.name}
-                        </span>
-                      )}
-                      <h4 className="text-[14px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h4>
-                      {item.published_at && (
-                        <span className="text-on-surface-variant text-[10px] flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[11px]">schedule</span>
-                          {formatDate(item.published_at)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <p className="text-on-surface-variant text-center py-8 text-sm">വാർത്തകൾ ഇല്ല</p>
+                      <div className="pt-2 flex-1 flex flex-col justify-between">
+                        <div>
+                          {item.categories && (
+                            <span className="text-primary text-[9px] font-bold uppercase tracking-wider block mb-1">
+                              {item.categories.name}
+                            </span>
+                          )}
+                          <p className="text-on-surface text-[11px] font-medium leading-snug line-clamp-3">
+                            {item.title}
+                          </p>
+                        </div>
+                        {item.published_at && (
+                          <p className="text-on-surface-variant/60 text-[9px] mt-1.5">
+                            {formatTime(item.published_at)}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
             )}
+
+            {/* Trending Section */}
+            {trendingNews.length > 0 && (
+              <section className="px-4 flex flex-col gap-3">
+                <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px] text-primary">trending_up</span>
+                  ട്രെൻഡിംഗ്
+                </h3>
+                <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
+                  {trendingNews.slice(0, 5).map((item, index) => (
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                      <div className="flex items-center gap-3 p-3 hover:bg-surface-container/20 transition-colors">
+                        <div className="text-xl font-black text-outline/30 group-hover:text-primary/60 transition-colors w-6 h-6 flex items-center justify-center shrink-0">
+                          {index + 1}
+                        </div>
+                        <div className="relative rounded-lg overflow-hidden shrink-0 aspect-[16/11] bg-surface-container w-16">
+                          {item.image_url ? (
+                            <Image src={item.image_url} alt={item.title} fill sizes="64px" className="object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                              <span className="material-symbols-outlined text-lg">newspaper</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-on-surface text-[12.5px] font-medium leading-snug line-clamp-2">
+                            {item.title}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Ad Banner */}
+            <section className="px-4">
+              <AdBanner maxAds={2} />
+            </section>
+
+            {/* Latest News Timeline List */}
+            <section className="px-4 flex flex-col gap-4">
+              <h3 className="text-on-surface font-bold text-[15px] uppercase tracking-wider flex items-center gap-2">
+                <span className="w-1.5 h-4 bg-primary rounded-full"></span>
+                ഏറ്റവും പുതിയ വാർത്തകൾ
+              </h3>
+              <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
+                {latestNews.length > 0 ? (
+                  latestNews.map((item, index) => (
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                      <div className="flex gap-3 p-3 hover:bg-surface-container/20 transition-colors">
+                        {item.image_url && (
+                          <div className="relative flex-shrink-0 w-20 aspect-[4/3] rounded-lg overflow-hidden bg-surface-container">
+                            <Image
+                              src={item.image_url}
+                              alt={item.title}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex flex-col justify-center flex-1 min-w-0 gap-0.5">
+                          {item.categories && (
+                            <span className="text-primary text-[9px] font-bold uppercase tracking-wider">
+                              {item.categories.name}
+                            </span>
+                          )}
+                          <h4 className="text-[12.5px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                            {item.title}
+                          </h4>
+                          {item.published_at && (
+                            <span className="text-on-surface-variant/60 text-[9px] mt-0.5">
+                              {formatDate(item.published_at)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-on-surface-variant text-center py-8 text-sm">വാർത്തകൾ ഇല്ല</p>
+                )}
+              </div>
+              {hasMore && latestNews.length > 0 && (
+                <button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="w-full py-3 bg-surface-container text-on-surface rounded-xl font-bold text-xs hover:bg-surface-container-high transition-colors disabled:opacity-50 tracking-wider uppercase"
+                >
+                  {loadingMore ? 'ലോഡിംഗ്...' : 'കൂടുതൽ വാർത്തകൾ കാണാൻ'}
+                </button>
+              )}
+            </section>
           </div>
-          {hasMore && latestNews.length > 0 && (
-            <button
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="w-full py-3 mt-4 bg-surface-container text-on-surface rounded-md font-medium text-sm hover:bg-surface-container-high transition-colors disabled:opacity-50"
-            >
-              {loadingMore ? 'ലോഡിംഗ്...' : 'കൂടുതൽ വാർത്തകൾ കാണാൻ'}
-            </button>
-          )}
-        </section>
+        )}
       </main>
 
       {/* Desktop Layout - 3 Column */}
-      <main className="hidden md:block max-w-[1200px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left Column - Latest News (3 cols) */}
-          <div className="col-span-3">
-            <h3 className="text-on-surface text-[16px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-1 h-5 bg-primary rounded-full"></span>
-              ഏറ്റവും പുതിയ വാർത്തകൾ
-            </h3>
-            <div className="flex flex-col gap-2">
-              {latestNews.slice(0, 10).map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                  <div className="p-3 rounded-lg hover:bg-surface-container transition-colors">
-                    {item.categories && (
-                      <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
-                        {item.categories.name}
-                      </span>
-                    )}
-                    <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h4>
-                    {item.published_at && (
-                      <span className="text-on-surface-variant text-[10px] mt-1 block">
-                        {formatDate(item.published_at)} • {getAuthorName(item)}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Middle Column - Featured News (6 cols) */}
-          <div className="col-span-6">
-            {featuredNews && (
-              <Link href={`/news/${featuredNews.id}`} className="block group">
-                {featuredNews.image_url ? (
-                  <div className="relative rounded-xl overflow-hidden">
-                    <div className="relative w-full h-96">
-                      <Image
-                        src={featuredNews.image_url}
-                        alt={featuredNews.title}
-                        fill
-                        priority
-                        sizes="(max-width: 768px) 100vw, 600px"
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      {featuredNews.categories && (
-                        <span className="inline-block bg-secondary text-white text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded mb-2">
-                          {featuredNews.categories.name}
-                        </span>
-                      )}
-                      <h2 className="text-white text-[28px] font-bold leading-snug">
-                        {featuredNews.title}
-                      </h2>
-                      {featuredNews.published_at && (
-                        <p className="text-white/70 text-sm mt-2">
-                          {formatDate(featuredNews.published_at)} • {getAuthorName(featuredNews)}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-surface-container rounded-xl p-6">
-                    {featuredNews.categories && (
-                      <span className="inline-block bg-secondary text-white text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded mb-3">
-                        {featuredNews.categories.name}
-                      </span>
-                    )}
-                    <h2 className="text-on-surface text-[28px] font-bold leading-snug">
-                      {featuredNews.title}
-                    </h2>
-                    {featuredNews.published_at && (
-                      <p className="text-on-surface-variant text-sm mt-2">
-                        {formatDate(featuredNews.published_at)} • {getAuthorName(featuredNews)}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </Link>
-            )}
-          </div>
-
-          {/* Right Column - Trending (3 cols) */}
-          <div className="col-span-3">
-            <h3 className="text-on-surface text-[16px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-1 h-5 bg-secondary rounded-full"></span>
-              ട്രെൻഡിംഗ്
-            </h3>
-            <div className="flex flex-col gap-3">
-              {trendingNews.map((item) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
-                  <article className="rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300 bg-surface-container">
-                    {item.image_url && (
-                      <div className="relative">
-                        <div className="relative w-full h-32">
-                          <Image src={item.image_url} alt={item.title} fill sizes="300px" className="object-cover" />
-                        </div>
-                        {item.youtube_link && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                            <span className="material-symbols-outlined text-white text-4xl">play_circle</span>
+      <main className="hidden md:block max-w-[1240px] mx-auto px-6 py-8">
+        {loading ? renderDesktopShimmer() : (
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column - Live Stream Timeline (3 cols) */}
+            <div className="col-span-3 border-r border-border/60 pr-6">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <h3 className="text-on-surface text-[15px] font-bold uppercase tracking-wider">
+                  ഏറ്റവും പുതിയവ (Latest)
+                </h3>
+              </div>
+              <div className="flex flex-col gap-4 max-h-[850px] overflow-y-auto pr-2 no-scrollbar">
+                {latestNews.map((item, index) => (
+                  <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                    <div className="flex gap-3 items-start p-2 rounded-lg hover:bg-surface-container/40 transition-all duration-300">
+                      <div className="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-surface-container">
+                        {item.image_url ? (
+                          <Image src={item.image_url} alt={item.title} fill sizes="56px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant/30">
+                            <span className="material-symbols-outlined text-base">newspaper</span>
                           </div>
                         )}
                       </div>
-                    )}
-                    <div className="p-3">
-                      {item.categories && (
-                        <span className="text-primary text-[10px] font-semibold uppercase tracking-wide">
-                          {item.categories.name}
-                        </span>
-                      )}
-                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 mt-1 leading-snug group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h4>
-                      {item.published_at && (
-                        <span className="text-on-surface-variant text-[10px] mt-1 block">
-                          {formatDate(item.published_at)}
-                        </span>
-                      )}
+                      <div className="flex-1 min-w-0">
+                        {item.categories && (
+                          <span className="text-primary text-[10px] font-bold uppercase tracking-wide">
+                            {item.categories.name}
+                          </span>
+                        )}
+                        <h4 className="text-[12.5px] font-medium text-on-surface line-clamp-2 mt-0.5 leading-snug group-hover:text-primary transition-colors">
+                          {item.title}
+                        </h4>
+                        {item.published_at && (
+                          <span className="text-on-surface-variant/60 text-[10px] mt-1 block">
+                            {formatDate(item.published_at)}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </article>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-6">
-              <AdBanner maxAds={3} />
+            {/* Middle Column - Hero & Stories Grid (6 cols) */}
+            <div className="col-span-6">
+              {featuredNews && (
+                <div className="flex flex-col gap-6">
+                  {/* Main Hero Card */}
+                  <Link href={`/news/${featuredNews.slug || featuredNews.id}`} prefetch={false} className="block group">
+                    <div className="flex flex-col gap-4 bg-surface-container/10 p-3 rounded-2xl border border-border/20 hover:border-border/60 hover:bg-surface-container/30 transition-all duration-300">
+                      {/* Hero Image Container */}
+                      <div className="relative rounded-xl overflow-hidden aspect-[16/10] bg-surface-container">
+                        {featuredNews.image_url ? (
+                          <Image
+                            src={featuredNews.image_url}
+                            alt={featuredNews.title}
+                            fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 600px"
+                            className="object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                            <span className="material-symbols-outlined text-6xl">newspaper</span>
+                          </div>
+                        )}
+                        {/* Elegant overlay category tag */}
+                        {featuredNews.categories && (
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className="bg-background/80 backdrop-blur-md text-primary text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider border border-border/40 shadow-sm">
+                              {featuredNews.categories.name}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Hero Meta & Title Below Image */}
+                      <div className="px-1 pb-1">
+                        <h2 className="text-on-surface text-[20px] md:text-[23px] font-black tracking-tight leading-tight group-hover:text-primary transition-colors duration-300" title={featuredNews.title}>
+                          {featuredNews.title.length > 110 ? featuredNews.title.substring(0, 110) + '...' : featuredNews.title}
+                        </h2>
+                        {featuredNews.published_at && (
+                          <p className="text-on-surface-variant/60 text-[11px] mt-3.5 flex items-center gap-2 font-medium">
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px] opacity-70">schedule</span>
+                              {formatDate(featuredNews.published_at)}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-border" />
+                            <span className="flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px] opacity-70">person</span>
+                              {getAuthorName(featuredNews)}
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Sub Grid Stories */}
+                  <div className="mt-2">
+                    <h3 className="text-on-surface text-[15px] font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <span className="w-1.5 h-4 bg-secondary rounded-full"></span>
+                      പ്രധാന വാർത്തകൾ (Featured Stories)
+                    </h3>
+                    <div className="grid grid-cols-2 gap-5">
+                      {latestNews.slice(0, 4).map((item) => (
+                        <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                          <div className="flex flex-col h-full bg-surface-container/20 rounded-xl overflow-hidden hover:bg-surface-container/50 transition-colors duration-300 border border-border/40">
+                            <div className="relative aspect-[16/10] bg-surface-container">
+                              {item.image_url ? (
+                                <Image
+                                  src={item.image_url}
+                                  alt={item.title}
+                                  fill
+                                  sizes="300px"
+                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
+                                  <span className="material-symbols-outlined text-4xl">newspaper</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-3 flex-1 flex flex-col justify-between">
+                              <div>
+                                {item.categories && (
+                                  <span className="text-primary text-[10px] font-bold uppercase tracking-wide block mb-1">
+                                    {item.categories.name}
+                                  </span>
+                                )}
+                                <h4 className="text-[13px] font-semibold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                                  {item.title}
+                                </h4>
+                              </div>
+                              {item.published_at && (
+                                <span className="text-on-surface-variant/60 text-[10px] mt-2 block">
+                                  {formatDate(item.published_at)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column - Trending & Ads (3 cols) */}
+            <div className="col-span-3 border-l border-border/60 pl-6">
+              <h3 className="text-on-surface text-[15px] font-bold uppercase tracking-wider mb-5 flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px] text-primary">trending_up</span>
+                ട്രെൻഡിംഗ് (Trending)
+              </h3>
+              <div className="flex flex-col gap-4">
+                {trendingNews.slice(0, 5).map((item, index) => (
+                  <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                    <div className="flex items-center gap-3 py-2 border-b border-border/60 group-hover:border-primary/40 transition-colors">
+                      <div className="text-2xl font-black text-outline/40 group-hover:text-primary/60 transition-colors w-8 h-8 flex items-center justify-center shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        {item.categories && (
+                          <span className="text-primary text-[9px] font-bold uppercase tracking-wide">
+                            {item.categories.name}
+                          </span>
+                        )}
+                        <h4 className="text-[12.5px] font-medium text-on-surface line-clamp-2 mt-0.5 leading-snug group-hover:text-primary transition-colors">
+                          {item.title}
+                        </h4>
+                        {item.published_at && (
+                          <span className="text-on-surface-variant/60 text-[9px] mt-1 block">
+                            {formatDate(item.published_at)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-8 rounded-2xl overflow-hidden border border-border/60">
+                <AdBanner maxAds={3} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
 
       <Footer />

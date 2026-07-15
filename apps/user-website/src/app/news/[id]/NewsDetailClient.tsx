@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { api, NewsItem } from '@/lib/api'
@@ -15,6 +15,7 @@ import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
 interface RelatedNews {
   id: string
   title: string
+  slug?: string | null
   image_url?: string | null
   published_at?: string | null
   categories?: {
@@ -59,12 +60,24 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
   const router = useRouter()
   const news = initialNews
   const [relatedNews] = useState<RelatedNews[]>(initialRelated || [])
+  const pathname = usePathname()
   const viewCountedRef = useRef(false)
 
   useEffect(() => {
-    if (!viewCountedRef.current) {
+    if (news.slug && pathname !== `/news/${news.slug}`) {
+      router.replace(`/news/${news.slug}`)
+    }
+  }, [news.slug, pathname, router])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !viewCountedRef.current) {
       viewCountedRef.current = true
-      api.incrementView(initialNews.id)
+      const storageKey = `viewed_${initialNews.id}`
+      const hasViewed = sessionStorage.getItem(storageKey)
+      if (!hasViewed) {
+        sessionStorage.setItem(storageKey, 'true')
+        api.incrementView(initialNews.id)
+      }
     }
   }, [initialNews.id])
 
@@ -73,14 +86,24 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
     const newsUrl = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
 
-    const boldTitle = news.title
+    const normalizeMalayalam = (text: string) => {
+      if (!text) return text
+      return text
+        .replace(/\u0D23\u0D4D\u200D/g, '\u0D7A') // ണ + ് + ZWJ -> ൺ
+        .replace(/\u0D28\u0D4D\u200D/g, '\u0D7B') // ന + ് + ZWJ -> ൻ
+        .replace(/\u0D30\u0D4D\u200D/g, '\u0D7C') // ര + ് + ZWJ -> ർ
+        .replace(/\u0D32\u0D4D\u200D/g, '\u0D7D') // ല + ് + ZWJ -> ൽ
+        .replace(/\u0D33\u0D4D\u200D/g, '\u0D7E') // ള + ് + ZWJ -> ൾ
+    }
+
+    const boldTitle = normalizeMalayalam(news.title)
       .split('\n')
       .map(line => line.trim())
       .filter(line => line.length > 0)
       .map(line => `*${line}*`)
       .join('\n')
 
-    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+    const shareText = `${boldTitle}\n\n${newsUrl}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
 
     const fallbackToWhatsApp = () => {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
@@ -136,6 +159,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <div className="flex items-center justify-between">
           <Link
             href="/"
+            prefetch={false}
             className="inline-flex items-center gap-1 text-on-surface-variant text-[13px] font-medium hover:text-on-surface transition-colors min-h-[44px]"
           >
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -197,15 +221,45 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <article className="w-full mt-2">
           {news.description && (
             <div className="border-l-[3px] border-secondary pl-4 mb-5">
-              <p className="font-semibold !text-black text-[15px] md:text-[16px] leading-relaxed" style={{ textAlign: 'justify', textAlignLast: 'left', textJustify: 'inter-word', wordSpacing: '0.05em', color: '#000000' }}>{news.description}</p>
+              <p className="font-semibold text-black dark:text-white text-[15px] md:text-[16px] leading-relaxed text-left">{news.description}</p>
             </div>
           )}
           {news.content && (
-            <div 
-              className="!text-black [&_p]:!text-black [&_span]:!text-black [&_strong]:!text-black [&_em]:!text-black [&_a]:!text-black [&_li]:!text-black [&_ul]:!text-black [&_ol]:!text-black [&_h1]:!text-black [&_h2]:!text-black [&_h3]:!text-black [&_h4]:!text-black [&_*]:!text-black [&_*]:[color:#000000!important] [&_p]:leading-relaxed text-[16px] md:text-[17px]" 
-              style={{ color: '#000000' }}
-              dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
-            />
+            <>
+              <style dangerouslySetInnerHTML={{ __html: `
+                .news-content-area,
+                .news-content-area * {
+                  color: #000000 !important;
+                  text-align: left !important;
+                }
+                .news-content-area a {
+                  color: #2563eb !important;
+                  text-decoration: underline;
+                  cursor: pointer;
+                }
+                .news-content-area a:hover {
+                  color: #1d4ed8 !important;
+                }
+                html.dark .news-content-area,
+                html.dark .news-content-area *,
+                .dark .news-content-area,
+                .dark .news-content-area * {
+                  color: #ffffff !important;
+                }
+                html.dark .news-content-area a,
+                .dark .news-content-area a {
+                  color: #60a5fa !important;
+                }
+                html.dark .news-content-area a:hover,
+                .dark .news-content-area a:hover {
+                  color: #93c5fd !important;
+                }
+              ` }} />
+              <div 
+                className="news-content-area leading-relaxed text-[16px] md:text-[17px]" 
+                dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
+              />
+            </>
           )}
         </article>
 
@@ -223,7 +277,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
             </h3>
             <div className="flex flex-col">
               {relatedNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.id}`} className="block group">
+                <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
                   <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-border' : ''}`}>
                     {item.image_url && (
                       <div className="relative w-14 h-14 flex-shrink-0">

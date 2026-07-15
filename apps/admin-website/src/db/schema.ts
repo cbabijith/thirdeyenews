@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, boolean, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
-export const userRoleEnum = pgEnum('user_role', ['admin', 'staff', 'user'])
+export const userRoleEnum = pgEnum('user_role', ['superadmin', 'admin', 'staff', 'user'])
 
 export const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey(),

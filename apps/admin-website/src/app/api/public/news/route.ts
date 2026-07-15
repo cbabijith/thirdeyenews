@@ -20,21 +20,41 @@ export async function GET(req: NextRequest) {
 
     if (q) {
       const results = await newsRepository.searchPublished(q, limit, offset)
-      return NextResponse.json({ data: results }, { headers: corsHeaders })
+      return NextResponse.json({ data: results }, {
+        headers: {
+          ...corsHeaders,
+          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
+        }
+      })
     }
 
     if (type === 'pinned') {
       const data = await newsRepository.findPinnedPublished(category, limit)
-      return NextResponse.json({ data }, { headers: corsHeaders })
+      return NextResponse.json({ data }, {
+        headers: {
+          ...corsHeaders,
+          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+        }
+      })
     }
 
     if (type === 'trending') {
       const data = await newsRepository.findTopViewed(limit)
-      return NextResponse.json({ data }, { headers: corsHeaders })
+      return NextResponse.json({ data }, {
+        headers: {
+          ...corsHeaders,
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=15',
+        }
+      })
     }
 
     const data = await newsRepository.findRecentPublished(category, limit, offset)
-    return NextResponse.json({ data }, { headers: corsHeaders })
+    return NextResponse.json({ data }, {
+      headers: {
+        ...corsHeaders,
+        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch news' },

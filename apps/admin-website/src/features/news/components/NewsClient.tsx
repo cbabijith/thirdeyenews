@@ -2,10 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Category, Subcategory } from '@/features/category/types'
 import { News } from '../types'
 import { useNews } from '../hooks/useNews'
-import { Search, Plus, Pin, Globe, Eye, Pencil, Trash2, Video, ChevronDown, X, Folder, ArrowUpDown, MoreVertical, ExternalLink, Newspaper } from 'lucide-react'
+import { usePermissions } from '@/hooks/usePermissions'
+import { Search, Plus, Pin, Globe, Eye, Pencil, Trash2, Video, ChevronDown, X, Folder, ArrowUpDown, MoreVertical, ExternalLink, Newspaper, Loader2 } from 'lucide-react'
+
 
 function stripHtml(html: string): string {
   return html
@@ -24,7 +27,17 @@ function stripHtml(html: string): string {
 }
 
 function buildWhatsAppShareUrl(item: News): string {
-  const title = item.title || ''
+  const normalizeMalayalam = (text: string) => {
+    if (!text) return text
+    return text
+      .replace(/\u0D23\u0D4D\u200D/g, '\u0D7A') // ണ + ് + ZWJ -> ൺ
+      .replace(/\u0D28\u0D4D\u200D/g, '\u0D7B') // ന + ് + ZWJ -> ൻ
+      .replace(/\u0D30\u0D4D\u200D/g, '\u0D7C') // ര + ് + ZWJ -> ർ
+      .replace(/\u0D32\u0D4D\u200D/g, '\u0D7D') // ല + ് + ZWJ -> ൽ
+      .replace(/\u0D33\u0D4D\u200D/g, '\u0D7E') // ള + ് + ZWJ -> ൾ
+  }
+
+  const title = normalizeMalayalam(item.title || '')
   const boldTitle = title
     .split('\n')
     .map(line => line.trim())
@@ -34,7 +47,7 @@ function buildWhatsAppShareUrl(item: News): string {
   const linkIdentifier = item.slug || item.id
   const link = `https://thirdeyenewslive.com/news/${linkIdentifier}`
 
-  const text = `${boldTitle}\n\n${link}\n\n🩸വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ  വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n🟣വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+  const text = `${boldTitle}\n\n${link}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 
@@ -64,12 +77,15 @@ export function NewsClient({
   initialCategories,
   initialCount
 }: NewsClientProps) {
+  const router = useRouter()
   const {
     newsItems,
     categories,
     count,
     loading,
     loadingMore,
+    hasMore,
+    loadMore,
     deleteItemId,
     setDeleteItemId,
     searchQuery,
@@ -84,6 +100,7 @@ export function NewsClient({
   } = useNews({ initialNews, initialCategories, initialCount })
 
   const [moreMenuId, setMoreMenuId] = useState<string | null>(null)
+  const { hasRole } = usePermissions()
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -95,6 +112,7 @@ export function NewsClient({
         </div>
         <Link
           href="/content/news/new"
+          prefetch={false}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all whitespace-nowrap"
         >
           <Plus className="w-4 h-4" />
@@ -162,7 +180,7 @@ export function NewsClient({
       </div>
 
       {/* Compact Newsroom List */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200">
         {loading && newsItems.length === 0 ? (
           <div className="divide-y divide-gray-100">
             {[...Array(8)].map((_, i) => (
@@ -186,7 +204,7 @@ export function NewsClient({
             {newsItems.map((item) => (
               <div
                 key={item.id}
-                className="group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors"
+                className={`group flex items-center gap-3 px-3 py-2 hover:bg-gray-50 transition-colors ${moreMenuId === item.id ? 'relative z-40' : 'relative z-0'}`}
               >
                 {/* Thumbnail - 56x42 compact */}
                 <div className="w-14 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-100">
@@ -274,6 +292,7 @@ export function NewsClient({
                       <div className="absolute right-0 top-9 z-50 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px]">
                         <Link
                           href={`/content/news/edit/${item.id}`}
+                          prefetch={false}
                           onClick={() => setMoreMenuId(null)}
                           className="flex items-center gap-2 w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
                         >
@@ -301,14 +320,18 @@ export function NewsClient({
                           <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
                           View on Site
                         </button>
-                        <div className="border-t border-gray-100 my-1" />
-                        <button
-                          onClick={() => { setDeleteItemId(item.id); setMoreMenuId(null) }}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          Delete
-                        </button>
+                        {hasRole('superadmin') && (
+                          <>
+                            <div className="border-t border-gray-100 my-1" />
+                            <button
+                              onClick={() => { setDeleteItemId(item.id); setMoreMenuId(null) }}
+                              className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Delete
+                            </button>
+                          </>
+                        )}
                       </div>
                     </>
                   )}
@@ -321,6 +344,17 @@ export function NewsClient({
                   <div className="w-3.5 h-3.5 border-2 border-gray-200 border-t-gray-400 rounded-full animate-spin" />
                   Loading more...
                 </div>
+              </div>
+            )}
+            {hasMore && !loadingMore && !loading && (
+              <div className="text-center py-3">
+                <button
+                  type="button"
+                  onClick={loadMore}
+                  className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-all active:scale-95 cursor-pointer"
+                >
+                  Load More
+                </button>
               </div>
             )}
           </div>

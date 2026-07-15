@@ -6,7 +6,7 @@ export const revalidate = 0
 
 export default async function NewsPage() {
   const [{ data: newsData, count }, categoriesResult, subcategoriesResult] = await Promise.all([
-    newsService.getNewsForListPage(10, 0),
+    newsService.getNewsForListPage(20, 0),
     categoriesService.getAllCategories(),
     subcategoriesService.getAllSubcategories(),
   ])

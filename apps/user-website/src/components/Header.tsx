@@ -59,7 +59,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
     async function fetchCategories() {
       try {
         const data = await api.getCategories()
-        setCategories(data)
+        setCategories(data || [])
       } catch (err) {
         console.error('Error fetching categories for header:', err)
       }
@@ -69,7 +69,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-background border-b border-border flex items-center justify-between px-4 md:px-6 h-14 w-full">
+      <header className="sticky top-0 z-50 bg-background border-b border-border flex items-center justify-between px-4 md:px-6 h-20 w-full">
         <button
           onClick={() => setSidebarOpen(true)}
           aria-label="Menu"
@@ -79,8 +79,8 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
         </button>
 
         {/* Logo */}
-        <Link href="/" className="hover:opacity-90 transition-opacity flex items-center">
-          <img src="/logo.svg" alt="ThirdEye News" className="h-8 w-auto" />
+        <Link href="/" prefetch={false} className="hover:opacity-90 transition-opacity flex items-center">
+          <img src="/thirdeye.svg" alt="ThirdEye News" className="h-[60px] md:h-[66px] w-auto" />
         </Link>
 
         <div className="flex items-center gap-3">

@@ -63,8 +63,8 @@ export function SearchContent() {
           8000
         )
 
-        setResults(newsData)
-        setHasMore(newsData.length === PAGE_SIZE)
+        setResults(newsData || [])
+        setHasMore((newsData || []).length === PAGE_SIZE)
       } catch (err) {
         console.error('Search failed:', err)
         setError(err instanceof Error ? err.message : 'Search failed. Please try again.')
@@ -87,8 +87,8 @@ export function SearchContent() {
         8000
       )
 
-      setResults(prev => [...prev, ...newsData])
-      setHasMore(newsData.length === PAGE_SIZE)
+      setResults(prev => [...prev, ...(newsData || [])])
+      setHasMore((newsData || []).length === PAGE_SIZE)
     } catch (err) {
       console.error('Load more failed:', err)
     } finally {
@@ -172,7 +172,8 @@ export function SearchContent() {
                     {results.slice(0, 5).map((item) => (
                       <Link
                         key={item.id}
-                        href={`/news/${item.id}`}
+                        href={`/news/${item.slug || item.id}`}
+                        prefetch={false}
                         onClick={() => setShowDropdown(false)}
                         className="block"
                       >
@@ -222,7 +223,7 @@ export function SearchContent() {
               Found {results.length}+ result{results.length !== 1 ? 's' : ''} for "{searchQuery}"
             </p>
             {results.map((item) => (
-              <Link key={item.id} href={`/news/${item.id}`} className="block">
+              <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block">
                 <article className={`flex gap-4 ${colors.surfaceContainerLowest} border ${colors.outlineVariant} p-4 rounded-xl hover:shadow-md transition-shadow`}>
                   {item.image_url && (
                     <div className="relative w-24 h-24 flex-shrink-0">

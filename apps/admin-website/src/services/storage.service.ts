@@ -1,8 +1,71 @@
+function compressImageClientSide(file: File, maxWidth = 1200, quality = 0.82): Promise<File> {
+  return new Promise((resolve) => {
+    // Only compress image files
+    if (!file.type.startsWith('image/')) {
+      return resolve(file);
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate scaling
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return resolve(file);
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to WebP blob
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              return resolve(file);
+            }
+            const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+            const newFile = new File([blob], `${originalName}.webp`, {
+              type: 'image/webp',
+              lastModified: Date.now(),
+            });
+            resolve(newFile);
+          },
+          'image/webp',
+          quality
+        );
+      };
+      img.onerror = () => {
+        resolve(file); // fallback to original file on error
+      };
+    };
+    reader.onerror = () => {
+      resolve(file); // fallback to original file on error
+    };
+  });
+}
+
 export const storageService = {
   async uploadImage(file: File, path: string): Promise<{ data: string | null; error: string | null }> {
     try {
+      // Compress the image in the browser first to save serverless bandwidth and prevent timeouts
+      const compressedFile = await compressImageClientSide(file);
+
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', compressedFile)
       formData.append('folder', path)
 
       const res = await fetch('/api/upload', {

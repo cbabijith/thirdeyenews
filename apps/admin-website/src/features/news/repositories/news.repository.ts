@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
+import { eq, ne, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
 import { db } from '@/db'
 import { news } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
@@ -53,6 +53,9 @@ export const newsRepository = {
   async findPublishedWithRelations(limit: number, offset: number): Promise<News[]> {
     const result = await db.query.news.findMany({
       where: eq(news.is_published, true),
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.published_at), desc(news.created_at)],
       limit,
@@ -63,6 +66,9 @@ export const newsRepository = {
 
   async findAllWithRelations(limit: number, offset: number): Promise<News[]> {
     const result = await db.query.news.findMany({
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.created_at)],
       limit,
@@ -161,8 +167,8 @@ export const newsRepository = {
     if (updates.content !== undefined) updateData.content = updates.content
     if (updates.image_url !== undefined) updateData.image_url = updates.image_url
     if (updates.youtube_link !== undefined) updateData.youtube_link = updates.youtube_link
-    if (updates.category_id !== undefined) updateData.category_id = updates.category_id
-    if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id
+    if (updates.category_id !== undefined) updateData.category_id = updates.category_id || null
+    if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id || null
     if (updates.is_published !== undefined) updateData.is_published = updates.is_published
     if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
     if (updates.published_at !== undefined)
@@ -194,6 +200,9 @@ export const newsRepository = {
   async findTopViewed(limit: number = 5): Promise<News[]> {
     const result = await db.query.news.findMany({
       where: eq(news.is_published, true),
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.view_count)],
       limit,
@@ -230,6 +239,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), eq(news.is_pinned, true))
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: desc(news.published_at),
       limit,
@@ -243,6 +255,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), eq(news.is_pinned, false))
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: [desc(news.published_at), desc(news.created_at)],
       limit,
@@ -257,6 +272,9 @@ export const newsRepository = {
       : and(eq(news.is_published, true), sql`${news.id} != ${newsId}`)
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true },
       orderBy: desc(news.published_at),
       limit,
@@ -276,6 +294,9 @@ export const newsRepository = {
     )
     const result = await db.query.news.findMany({
       where: whereConditions,
+      columns: {
+        content: false,
+      },
       with: { categories: true, profiles: true },
       orderBy: desc(news.published_at),
       limit,
@@ -284,10 +305,24 @@ export const newsRepository = {
     return result as unknown as News[]
   },
 
+  async isSlugExists(slug: string, excludeId?: string): Promise<boolean> {
+    const conditions = excludeId 
+      ? and(eq(news.slug, slug), ne(news.id, excludeId))
+      : eq(news.slug, slug)
+    
+    const [result] = await db
+      .select({ id: news.id })
+      .from(news)
+      .where(conditions)
+      .limit(1)
+    
+    return !!result
+  },
+
   async incrementViewCount(id: string): Promise<void> {
     await db
       .update(news)
-      .set({ view_count: sql`${news.view_count} + 1` })
+      .set({ view_count: sql`${news.view_count} + 20` })
       .where(eq(news.id, id))
   },
 }

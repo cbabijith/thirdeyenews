@@ -9,7 +9,7 @@ function getHeaders(): Record<string, string> {
   if (typeof window !== 'undefined') {
     return { 'Content-Type': 'application/json' }
   }
-  const token = process.env.ADMIN_API_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
+  const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
   return {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,
@@ -32,6 +32,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
       ...getHeaders(),
       ...options?.headers,
     },
+    next: {
+      revalidate: 60,
+      ...options?.next,
+    },
   })
 
   if (!res.ok) {
@@ -39,6 +43,12 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   const json = await res.json()
+  if (json.error) {
+    throw new Error(json.error)
+  }
+  if (json.data === undefined || json.data === null) {
+    return [] as unknown as T
+  }
   return json.data as T
 }
 
@@ -99,9 +109,22 @@ export interface Ad {
   display_order: number
 }
 
+const memoryCache = new Map<string, { data: any; ts: number }>()
+const DEFAULT_CACHE_TTL = 300_000 // 5 minutes cache
+
+async function cachedFetch<T>(key: string, fetchFn: () => Promise<T>, ttl = DEFAULT_CACHE_TTL): Promise<T> {
+  const cached = memoryCache.get(key)
+  if (cached && Date.now() - cached.ts < ttl) {
+    return cached.data
+  }
+  const data = await fetchFn()
+  memoryCache.set(key, { data, ts: Date.now() })
+  return data
+}
+
 export const api = {
   async getCategories(): Promise<Category[]> {
-    return apiFetch<Category[]>('/api/categories')
+    return cachedFetch('categories', () => apiFetch<Category[]>('/api/categories'))
   },
 
   async getPinnedNews(categoryId?: string, limit: number = 5): Promise<NewsItem[]> {
@@ -147,6 +170,7 @@ export const api = {
   },
 
   async getAds(position: string = 'main_banner', limit: number = 3): Promise<Ad[]> {
-    return apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`)
+    const key = `ads_${position}_${limit}`
+    return cachedFetch(key, () => apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`))
   },
 }

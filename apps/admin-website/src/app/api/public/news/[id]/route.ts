@@ -16,7 +16,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     if (!news || !news.is_published) {
       return NextResponse.json({ error: 'News not found' }, { status: 404, headers: corsHeaders })
     }
-    return NextResponse.json({ data: news }, { headers: corsHeaders })
+    return NextResponse.json({ data: news }, {
+      headers: {
+        ...corsHeaders,
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch news' },

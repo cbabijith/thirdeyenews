@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
 import { useEffect } from 'react'
 
 interface RichTextEditorProps {
@@ -13,6 +14,10 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Link.configure({
+        openOnClick: false,
+        defaultProtocol: 'https',
+      }),
     ],
     content,
     immediatelyRender: false,
@@ -31,6 +36,23 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
       editor.commands.setContent(content)
     }
   }, [content, editor])
+
+  const setLink = () => {
+    if (!editor) return
+    const previousUrl = editor.getAttributes('link').href
+    const url = window.prompt('Enter URL:', previousUrl)
+
+    if (url === null) {
+      return
+    }
+
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      return
+    }
+
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  }
 
   if (!editor) {
     return null
@@ -66,8 +88,17 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
         >
           • List
         </button>
+        <button
+          type="button"
+          onClick={setLink}
+          className={`px-2.5 py-1 rounded text-sm transition-colors ${editor.isActive('link') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-200'}`}
+          title="Insert/Remove Link"
+        >
+          Link
+        </button>
       </div>
       <EditorContent editor={editor} />
     </div>
   )
 }
+
