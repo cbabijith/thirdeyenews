@@ -6,13 +6,20 @@ import { api, Ad } from '@/lib/api'
 interface AdBannerProps {
   maxAds?: number
   className?: string
+  ads?: Ad[]
 }
 
-export function AdBanner({ maxAds = 3, className = '' }: AdBannerProps) {
-  const [ads, setAds] = useState<Ad[]>([])
-  const [loading, setLoading] = useState(true)
+export function AdBanner({ maxAds = 3, className = '', ads: passedAds }: AdBannerProps) {
+  const [ads, setAds] = useState<Ad[]>(passedAds || [])
+  const [loading, setLoading] = useState(!passedAds)
 
   useEffect(() => {
+    if (passedAds) {
+      setAds(passedAds)
+      setLoading(false)
+      return
+    }
+
     async function fetchAds() {
       try {
         const data = await api.getAds('main_banner', maxAds)
@@ -25,7 +32,7 @@ export function AdBanner({ maxAds = 3, className = '' }: AdBannerProps) {
     }
 
     fetchAds()
-  }, [maxAds])
+  }, [maxAds, passedAds])
 
   if (loading || ads.length === 0) {
     return null

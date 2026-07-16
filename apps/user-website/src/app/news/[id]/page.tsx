@@ -94,22 +94,32 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
 
   // Start fetching all data concurrently to prevent waterfalls
   const newsPromise = fetchNews(id)
-  const relatedNewsPromise = fetchRelatedNews(id)
-  const adjacentNewsPromise = api.getAdjacentNews(id).catch(err => {
-    console.error('Failed to fetch adjacent news:', err)
-    return { prev: null, next: null }
-  })
+  const relatedNewsPromise = fetchRelatedNews(id).catch(() => [])
+  const adjacentNewsPromise = api.getAdjacentNews(id).catch(() => ({ prev: null, next: null }))
+  const categoriesPromise = api.getCategories().catch(() => [])
+  const adsPromise = api.getAds('main_banner', 3).catch(() => [])
 
-  const [news, relatedNews, adjacentNews] = await Promise.all([
+  const [news, relatedNews, adjacentNews, categories, ads] = await Promise.all([
     newsPromise,
     relatedNewsPromise,
-    adjacentNewsPromise
+    adjacentNewsPromise,
+    categoriesPromise,
+    adsPromise
   ])
 
   if (!news) {
     notFound()
   }
 
-  return <NewsDetailClient key={news.id} news={news} relatedNews={relatedNews} adjacentNews={adjacentNews} />
+  return (
+    <NewsDetailClient
+      key={news.id}
+      news={news}
+      relatedNews={relatedNews}
+      adjacentNews={adjacentNews}
+      categories={categories}
+      ads={ads}
+    />
+  )
 }
 

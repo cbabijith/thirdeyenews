@@ -14,7 +14,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     })
     const json = await res.json()
-    return NextResponse.json(json)
+    return NextResponse.json(json, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+      },
+    })
   } catch (err) {
     console.error('Related news proxy error:', err)
     return NextResponse.json({ data: [] })

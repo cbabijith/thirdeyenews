@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { api, NewsItem } from '@/lib/api'
+import { api, NewsItem, Category, Ad } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
@@ -30,6 +29,8 @@ interface NewsDetailClientProps {
     prev: NewsItem | null
     next: NewsItem | null
   }
+  categories?: Category[]
+  ads?: Ad[]
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
@@ -59,18 +60,10 @@ function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl
   return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
 }
 
-export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacentNews }: NewsDetailClientProps) {
+export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacentNews, categories, ads }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
-  const router = useRouter()
   const news = initialNews
-  const pathname = usePathname()
   const viewCountedRef = useRef(false)
-
-  useEffect(() => {
-    if (news.slug && pathname !== `/news/${news.slug}`) {
-      router.replace(`/news/${news.slug}`)
-    }
-  }, [news.slug, pathname, router])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !viewCountedRef.current) {
@@ -155,7 +148,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
 
   return (
     <div className={`min-h-screen ${colors.background}`}>
-      <Header />
+      <Header categories={categories} />
 
       <main className="w-full max-w-[700px] mx-auto px-4 md:px-6 pt-3 md:pt-5 pb-8 flex flex-col gap-3 md:gap-4">
         {/* Back + Category Row */}
@@ -270,7 +263,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
 
         {/* Ad Banners */}
         <div className="w-full pt-2">
-          <AdBanner maxAds={3} />
+          <AdBanner maxAds={3} ads={ads} />
         </div>
 
         {/* Adjacent News Navigation */}
