@@ -489,7 +489,7 @@ export function HomeContent({
                             fill
                             priority
                             sizes="(max-width: 768px) 100vw, 600px"
-                            className="object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                            className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-on-surface-variant/20">
