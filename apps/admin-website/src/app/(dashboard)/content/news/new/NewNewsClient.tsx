@@ -15,7 +15,7 @@ export function NewNewsClient({ categories, subcategories }: NewNewsClientProps)
   const router = useRouter()
 
   const handleDraftCreated = (id: string) => {
-    router.replace(`/content/news/edit/${id}`)
+    window.history.replaceState(null, '', `/content/news/edit/${id}`)
   }
 
   const handleSubmit = async (formData: any) => {

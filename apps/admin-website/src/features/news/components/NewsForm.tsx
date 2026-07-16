@@ -108,17 +108,7 @@ export function NewsForm({
   }, [initialData])
 
   const isFormDirty = () => {
-    return (
-      formData.title.trim() !== '' ||
-      formData.content.trim() !== '' ||
-      formData.category_id !== '' ||
-      formData.subcategory_id !== '' ||
-      formData.image_url !== '' ||
-      formData.youtube_link !== '' ||
-      formData.slug !== '' ||
-      formData.ad_image_url !== '' ||
-      formData.ad_link_url !== ''
-    )
+    return formData.title.trim() !== ''
   }
 
   useEffect(() => {
@@ -143,8 +133,6 @@ export function NewsForm({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               ...formData,
-              title: formData.title || 'Untitled Article',
-              content: formData.content || ' ',
               is_published: false,
             }),
           })
@@ -303,7 +291,7 @@ export function NewsForm({
                   onChange={(e) => updateField('title', e.target.value)}
                   required
                   className="w-full text-3xl font-bold text-gray-900 bg-transparent border-none outline-none placeholder:text-gray-300"
-                  placeholder="Untitled"
+                  placeholder="Enter headline..."
                 />
               </div>
 
