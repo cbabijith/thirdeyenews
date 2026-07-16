@@ -15,13 +15,19 @@ export function useDashboard() {
     totalCategories: 0,
     topViewed: [],
   })
+  const [timeframe, setTimeframe] = useState<'today' | 'yesterday' | 'week' | 'month' | 'all'>('all')
   const [loading, setLoading] = useState(true)
+  const [statsLoading, setStatsLoading] = useState(false)
 
   useEffect(() => {
     async function fetchStats() {
-      setLoading(true)
+      if (stats.totalViews === 0) {
+        setLoading(true)
+      } else {
+        setStatsLoading(true)
+      }
       try {
-        const res = await fetch('/api/dashboard')
+        const res = await fetch(`/api/dashboard?timeframe=${timeframe}`)
         if (!res.ok) {
           console.error('Error fetching dashboard stats:', res.status)
           return
@@ -34,10 +40,11 @@ export function useDashboard() {
         console.error('Error fetching dashboard stats:', error)
       } finally {
         setLoading(false)
+        setStatsLoading(false)
       }
     }
     fetchStats()
-  }, [])
+  }, [timeframe])
 
-  return { stats, loading }
+  return { stats, loading, statsLoading, timeframe, setTimeframe }
 }

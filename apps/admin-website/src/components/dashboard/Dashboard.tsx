@@ -5,7 +5,7 @@ import { DashboardStats } from './DashboardStats'
 import { Eye, Pencil, Plus, Folder, Megaphone } from 'lucide-react'
 
 export function Dashboard() {
-  const { stats, loading } = useDashboard()
+  const { stats, loading, statsLoading, timeframe, setTimeframe } = useDashboard()
 
   if (loading) {
     return (
@@ -56,7 +56,25 @@ export function Dashboard() {
 
       {/* Top Viewed Articles */}
       <div className="mt-6">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Top Viewed Articles</h2>
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h2 className="text-sm font-semibold text-gray-900">Top Viewed Articles</h2>
+          <div className="flex items-center gap-2">
+            {statsLoading && (
+              <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+            )}
+            <select
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value as any)}
+              className="appearance-none bg-white border border-gray-200 hover:border-gray-300 text-xs font-medium text-gray-700 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer focus:border-gray-400 transition-colors"
+            >
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
+          </div>
+        </div>
         <div className="space-y-2">
           {stats.topViewed.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-gray-200">

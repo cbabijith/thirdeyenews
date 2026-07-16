@@ -1,6 +1,6 @@
 import { eq, ne, desc, asc, and, or, ilike, count, sql, lt, gt } from 'drizzle-orm'
 import { db } from '@/db'
-import { news, newsViews } from '@/db/schema'
+import { news, newsViews, categories, profiles } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
 
 export const newsRepository = {
@@ -415,5 +415,59 @@ export const newsRepository = {
         .where(eq(news.id, id)),
       db.insert(newsViews).values({ news_id: id })
     ])
+  },
+
+  async findTopViewedByTimeframe(timeframe: 'today' | 'yesterday' | 'week' | 'month' | 'all', limit: number = 5): Promise<News[]> {
+    if (timeframe === 'all') {
+      return this.findTopViewed(limit)
+    }
+
+    const start = new Date()
+    let end: Date | undefined = undefined
+
+    if (timeframe === 'today') {
+      start.setHours(0, 0, 0, 0)
+    } else if (timeframe === 'yesterday') {
+      start.setDate(start.getDate() - 1)
+      start.setHours(0, 0, 0, 0)
+      end = new Date()
+      end.setHours(0, 0, 0, 0)
+    } else if (timeframe === 'week') {
+      start.setDate(start.getDate() - 7)
+      start.setHours(0, 0, 0, 0)
+    } else if (timeframe === 'month') {
+      start.setDate(start.getDate() - 30)
+      start.setHours(0, 0, 0, 0)
+    }
+
+    const whereCondition = end
+      ? and(eq(news.is_published, true), gt(newsViews.viewed_at, start), lt(newsViews.viewed_at, end))
+      : and(eq(news.is_published, true), gt(newsViews.viewed_at, start))
+
+    const result = await db
+      .select({
+        id: news.id,
+        title: news.title,
+        is_published: news.is_published,
+        created_at: news.created_at,
+        category_id: news.category_id,
+        created_by: news.created_by,
+        view_count: sql<number>`count(${newsViews.id}) * 20`,
+      })
+      .from(news)
+      .innerJoin(newsViews, eq(news.id, newsViews.news_id))
+      .where(whereCondition)
+      .groupBy(news.id)
+      .orderBy(desc(sql`count(${newsViews.id})`))
+      .limit(limit)
+
+    const categoriesList = await db.select().from(categories)
+    const profilesList = await db.select().from(profiles)
+
+    return result.map(n => ({
+      ...n,
+      categories: categoriesList.find(c => c.id === n.category_id),
+      profiles: profilesList.find(p => p.id === n.created_by),
+    })) as unknown as News[]
   },
 }

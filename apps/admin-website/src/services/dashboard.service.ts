@@ -15,7 +15,7 @@ export interface DashboardStats {
 }
 
 export const dashboardService = {
-  async getStats(): Promise<DashboardStats> {
+  async getStats(timeframe: 'today' | 'yesterday' | 'week' | 'month' | 'all' = 'all'): Promise<DashboardStats> {
     try {
       const todayStart = new Date()
       todayStart.setHours(0, 0, 0, 0)
@@ -54,7 +54,7 @@ export const dashboardService = {
         newsRepository.getViewsCountSince(weekStart),
         newsRepository.getViewsCountSince(monthStart),
         categoriesRepository.findAll().then(c => c.length),
-        newsRepository.findTopViewed(5),
+        newsRepository.findTopViewedByTimeframe(timeframe, 5),
       ])
 
       return {
