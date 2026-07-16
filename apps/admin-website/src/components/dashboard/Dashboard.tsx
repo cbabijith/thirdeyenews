@@ -4,8 +4,14 @@ import { useDashboard } from '@/hooks/useDashboard'
 import { DashboardStats } from './DashboardStats'
 import { Eye, Pencil, Plus, Folder, Megaphone } from 'lucide-react'
 
-export function Dashboard() {
-  const { stats, loading, statsLoading, timeframe, setTimeframe } = useDashboard()
+import type { DashboardStats as DashboardStatsType } from '@/services/dashboard.service'
+
+interface DashboardProps {
+  initialStats?: DashboardStatsType
+}
+
+export function Dashboard({ initialStats }: DashboardProps) {
+  const { stats, loading, statsLoading, timeframe, setTimeframe } = useDashboard(initialStats)
 
   if (loading) {
     return (

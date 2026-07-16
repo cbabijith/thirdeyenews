@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { DashboardStats } from '@/services/dashboard.service'
 
-export function useDashboard() {
-  const [stats, setStats] = useState<DashboardStats>({
+export function useDashboard(initialStats?: DashboardStats) {
+  const [stats, setStats] = useState<DashboardStats>(initialStats || {
     publishedCount: 0,
     draftCount: 0,
     totalViews: 0,
@@ -16,10 +16,18 @@ export function useDashboard() {
     topViewed: [],
   })
   const [timeframe, setTimeframe] = useState<'today' | 'yesterday' | 'week' | 'month' | 'all'>('all')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initialStats)
   const [statsLoading, setStatsLoading] = useState(false)
+  const isFirstMount = useRef(true)
 
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      if (initialStats && timeframe === 'all') {
+        return
+      }
+    }
+
     async function fetchStats() {
       if (stats.totalViews === 0) {
         setLoading(true)
@@ -44,7 +52,7 @@ export function useDashboard() {
       }
     }
     fetchStats()
-  }, [timeframe])
+  }, [timeframe, initialStats, stats.totalViews])
 
   return { stats, loading, statsLoading, timeframe, setTimeframe }
 }

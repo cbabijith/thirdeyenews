@@ -26,7 +26,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [profile, loading, pathname, router, hasRole])
 
   const isSuperAdminOnlyRoute = pathname === '/'
-  const shouldBlock = isSuperAdminOnlyRoute && !loading && profile && !hasRole('superadmin')
+  const shouldBlock = isSuperAdminOnlyRoute ? (loading || !profile || !hasRole('superadmin')) : false
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -49,7 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         } ml-0 pb-20 md:pb-0`}
       >
         <div className="p-4 sm:p-6 lg:p-8">
-          {shouldBlock || loading ? (
+          {shouldBlock ? (
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
             </div>

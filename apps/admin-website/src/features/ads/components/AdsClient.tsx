@@ -2,17 +2,23 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAds } from '../hooks/useAds'
 import { Plus, Pencil, Trash2, Power, PowerOff, Image as ImageIcon, ExternalLink, X } from 'lucide-react'
+import { Ad } from '../types'
 
-export function AdsClient() {
+interface AdsClientProps {
+  initialAds?: Ad[]
+}
+
+export function AdsClient({ initialAds = [] }: AdsClientProps) {
   const {
     ads,
     loading,
     setDeleteItemId,
     toggleActive,
     deleteAd,
-  } = useAds()
+  } = useAds(initialAds)
 
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null)
 
@@ -90,27 +96,27 @@ export function AdsClient() {
                 <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center relative">
                   {ad.youtube_link ? (
                     <>
-                      <img
+                      <Image
                         src={`https://img.youtube.com/vi/${ad.youtube_link.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/)?.[2] || ''}/mqdefault.jpg`}
                         alt={ad.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 112px, 144px"
+                        priority={false}
                       />
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
                         <span className="bg-red-600 text-white rounded px-2 py-0.5 text-[9px] font-bold tracking-wider">
                           VIDEO
                         </span>
                       </div>
                     </>
                   ) : ad.image_url ? (
-                    <img
+                    <Image
                       src={ad.image_url}
                       alt={ad.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 112px, 144px"
                     />
                   ) : (
                     <ImageIcon className="w-8 h-8 text-gray-300" />

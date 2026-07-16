@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Ad } from '../types'
 import { storageService } from '@/services/storage.service'
 
-export function useAds() {
-  const [ads, setAds] = useState<Ad[]>([])
-  const [loading, setLoading] = useState(true)
+export function useAds(initialAds: Ad[] = []) {
+  const [ads, setAds] = useState<Ad[]>(initialAds)
+  const [loading, setLoading] = useState(initialAds.length === 0)
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
+  const isFirstMount = useRef(true)
 
-  const fetchAds = useCallback(async () => {
-    setLoading(true)
+  const fetchAds = useCallback(async (skipLoadingState = false) => {
+    if (!skipLoadingState) {
+      setLoading(true)
+    }
     try {
       const res = await fetch('/api/ads')
       if (!res.ok) {
@@ -34,8 +37,14 @@ export function useAds() {
   }, [])
 
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      if (initialAds.length > 0) {
+        return
+      }
+    }
     fetchAds()
-  }, [fetchAds])
+  }, [fetchAds, initialAds.length])
 
   const toggleActive = useCallback(async (ad: Ad) => {
     setAds((prev) =>
