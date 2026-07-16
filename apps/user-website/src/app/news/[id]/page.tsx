@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const title = news.title || 'ThirdEye News'
   const description = news.description || news.content?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Malayalam News Portal'
-  const image = news.image_url || '/logo.png'
+  const image = news.image_url || '/logo.svg'
   const url = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
 
   return {

@@ -14,14 +14,14 @@ export const metadata: Metadata = {
   title: 'ThirdEye News - User Website',
   description: 'ThirdEye News User Portal',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/logo.svg',
+    apple: '/logo.svg',
   },
   openGraph: {
     siteName: 'ThirdEye News',
     locale: 'ml_IN',
     type: 'website',
-    images: ['/logo.png'],
+    images: ['/logo.svg'],
   },
   twitter: {
     card: 'summary_large_image',
