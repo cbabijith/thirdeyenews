@@ -69,7 +69,6 @@ export function Sidebar() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    prefetch={false}
                     onClick={() => handleNavClick(item.href)}
                     className={`flex items-center rounded-lg transition-all duration-200 ${
                       sidebarOpen ? 'px-3 py-2 gap-3' : 'p-2.5 justify-center'
@@ -145,7 +144,6 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              prefetch={false}
               onClick={() => handleNavClick(item.href)}
               className={`flex flex-col items-center justify-center flex-1 h-full py-1.5 text-xs transition-colors ${
                 isActive ? 'text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-900'

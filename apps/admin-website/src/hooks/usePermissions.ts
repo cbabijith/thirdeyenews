@@ -1,15 +1,35 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { create } from 'zustand'
 import { createClient } from '@/lib/client'
 import { Profile, UserRole } from '@/types'
 
+interface AuthState {
+  profile: Profile | null
+  loading: boolean
+  hasFetched: boolean
+  setProfile: (profile: Profile | null) => void
+  setLoading: (loading: boolean) => void
+  setHasFetched: (hasFetched: boolean) => void
+}
+
+const useAuthStore = create<AuthState>((set) => ({
+  profile: null,
+  loading: true,
+  hasFetched: false,
+  setProfile: (profile) => set({ profile }),
+  setLoading: (loading) => set({ loading }),
+  setHasFetched: (hasFetched) => set({ hasFetched }),
+}))
+
 export function usePermissions() {
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { profile, loading, hasFetched, setProfile, setLoading, setHasFetched } = useAuthStore()
   const supabase = createClient()
 
   useEffect(() => {
+    if (hasFetched) return
+
     async function fetchProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
@@ -28,11 +48,12 @@ export function usePermissions() {
         console.error('Error fetching profile:', error)
       } finally {
         setLoading(false)
+        setHasFetched(true)
       }
     }
 
     fetchProfile()
-  }, [supabase])
+  }, [supabase, hasFetched, setProfile, setLoading, setHasFetched])
 
   const hasRole = (roles: UserRole | UserRole[]) => {
     if (!profile) return false

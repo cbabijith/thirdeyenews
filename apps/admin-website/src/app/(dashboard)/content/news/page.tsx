@@ -2,7 +2,7 @@ import { newsService } from '@/features/news/services/news.service'
 import { NewsClient } from '@/features/news'
 import { categoriesService, subcategoriesService, Category, Subcategory } from '@/features/category'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function NewsPage() {
   const [{ data: newsData, count }, categoriesResult, subcategoriesResult] = await Promise.all([
