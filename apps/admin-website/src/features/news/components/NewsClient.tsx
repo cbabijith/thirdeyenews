@@ -168,6 +168,7 @@ export function NewsClient({
               onChange={(e) => setSortBy(e.target.value as any)}
               className="appearance-none w-full h-10 pl-8 pr-9 text-sm text-gray-900 bg-white border border-gray-200 rounded-lg outline-none focus:border-gray-400 cursor-pointer transition-colors"
             >
+              <option value="updated-desc">Recently Updated</option>
               <option value="date-desc">Newest</option>
               <option value="date-asc">Oldest</option>
               <option value="views-desc">Most Viewed</option>

@@ -29,7 +29,7 @@ export interface News {
 export interface NewsSearchParams {
   searchQuery?: string
   categoryId?: string
-  sortBy?: 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc'
+  sortBy?: 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc' | 'updated-desc'
   limit: number
   offset: number
 }

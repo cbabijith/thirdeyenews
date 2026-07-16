@@ -5,7 +5,7 @@ import { News } from '../types'
 import type { Category } from '@/features/category/types'
 import { deleteImageAction } from '@/app/actions/upload'
 
-export type SortOption = 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc'
+export type SortOption = 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc' | 'updated-desc'
 
 interface UseNewsProps {
   initialNews: News[]
@@ -25,7 +25,7 @@ export function useNews({ initialNews, initialCategories, initialCount }: UseNew
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('')
-  const [sortBy, setSortBy] = useState<SortOption>('date-desc')
+  const [sortBy, setSortBy] = useState<SortOption>('updated-desc')
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   useEffect(() => {

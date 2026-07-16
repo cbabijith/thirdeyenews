@@ -8,11 +8,11 @@ export const newsRepository = {
     const result = includeCategory
       ? await db.query.news.findMany({
           with: { categories: true, profiles: true },
-          orderBy: desc(news.created_at),
+          orderBy: desc(news.updated_at),
         })
       : await db.query.news.findMany({
           with: { profiles: true },
-          orderBy: desc(news.created_at),
+          orderBy: desc(news.updated_at),
         })
     return result as unknown as News[]
   },
@@ -70,7 +70,7 @@ export const newsRepository = {
         content: false,
       },
       with: { categories: true, profiles: true },
-      orderBy: [desc(news.created_at)],
+      orderBy: [desc(news.updated_at)],
       limit,
       offset,
     })
@@ -115,8 +115,11 @@ export const newsRepository = {
       case 'views-desc':
         orderByClause = [desc(news.view_count)]
         break
+      case 'updated-desc':
+        orderByClause = [desc(news.updated_at)]
+        break
       default:
-        orderByClause = [desc(news.created_at)]
+        orderByClause = [desc(news.updated_at)]
     }
 
     const [dataResult, countResult] = await Promise.all([
@@ -176,6 +179,7 @@ export const newsRepository = {
     if (updates.slug !== undefined) updateData.slug = updates.slug || null
     if (updates.ad_image_url !== undefined) updateData.ad_image_url = updates.ad_image_url || null
     if (updates.ad_link_url !== undefined) updateData.ad_link_url = updates.ad_link_url || null
+    updateData.updated_at = new Date()
 
     const [result] = await db.update(news).set(updateData).where(eq(news.id, id)).returning()
     return result as unknown as News | null
@@ -191,6 +195,7 @@ export const newsRepository = {
       .set({
         is_published: isPublished,
         published_at: isPublished ? new Date() : null,
+        updated_at: new Date(),
       })
       .where(eq(news.id, id))
       .returning()

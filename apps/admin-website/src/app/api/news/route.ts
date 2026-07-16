@@ -7,12 +7,12 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get('search') || undefined
   const categoryId = searchParams.get('categoryId') || undefined
   const published = searchParams.get('published')
-  const sortBy = (searchParams.get('sortBy') as 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc') || 'date-desc'
+  const sortBy = (searchParams.get('sortBy') as 'date-desc' | 'date-asc' | 'category' | 'title-asc' | 'title-desc' | 'views-desc' | 'updated-desc') || 'updated-desc'
   const limit = parseInt(searchParams.get('limit') || '10')
   const offset = parseInt(searchParams.get('offset') || '0')
 
   // If simple list without search params
-  if (!search && !categoryId && published === null && sortBy === 'date-desc' && limit === 10 && offset === 0) {
+  if (!search && !categoryId && published === null && sortBy === 'updated-desc' && limit === 10 && offset === 0) {
     const result = await newsService.getNewsForListPage(limit, offset)
     return NextResponse.json({ data: result.data, count: result.count })
   }
