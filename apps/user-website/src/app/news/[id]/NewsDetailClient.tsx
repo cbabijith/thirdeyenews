@@ -59,11 +59,10 @@ function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl
   return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
 }
 
-export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated, adjacentNews }: NewsDetailClientProps) {
+export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacentNews }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
   const news = initialNews
-  const [relatedNews] = useState<RelatedNews[]>(initialRelated || [])
   const pathname = usePathname()
   const viewCountedRef = useRef(false)
 
@@ -198,12 +197,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
         {/* Featured Image */}
         {news.image_url && (
-          <div className="w-full rounded-xl overflow-hidden bg-surface-container mt-1">
-            <img
+          <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-surface-container mt-1">
+            <Image
               src={news.image_url}
               alt={news.title}
-              className="w-full h-auto block"
-              loading="eager"
+              fill
+              priority
+              sizes="(max-w-[700px]) 100vw, 700px"
+              className="object-cover"
             />
           </div>
         )}

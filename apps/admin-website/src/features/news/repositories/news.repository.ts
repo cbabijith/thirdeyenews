@@ -319,12 +319,7 @@ export const newsRepository = {
     return !!result
   },
 
-  async findAdjacentPublished(newsId: string): Promise<{ prev: News | null; next: News | null }> {
-    const current = await this.findById(newsId, false)
-    if (!current) {
-      return { prev: null, next: null }
-    }
-
+  async findAdjacentPublished(current: News): Promise<{ prev: News | null; next: News | null }> {
     const currentPublishedAt = current.published_at ? new Date(current.published_at) : null
     const currentCreatedAt = current.created_at ? new Date(current.created_at) : new Date()
 

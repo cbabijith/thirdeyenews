@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { cache } from 'react'
 import { api, NewsItem } from '@/lib/api'
 import { NewsDetailClient } from './NewsDetailClient'
 
@@ -19,7 +20,7 @@ interface RelatedNews {
 const newsCache = new Map<string, { data: NewsItem | null; ts: number }>()
 const CACHE_TTL = 60_000
 
-async function fetchNews(id: string): Promise<NewsItem | null> {
+const fetchNews = cache(async (id: string): Promise<NewsItem | null> => {
   const cached = newsCache.get(id)
   if (cached && Date.now() - cached.ts < CACHE_TTL) {
     return cached.data
@@ -31,9 +32,9 @@ async function fetchNews(id: string): Promise<NewsItem | null> {
   }
   newsCache.set(id, { data, ts: Date.now() })
   return data
-}
+})
 
-async function fetchRelatedNews(newsId: string, categoryId?: string | null): Promise<RelatedNews[]> {
+async function fetchRelatedNews(newsId: string): Promise<RelatedNews[]> {
   try {
     const data = await api.getRelatedNews(newsId, 4)
     return Array.isArray(data) ? (data as unknown as RelatedNews[]) : []
@@ -90,20 +91,25 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const news = await fetchNews(id)
+
+  // Start fetching all data concurrently to prevent waterfalls
+  const newsPromise = fetchNews(id)
+  const relatedNewsPromise = fetchRelatedNews(id)
+  const adjacentNewsPromise = api.getAdjacentNews(id).catch(err => {
+    console.error('Failed to fetch adjacent news:', err)
+    return { prev: null, next: null }
+  })
+
+  const [news, relatedNews, adjacentNews] = await Promise.all([
+    newsPromise,
+    relatedNewsPromise,
+    adjacentNewsPromise
+  ])
 
   if (!news) {
     notFound()
   }
 
-  const [_, relatedNews, adjacentNews] = await Promise.all([
-    Promise.resolve(news),
-    fetchRelatedNews(id, news?.category_id),
-    api.getAdjacentNews(id).catch(err => {
-      console.error('Failed to fetch adjacent news:', err)
-      return { prev: null, next: null }
-    })
-  ])
-
-  return <NewsDetailClient news={news} relatedNews={relatedNews} adjacentNews={adjacentNews} />
+  return <NewsDetailClient key={news.id} news={news} relatedNews={relatedNews} adjacentNews={adjacentNews} />
 }
+

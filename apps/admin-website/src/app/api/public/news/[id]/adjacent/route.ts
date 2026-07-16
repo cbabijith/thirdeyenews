@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: 'News not found' }, { status: 404, headers: corsHeaders })
     }
 
-    const adjacent = await newsRepository.findAdjacentPublished(newsItem.id)
+    const adjacent = await newsRepository.findAdjacentPublished(newsItem)
     return NextResponse.json({ data: adjacent }, {
       headers: {
         ...corsHeaders,
