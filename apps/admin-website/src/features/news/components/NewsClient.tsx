@@ -47,7 +47,7 @@ function buildWhatsAppShareUrl(item: News): string {
   const linkIdentifier = item.slug || item.id
   const link = `https://thirdeyenewslive.com/news/${linkIdentifier}`
 
-  const text = `${boldTitle}\n\n${link}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9`
+  const text = `${boldTitle}\n\n${link}\n\n🔴 വാർത്തകൾ ഡെയ്ലി ഹണ്ടിൽ വായിക്കുവാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://profile.dailyhunt.in/thirdeyenewslive\n\n📢 വാർത്തകൾ വാട്സ് ആപ്പിൽ അതിവേഗമറിയാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക\nhttps://chat.whatsapp.com/K87BAlQ3O3g6AW6SOuETY3?s=cl&p=a&ilr=4`
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 

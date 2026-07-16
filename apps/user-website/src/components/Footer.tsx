@@ -19,7 +19,7 @@ export function Footer() {
             {/* Social Icons */}
             <div className="flex items-center gap-2.5 mt-2">
               <a 
-                href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" 
+                href="https://chat.whatsapp.com/K87BAlQ3O3g6AW6SOuETY3?s=cl&p=a&ilr=4" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-8 h-8 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 flex items-center justify-center text-[#25D366] hover:bg-[#25D366] hover:text-white transition-all duration-300"
@@ -60,7 +60,7 @@ export function Footer() {
                   </div>
                 </div>
                 <a 
-                  href="https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9" 
+                  href="https://chat.whatsapp.com/K87BAlQ3O3g6AW6SOuETY3?s=cl&p=a&ilr=4" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-[12px] font-bold shadow-md shadow-[#25D366]/10 flex items-center gap-1.5 transition-all duration-300 justify-center w-full"

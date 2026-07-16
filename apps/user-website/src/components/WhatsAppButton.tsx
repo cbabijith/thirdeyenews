@@ -1,7 +1,7 @@
 'use client'
 
 export function WhatsAppButton() {
-  const whatsappUrl = 'https://chat.whatsapp.com/EDpxcoLm36sGvoGLYlv4b9'
+  const whatsappUrl = 'https://chat.whatsapp.com/K87BAlQ3O3g6AW6SOuETY3?s=cl&p=a&ilr=4'
 
   return (
     <a
