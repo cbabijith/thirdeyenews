@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand Column (Col Span 5) */}
           <div className="md:col-span-5 flex flex-col gap-4 mb-4 md:mb-0">
             <Link href="/" prefetch={false} className="inline-block hover:opacity-90 transition-opacity">
-              <img src="/thirdeye.svg" alt="ThirdEye News" className="h-9 w-auto" />
+              <img src="/thirdeye.svg" alt="ThirdEye News" className="h-[54px] w-auto" />
             </Link>
             <p className="text-on-surface-variant/80 text-[13px] leading-relaxed max-w-sm">
               പക്ഷം ചേരാതെ, മുഖം നോക്കാതെ, സമഗ്രമായ വാർത്തകൾ. നേരിനു നേരേ തുറന്നുവെച്ച വാർത്തയുടെ മൂന്നാം കണ്ണ്.!!
