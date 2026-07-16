@@ -7,7 +7,7 @@ export interface DashboardStats {
   draftCount: number
   totalViews: number
   totalCategories: number
-  topViewed: Pick<News, 'id' | 'title' | 'view_count' | 'is_published' | 'created_at' | 'categories' | 'profiles'>[]
+  topViewed: Pick<News, 'id' | 'title' | 'image_url' | 'view_count' | 'is_published' | 'created_at' | 'categories' | 'profiles'>[]
 }
 
 export const dashboardService = {
@@ -29,6 +29,7 @@ export const dashboardService = {
         topViewed: topViewed.map(n => ({
           id: n.id,
           title: n.title,
+          image_url: n.image_url,
           view_count: n.view_count,
           is_published: n.is_published,
           created_at: n.created_at,

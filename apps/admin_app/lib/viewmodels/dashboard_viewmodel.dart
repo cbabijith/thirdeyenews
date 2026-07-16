@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart';
 import '../config/supabase_config.dart';
 import '../models/news.dart';
 
@@ -53,6 +55,7 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
     fetchStats();
   }
 
+
   Future<void> fetchStats() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
@@ -68,6 +71,26 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
       final topViewedJson = data['topViewed'] as List<dynamic>? ?? [];
       final topViewedList = topViewedJson.map((json) => News.fromJson(json as Map<String, dynamic>)).toList();
 
+      final List<News> resolvedList = [];
+      for (final newsItem in topViewedList) {
+        if (newsItem.imageUrl == null || newsItem.imageUrl!.trim().isEmpty) {
+          try {
+            final res = await Supabase.instance.client
+                .from('news')
+                .select('image_url')
+                .eq('id', newsItem.id);
+            if (res.isNotEmpty) {
+              final url = res.first['image_url'] as String?;
+              resolvedList.add(newsItem.copyWith(imageUrl: url));
+              continue;
+            }
+          } catch (e) {
+            debugPrint('Failed to fetch image_url fallback from Supabase for news ${newsItem.id}: $e');
+          }
+        }
+        resolvedList.add(newsItem);
+      }
+
       int parseInt(dynamic val) {
         if (val == null) return 0;
         if (val is num) return val.toInt();
@@ -81,7 +104,7 @@ class DashboardViewModel extends StateNotifier<DashboardState> {
         draftCount: parseInt(data['draftCount']),
         totalViews: parseInt(data['totalViews']),
         totalCategories: parseInt(data['totalCategories']),
-        topViewed: topViewedList,
+        topViewed: resolvedList,
       );
     } catch (e) {
       state = state.copyWith(

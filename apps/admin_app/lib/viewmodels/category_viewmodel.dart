@@ -159,14 +159,9 @@ class CategoryViewModel extends StateNotifier<CategoryState> {
 
   // Reorder Categories
   Future<void> reorderCategories(int oldIndex, int newIndex) async {
-    var index = newIndex;
-    if (oldIndex < index) {
-      index -= 1;
-    }
-    
     final updatedList = List<Category>.from(state.categories);
     final moved = updatedList.removeAt(oldIndex);
-    updatedList.insert(index, moved);
+    updatedList.insert(newIndex, moved);
 
     // Optimistically update state
     state = state.copyWith(categories: updatedList);

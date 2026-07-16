@@ -224,7 +224,7 @@ class DashboardOverviewView extends ConsumerWidget {
                         border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: isDark ? Colors.black.withOpacity(0.1) : const Color(0xFF0F172A).withOpacity(0.01),
+                            color: isDark ? Colors.black.withValues(alpha: 0.1) : const Color(0xFF0F172A).withValues(alpha: 0.01),
                             blurRadius: 4,
                             offset: const Offset(0, 1),
                           ),
@@ -404,7 +404,7 @@ class DashboardOverviewView extends ConsumerWidget {
         border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.1) : const Color(0xFF0F172A).withOpacity(0.02),
+            color: isDark ? Colors.black.withValues(alpha: 0.1) : const Color(0xFF0F172A).withValues(alpha: 0.02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -422,7 +422,7 @@ class DashboardOverviewView extends ConsumerWidget {
                 height: 36,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.08),
+                  color: iconColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, size: 18, color: iconColor),
@@ -430,7 +430,7 @@ class DashboardOverviewView extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: trendColor.withOpacity(0.08),
+                  color: trendColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -496,7 +496,7 @@ class DashboardOverviewView extends ConsumerWidget {
           boxShadow: isPrimary
               ? [
                   BoxShadow(
-                    color: isDark ? Colors.black.withOpacity(0.2) : const Color(0xFF0F172A).withOpacity(0.1),
+                    color: isDark ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF0F172A).withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -532,13 +532,13 @@ class DashboardOverviewView extends ConsumerWidget {
     Color textColor;
 
     if (index == 0) {
-      bgColor = isDark ? const Color(0xFF78350F).withOpacity(0.3) : const Color(0xFFFEF3C7); // Amber 100
+      bgColor = isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7); // Amber 100
       textColor = const Color(0xFFF59E0B); // Amber 600
     } else if (index == 1) {
-      bgColor = isDark ? const Color(0xFF334155).withOpacity(0.4) : const Color(0xFFF1F5F9); // Slate 100
+      bgColor = isDark ? const Color(0xFF334155).withValues(alpha: 0.4) : const Color(0xFFF1F5F9); // Slate 100
       textColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569); // Slate 600
     } else if (index == 2) {
-      bgColor = isDark ? const Color(0xFF7C2D12).withOpacity(0.3) : const Color(0xFFFFEDD5); // Orange 100
+      bgColor = isDark ? const Color(0xFF7C2D12).withValues(alpha: 0.3) : const Color(0xFFFFEDD5); // Orange 100
       textColor = const Color(0xFFF97316); // Orange 600
     } else {
       bgColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC); // Slate 50
@@ -553,7 +553,7 @@ class DashboardOverviewView extends ConsumerWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: index < 3 ? textColor.withOpacity(0.2) : Colors.transparent,
+          color: index < 3 ? textColor.withValues(alpha: 0.2) : Colors.transparent,
           width: 1,
         ),
       ),

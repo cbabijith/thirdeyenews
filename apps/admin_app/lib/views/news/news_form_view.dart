@@ -517,7 +517,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           icon: Icons.folder_outlined,
           children: [
             DropdownButtonFormField<String>(
-              value: _selectedCategoryId,
+              initialValue: _selectedCategoryId,
               decoration: const InputDecoration(labelText: 'Category'),
               items: categoryState.categories.map((cat) {
                 return DropdownMenuItem(value: cat.id, child: Text(cat.name, style: const TextStyle(fontSize: 13)));
@@ -532,7 +532,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
             if (_selectedCategoryId != null && filteredSubs.isNotEmpty) ...[
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _selectedSubcategoryId,
+                initialValue: _selectedSubcategoryId,
                 decoration: const InputDecoration(labelText: 'Subcategory'),
                 items: filteredSubs.map((sub) {
                   return DropdownMenuItem(value: sub.id, child: Text(sub.name, style: const TextStyle(fontSize: 13)));

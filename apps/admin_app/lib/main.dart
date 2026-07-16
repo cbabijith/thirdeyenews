@@ -19,11 +19,11 @@ void main() async {
   );
 
   // Print configuration to debug console
-  print('=============================================');
-  print('🚀 INITIALIZING APP');
-  print('🔗 Supabase URL: ${SupabaseConfig.url}');
-  print('🔗 Admin API URL: ${SupabaseConfig.adminApiBaseUrl}');
-  print('=============================================');
+  debugPrint('=============================================');
+  debugPrint('🚀 INITIALIZING APP');
+  debugPrint('🔗 Supabase URL: ${SupabaseConfig.url}');
+  debugPrint('🔗 Admin API URL: ${SupabaseConfig.adminApiBaseUrl}');
+  debugPrint('=============================================');
 
   runApp(const ProviderScope(child: MyApp()));
 }

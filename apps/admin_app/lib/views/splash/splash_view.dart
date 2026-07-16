@@ -72,7 +72,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                   center: Alignment.center,
                   radius: 1.2,
                   colors: [
-                    AppTheme.primaryColor.withOpacity(isDark ? 0.08 : 0.05),
+                    AppTheme.primaryColor.withValues(alpha: isDark ? 0.08 : 0.05),
                     Colors.transparent,
                   ],
                 ),
@@ -106,7 +106,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.12),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.12),
                           blurRadius: 24,
                           offset: const Offset(0, 8),
                         ),
@@ -147,7 +147,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 4,
-                          color: AppTheme.primaryColor.withOpacity(0.8),
+                          color: AppTheme.primaryColor.withValues(alpha: 0.8),
                         ),
                       ),
                     ],

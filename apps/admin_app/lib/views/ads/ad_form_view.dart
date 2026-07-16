@@ -19,6 +19,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _linkController = TextEditingController();
+  final _youtubeLinkController = TextEditingController();
   final _orderController = TextEditingController(text: '0');
 
   String _selectedPosition = 'main_banner';
@@ -35,6 +36,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
       final ad = widget.initialAd!;
       _titleController.text = ad.title;
       _linkController.text = ad.linkUrl ?? '';
+      _youtubeLinkController.text = ad.youtubeLink ?? '';
       _orderController.text = ad.displayOrder.toString();
       _selectedPosition = ad.position;
       _isActive = ad.isActive;
@@ -46,6 +48,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
   void dispose() {
     _titleController.dispose();
     _linkController.dispose();
+    _youtubeLinkController.dispose();
     _orderController.dispose();
     super.dispose();
   }
@@ -83,6 +86,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
       id: widget.initialAd?.id ?? '',
       title: _titleController.text.trim(),
       linkUrl: _linkController.text.trim().isEmpty ? null : _linkController.text.trim(),
+      youtubeLink: _youtubeLinkController.text.trim().isEmpty ? null : _youtubeLinkController.text.trim(),
       imageUrl: _remoteImageUrl ?? '',
       position: _selectedPosition,
       displayOrder: int.tryParse(_orderController.text) ?? 0,
@@ -127,7 +131,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedPosition,
+              initialValue: _selectedPosition,
               decoration: const InputDecoration(labelText: 'Banner Position'),
               items: const [
                 DropdownMenuItem(value: 'main_banner', child: Text('Main Banner (Home & News)')),
@@ -143,6 +147,15 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
               decoration: const InputDecoration(
                 labelText: 'Click Redirect URL (Optional)',
                 prefixIcon: Icon(Icons.link, size: 18),
+              ),
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _youtubeLinkController,
+              decoration: const InputDecoration(
+                labelText: 'YouTube Video Link (Optional)',
+                prefixIcon: Icon(Icons.video_library_outlined, size: 18),
               ),
               keyboardType: TextInputType.url,
             ),
@@ -164,7 +177,7 @@ class _AdFormViewState extends ConsumerState<AdFormView> {
               value: _isActive,
               dense: true,
               contentPadding: EdgeInsets.zero,
-              activeColor: AppTheme.accentColor,
+              activeThumbColor: AppTheme.accentColor,
               onChanged: (val) => setState(() => _isActive = val),
             ),
             const Divider(color: Color(0xFFF1F5F9)),

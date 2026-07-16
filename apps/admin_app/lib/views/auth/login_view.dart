@@ -157,8 +157,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: isDark ? AppTheme.dangerColor.withOpacity(0.12) : Colors.red[50],
-                        border: Border.all(color: isDark ? AppTheme.dangerColor.withOpacity(0.3) : Colors.red[200]!),
+                        color: isDark ? AppTheme.dangerColor.withValues(alpha: 0.12) : Colors.red[50],
+                        border: Border.all(color: isDark ? AppTheme.dangerColor.withValues(alpha: 0.3) : Colors.red[200]!),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(

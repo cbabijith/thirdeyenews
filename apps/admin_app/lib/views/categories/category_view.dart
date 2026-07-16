@@ -156,7 +156,7 @@ class CategoryView extends ConsumerWidget {
                   : ReorderableListView.builder(
                       padding: EdgeInsets.zero,
                       itemCount: categoryState.categories.length,
-                      onReorder: notifier.reorderCategories,
+                      onReorderItem: notifier.reorderCategories,
                       itemBuilder: (context, index) {
                         final category = categoryState.categories[index];
 

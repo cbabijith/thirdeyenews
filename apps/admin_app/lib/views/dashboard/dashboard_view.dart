@@ -380,7 +380,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hoverColor: isDark ? AppTheme.crimsonColor.withOpacity(0.1) : Colors.red[50],
+                    hoverColor: isDark ? AppTheme.crimsonColor.withValues(alpha: 0.1) : Colors.red[50],
                     onTap: _showLogoutDialog,
                   )
                 else ...[
@@ -421,7 +421,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             : const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isActive
-              ? (isDark ? AppTheme.primaryColor.withOpacity(0.15) : const Color(0xFF0F172A))
+              ? (isDark ? AppTheme.primaryColor.withValues(alpha: 0.15) : const Color(0xFF0F172A))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -479,7 +479,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           border: Border.all(color: borderCol, width: 1),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black.withOpacity(0.3) : const Color(0xFF0F172A).withOpacity(0.08),
+              color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0xFF0F172A).withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -508,7 +508,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppTheme.primaryColor.withOpacity(0.08)
+                                ? AppTheme.primaryColor.withValues(alpha: 0.08)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                           ),

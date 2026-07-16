@@ -6,10 +6,25 @@ import '../../viewmodels/ad_viewmodel.dart';
 import '../../config/theme.dart';
 import 'ad_form_view.dart';
 import '../components/shimmer_container.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+
 
 class AdListView extends ConsumerWidget {
   const AdListView({super.key});
+
+  String? _getYoutubeThumbnail(String? url) {
+    if (url == null || url.isEmpty) return null;
+    final regExp = RegExp(
+      r'^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+      caseSensitive: false,
+      multiLine: false,
+    );
+    final match = regExp.firstMatch(url);
+    if (match != null && match.groupCount >= 2 && match.group(2)!.length == 11) {
+      final videoId = match.group(2)!;
+      return 'https://img.youtube.com/vi/$videoId/0.jpg';
+    }
+    return null;
+  }
 
   void _confirmDelete(BuildContext context, String title, VoidCallback onDelete) {
     showDialog(
@@ -35,8 +50,7 @@ class AdListView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final adState = ref.watch(adViewModelProvider);
     final notifier = ref.read(adViewModelProvider.notifier);
-    final userProfile = ref.watch(authViewModelProvider).profile;
-    final isSuperAdmin = userProfile?.isSuperAdmin ?? false;
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? AppTheme.darkTextPrimary : AppTheme.lightTextPrimary;
     final textSecondary = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
@@ -146,6 +160,9 @@ class AdListView extends ConsumerWidget {
                       itemCount: adState.ads.length,
                       itemBuilder: (context, index) {
                         final ad = adState.ads[index];
+                        final resolvedImageUrl = ad.imageUrl.isNotEmpty
+                            ? ad.imageUrl
+                            : _getYoutubeThumbnail(ad.youtubeLink) ?? '';
                         return Card(
                           margin: const EdgeInsets.only(bottom: 16),
                           elevation: 0.5,
@@ -168,7 +185,7 @@ class AdListView extends ConsumerWidget {
                                         width: 100,
                                         height: 100,
                                         child: CachedNetworkImage(
-                                          imageUrl: ad.imageUrl,
+                                          imageUrl: resolvedImageUrl,
                                           fit: BoxFit.cover,
                                           placeholder: (context, url) => Container(
                                             color: Colors.grey[200],
@@ -309,6 +326,49 @@ class AdListView extends ConsumerWidget {
                                               ),
                                             ),
                                           ],
+                                          if (ad.youtubeLink != null &&
+                                              ad.youtubeLink!.isNotEmpty) ...[
+                                            const SizedBox(height: 6),
+                                            InkWell(
+                                              onTap: () async {
+                                                final uri = Uri.parse(
+                                                  ad.youtubeLink!,
+                                                );
+                                                if (await canLaunchUrl(uri)) {
+                                                  await launchUrl(
+                                                    uri,
+                                                    mode: LaunchMode
+                                                        .externalApplication,
+                                                  );
+                                                }
+                                              },
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.video_library_outlined,
+                                                    size: 12,
+                                                    color: Colors.red,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Flexible(
+                                                    child: Text(
+                                                      ad.youtubeLink!,
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.red,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ],
                                       ),
                                     ),
@@ -369,29 +429,27 @@ class AdListView extends ConsumerWidget {
                                         );
                                       },
                                     ),
-                                    if (isSuperAdmin) ...[
-                                      const SizedBox(width: 8),
-                                      TextButton.icon(
-                                        icon: const Icon(
-                                          Icons.delete_outline_rounded,
-                                          size: 16,
+                                    const SizedBox(width: 8),
+                                    TextButton.icon(
+                                      icon: const Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 16,
+                                        color: AppTheme.dangerColor,
+                                      ),
+                                      label: const Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          fontSize: 12,
                                           color: AppTheme.dangerColor,
-                                        ),
-                                        label: const Text(
-                                          'Delete',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: AppTheme.dangerColor,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        onPressed: () => _confirmDelete(
-                                          context,
-                                          ad.title,
-                                          () => notifier.deleteAd(ad.id),
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                    ],
+                                      onPressed: () => _confirmDelete(
+                                        context,
+                                        ad.title,
+                                        () => notifier.deleteAd(ad.id),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
