@@ -29,7 +29,7 @@ export default function NewsDetailLoading() {
         </div>
 
         {/* Featured Image */}
-        <ShimmerBox className="w-full aspect-[16/10] rounded-xl mt-1" />
+        <ShimmerBox className="w-full h-64 rounded-xl mt-1" />
 
         {/* Article Content */}
         <div className="flex flex-col gap-3 mt-4">
