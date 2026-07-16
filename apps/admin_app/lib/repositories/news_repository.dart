@@ -75,6 +75,9 @@ class NewsRepository {
         'subcategory_id': newsItem.subcategoryId,
         'is_published': newsItem.isPublished,
         'is_pinned': newsItem.isPinned,
+        'slug': newsItem.slug,
+        'ad_image_url': newsItem.adImageUrl,
+        'ad_link_url': newsItem.adLinkUrl,
         if (newsItem.publishedAt != null) 'published_at': newsItem.publishedAt!.toIso8601String(),
       },
     );
@@ -101,6 +104,10 @@ class NewsRepository {
         'subcategory_id': newsItem.subcategoryId,
         'is_published': newsItem.isPublished,
         'is_pinned': newsItem.isPinned,
+        'slug': newsItem.slug,
+        'ad_image_url': newsItem.adImageUrl,
+        'ad_link_url': newsItem.adLinkUrl,
+        if (newsItem.publishedAt != null) 'published_at': newsItem.publishedAt!.toIso8601String(),
       },
     );
 

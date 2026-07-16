@@ -42,6 +42,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
   bool _isLoadingDetails = false;
   String _initialHtml = '';
   double _editorHeight = 300;
+  bool _isEditorReady = false;
 
   @override
   void initState() {
@@ -88,8 +89,10 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           _remoteImageUrl = fullArticle.imageUrl;
           _remoteAdImageUrl = fullArticle.adImageUrl;
         });
-        // Populate rich text editor with new fetched content
-        _quillController.setText(_initialHtml);
+        // Populate rich text editor with new fetched content if editor is ready
+        if (_isEditorReady) {
+          _quillController.setText(_initialHtml);
+        }
       }
     } catch (_) {
       // Fallback to minimal data if server is down or error occurs
@@ -447,6 +450,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
                       fontSize: 14,
                     ),
                     onEditorCreated: () {
+                      setState(() => _isEditorReady = true);
                       if (_initialHtml.isNotEmpty) {
                         _quillController.setText(_initialHtml);
                       }
@@ -517,7 +521,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
           icon: Icons.folder_outlined,
           children: [
             DropdownButtonFormField<String>(
-              initialValue: _selectedCategoryId,
+              initialValue: categoryState.categories.any((cat) => cat.id == _selectedCategoryId) ? _selectedCategoryId : null,
               decoration: const InputDecoration(labelText: 'Category'),
               items: categoryState.categories.map((cat) {
                 return DropdownMenuItem(value: cat.id, child: Text(cat.name, style: const TextStyle(fontSize: 13)));
@@ -532,7 +536,7 @@ class _NewsFormViewState extends ConsumerState<NewsFormView> {
             if (_selectedCategoryId != null && filteredSubs.isNotEmpty) ...[
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                initialValue: _selectedSubcategoryId,
+                initialValue: filteredSubs.any((sub) => sub.id == _selectedSubcategoryId) ? _selectedSubcategoryId : null,
                 decoration: const InputDecoration(labelText: 'Subcategory'),
                 items: filteredSubs.map((sub) {
                   return DropdownMenuItem(value: sub.id, child: Text(sub.name, style: const TextStyle(fontSize: 13)));
