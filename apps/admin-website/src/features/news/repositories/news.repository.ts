@@ -328,6 +328,7 @@ export const newsRepository = {
 
     if (currentPublishedAt) {
       prevCondition = and(
+        ne(news.id, current.id),
         eq(news.is_published, true),
         or(
           lt(news.published_at, currentPublishedAt),
@@ -339,6 +340,7 @@ export const newsRepository = {
       )
 
       nextCondition = and(
+        ne(news.id, current.id),
         eq(news.is_published, true),
         or(
           gt(news.published_at, currentPublishedAt),
@@ -350,11 +352,13 @@ export const newsRepository = {
       )
     } else {
       prevCondition = and(
+        ne(news.id, current.id),
         eq(news.is_published, true),
         lt(news.created_at, currentCreatedAt)
       )
 
       nextCondition = and(
+        ne(news.id, current.id),
         eq(news.is_published, true),
         gt(news.created_at, currentCreatedAt)
       )
