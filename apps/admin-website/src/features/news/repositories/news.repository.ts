@@ -1,4 +1,4 @@
-import { eq, ne, desc, asc, and, or, ilike, count, sql } from 'drizzle-orm'
+import { eq, ne, desc, asc, and, or, ilike, count, sql, lt, gt } from 'drizzle-orm'
 import { db } from '@/db'
 import { news } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
@@ -335,10 +335,10 @@ export const newsRepository = {
       prevCondition = and(
         eq(news.is_published, true),
         or(
-          sql`${news.published_at} < ${currentPublishedAt}`,
+          lt(news.published_at, currentPublishedAt),
           and(
-            sql`${news.published_at} = ${currentPublishedAt}`,
-            sql`${news.created_at} < ${currentCreatedAt}`
+            eq(news.published_at, currentPublishedAt),
+            lt(news.created_at, currentCreatedAt)
           )
         )
       )
@@ -346,22 +346,22 @@ export const newsRepository = {
       nextCondition = and(
         eq(news.is_published, true),
         or(
-          sql`${news.published_at} > ${currentPublishedAt}`,
+          gt(news.published_at, currentPublishedAt),
           and(
-            sql`${news.published_at} = ${currentPublishedAt}`,
-            sql`${news.created_at} > ${currentCreatedAt}`
+            eq(news.published_at, currentPublishedAt),
+            gt(news.created_at, currentCreatedAt)
           )
         )
       )
     } else {
       prevCondition = and(
         eq(news.is_published, true),
-        sql`${news.created_at} < ${currentCreatedAt}`
+        lt(news.created_at, currentCreatedAt)
       )
 
       nextCondition = and(
         eq(news.is_published, true),
-        sql`${news.created_at} > ${currentCreatedAt}`
+        gt(news.created_at, currentCreatedAt)
       )
     }
 
