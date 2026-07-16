@@ -11,7 +11,10 @@ function getToken(): string {
 async function proxyRequest(req: NextRequest, pathSegments: string[]): Promise<NextResponse> {
   const path = '/' + pathSegments.join('/')
   const url = new URL(req.url)
-  const targetUrl = `${getAdminBaseUrl()}/api/public${path}${url.search}`
+  let targetUrl = `${getAdminBaseUrl()}/api/public${path}${url.search}`
+  if (path.startsWith('/public/')) {
+    targetUrl = `${getAdminBaseUrl()}/api${path}${url.search}`
+  }
 
   const token = getToken()
   const headers: Record<string, string> = {
