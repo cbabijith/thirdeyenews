@@ -274,32 +274,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
 
         {/* Adjacent News Navigation */}
         {adjacentNews && (adjacentNews.prev || adjacentNews.next) && (
-          <section className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border mt-2">
-            {adjacentNews.prev ? (
-              <Link
-                href={`/news/${adjacentNews.prev.slug || adjacentNews.prev.id}`}
-                prefetch={false}
-                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[90px]"
-              >
-                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-2">
-                  <span className="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                  മുൻപത്തെ വാർത്ത
-                </div>
-                <h4 className="text-[13px] md:text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                  {adjacentNews.prev.title}
-                </h4>
-              </Link>
-            ) : (
-              <div className="hidden sm:block" />
-            )}
-
-            {adjacentNews.next ? (
+          <section className="w-full flex flex-col gap-3 pt-4 border-t border-border mt-2">
+            {adjacentNews.next && (
               <Link
                 href={`/news/${adjacentNews.next.slug || adjacentNews.next.id}`}
                 prefetch={false}
-                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[90px] text-right items-end"
+                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[80px]"
               >
-                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-2">
+                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-1">
                   അടുത്ത വാർത്ത
                   <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </div>
@@ -307,8 +289,22 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
                   {adjacentNews.next.title}
                 </h4>
               </Link>
-            ) : (
-              <div className="hidden sm:block" />
+            )}
+
+            {adjacentNews.prev && (
+              <Link
+                href={`/news/${adjacentNews.prev.slug || adjacentNews.prev.id}`}
+                prefetch={false}
+                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[80px]"
+              >
+                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-1">
+                  <span className="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                  മുൻപത്തെ വാർത്ത
+                </div>
+                <h4 className="text-[13px] md:text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                  {adjacentNews.prev.title}
+                </h4>
+              </Link>
             )}
           </section>
         )}
