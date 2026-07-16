@@ -31,7 +31,7 @@ export function BottomNavAd() {
   const content = (
     <div className="relative w-full h-12 flex items-center justify-center rounded-md overflow-hidden bg-surface-container flex-shrink-0">
       <img
-        src={ad.image_url}
+        src={ad.image_url || undefined}
         alt={ad.title}
         className="w-full h-full object-cover"
         loading="lazy"

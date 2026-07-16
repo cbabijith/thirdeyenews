@@ -39,25 +39,64 @@ const getYouTubeEmbedUrl = (url: string) => {
   return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : ''
 }
 
-function renderAdHtml(imageUrl: string, linkUrl?: string | null): string {
-  const imgHtml = `<img src="${imageUrl}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
-  if (linkUrl) {
-    return `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%;">${imgHtml}</a>`
+function renderAdHtml(ad: { image_url?: string | null; link_url?: string | null; youtube_link?: string | null }): string {
+  if (ad.youtube_link) {
+    const embedUrl = getYouTubeEmbedUrl(ad.youtube_link)
+    if (embedUrl) {
+      return `<div style="margin: 1rem 0; border-radius: 0.75rem; overflow: hidden; aspect-ratio: 16/9;"><iframe src="${embedUrl}" style="width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
+    }
   }
-  return imgHtml
+  if (ad.image_url) {
+    const imgHtml = `<img src="${ad.image_url}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
+    if (ad.link_url) {
+      return `<a href="${ad.link_url}" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%;">${imgHtml}</a>`
+    }
+    return imgHtml
+  }
+  return ''
 }
 
-function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl?: string | null): string {
-  if (!adImageUrl) return content
-
-  const closingTag = '</p>'
-  const index = content.indexOf(closingTag)
-  if (index === -1) {
-    return content + renderAdHtml(adImageUrl, adLinkUrl)
+function getContentWithAds(
+  content: string,
+  newsAdImage?: string | null,
+  newsAdLink?: string | null,
+  globalAds: Ad[] = []
+): string {
+  if (newsAdImage) {
+    const adHtml = renderAdHtml({ image_url: newsAdImage, link_url: newsAdLink })
+    if (!adHtml) return content
+    const closingTag = '</p>'
+    const index = content.indexOf(closingTag)
+    if (index === -1) {
+      return content + adHtml
+    }
+    const insertPosition = index + closingTag.length
+    return content.slice(0, insertPosition) + adHtml + content.slice(insertPosition)
   }
 
-  const insertPosition = index + closingTag.length
-  return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
+  if (!globalAds || !globalAds.length) return content
+  const activeAds = globalAds.slice(0, 3)
+
+  let result = content
+  let searchFrom = 0
+
+  for (let i = 0; i < activeAds.length; i++) {
+    const ad = activeAds[i]
+    const adHtml = renderAdHtml(ad)
+    if (!adHtml) continue
+
+    const closingTag = '</p>'
+    const index = result.indexOf(closingTag, searchFrom)
+    if (index === -1) {
+      result = result + adHtml
+      break
+    }
+    const insertPosition = index + closingTag.length
+    result = result.slice(0, insertPosition) + adHtml + result.slice(insertPosition)
+    searchFrom = insertPosition + adHtml.length
+  }
+
+  return result
 }
 
 export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacentNews, categories, ads }: NewsDetailClientProps) {
@@ -253,7 +292,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
               ` }} />
               <div 
                 className="news-content-area leading-relaxed text-[16px] md:text-[17px]" 
-                dangerouslySetInnerHTML={{ __html: getContentWithAd(news.content, news.ad_image_url, news.ad_link_url) }} 
+                dangerouslySetInnerHTML={{ __html: getContentWithAds(news.content, news.ad_image_url, news.ad_link_url, ads) }} 
               />
             </>
           )}

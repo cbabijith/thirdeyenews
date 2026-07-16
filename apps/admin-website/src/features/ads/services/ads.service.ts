@@ -33,8 +33,9 @@ export const adsService = {
 
   async createAd(data: {
     title: string
-    image_url: string
+    image_url?: string | null
     link_url?: string | null
+    youtube_link?: string | null
     position: AdPosition
     display_order: number
     is_active?: boolean

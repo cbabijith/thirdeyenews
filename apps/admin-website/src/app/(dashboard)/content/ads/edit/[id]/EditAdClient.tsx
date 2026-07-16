@@ -13,8 +13,9 @@ export function EditAdClient({ ad }: EditAdClientProps) {
 
   const handleSubmit = async (formData: {
     title: string
-    image_url: string
-    link_url: string
+    image_url: string | null
+    link_url: string | null
+    youtube_link: string | null
     position: 'main_banner' | 'bottom_nav'
     display_order: number
     is_active: boolean
@@ -24,8 +25,9 @@ export function EditAdClient({ ad }: EditAdClientProps) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: formData.title,
-        image_url: formData.image_url,
+        image_url: formData.image_url || null,
         link_url: formData.link_url || null,
+        youtube_link: formData.youtube_link || null,
         position: formData.position,
         display_order: formData.display_order,
         is_active: formData.is_active,

@@ -73,8 +73,9 @@ export const likes = pgTable('likes', {
 export const ads = pgTable('ads', {
   id: uuid('id').defaultRandom().primaryKey(),
   title: text('title').notNull(),
-  image_url: text('image_url').notNull(),
+  image_url: text('image_url'),
   link_url: text('link_url'),
+  youtube_link: text('youtube_link'),
   position: text('position').notNull().default('main_banner'),
   is_active: boolean('is_active').default(true).notNull(),
   display_order: integer('display_order').default(0).notNull(),

@@ -87,13 +87,34 @@ export function AdsClient() {
             <div key={ad.id} className="bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all overflow-hidden">
               <div className="flex gap-4 p-3">
                 {/* Thumbnail */}
-                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
-                  <img
-                    src={ad.image_url}
-                    alt={ad.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center relative">
+                  {ad.youtube_link ? (
+                    <>
+                      <img
+                        src={`https://img.youtube.com/vi/${ad.youtube_link.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/)?.[2] || ''}/mqdefault.jpg`}
+                        alt={ad.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <span className="bg-red-600 text-white rounded px-2 py-0.5 text-[9px] font-bold tracking-wider">
+                          VIDEO
+                        </span>
+                      </div>
+                    </>
+                  ) : ad.image_url ? (
+                    <img
+                      src={ad.image_url}
+                      alt={ad.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-gray-300" />
+                  )}
                 </div>
 
                 {/* Content */}
@@ -115,6 +136,17 @@ export function AdsClient() {
                     <h3 className="text-sm font-medium text-gray-900 truncate" title={ad.title}>
                       {ad.title}
                     </h3>
+                    {ad.youtube_link && (
+                      <a
+                        href={ad.youtube_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-red-600 hover:underline truncate block mt-1 flex items-center gap-1"
+                      >
+                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">YouTube: {ad.youtube_link}</span>
+                      </a>
+                    )}
                     {ad.link_url && (
                       <a
                         href={ad.link_url}

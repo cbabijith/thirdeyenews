@@ -25,8 +25,9 @@ export const adsRepository = {
 
   async create(data: {
     title: string
-    image_url: string
+    image_url?: string | null
     link_url?: string | null
+    youtube_link?: string | null
     position: AdPosition
     display_order: number
     is_active?: boolean
@@ -35,8 +36,9 @@ export const adsRepository = {
       .insert(ads)
       .values({
         title: data.title,
-        image_url: data.image_url,
+        image_url: data.image_url || null,
         link_url: data.link_url || null,
+        youtube_link: data.youtube_link || null,
         position: data.position,
         display_order: data.display_order,
         is_active: data.is_active ?? true,
@@ -50,6 +52,7 @@ export const adsRepository = {
     if (updates.title !== undefined) updateData.title = updates.title
     if (updates.image_url !== undefined) updateData.image_url = updates.image_url
     if (updates.link_url !== undefined) updateData.link_url = updates.link_url
+    if (updates.youtube_link !== undefined) updateData.youtube_link = updates.youtube_link
     if (updates.position !== undefined) updateData.position = updates.position
     if (updates.display_order !== undefined) updateData.display_order = updates.display_order
     if (updates.is_active !== undefined) updateData.is_active = updates.is_active

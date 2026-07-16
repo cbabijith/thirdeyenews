@@ -9,8 +9,9 @@ interface AdFormProps {
   initialData?: Ad | null
   onSubmit: (data: {
     title: string
-    image_url: string
-    link_url: string
+    image_url: string | null
+    link_url: string | null
+    youtube_link: string | null
     position: AdPosition
     display_order: number
     is_active: boolean
@@ -29,8 +30,9 @@ export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) 
 
   const [formData, setFormData] = useState({
     title: '',
-    image_url: '',
+    image_url: '' as string | null,
     link_url: '',
+    youtube_link: '',
     position: 'main_banner' as AdPosition,
     display_order: 0,
     is_active: true,
@@ -42,6 +44,7 @@ export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) 
         title: initialData.title || '',
         image_url: initialData.image_url || '',
         link_url: initialData.link_url || '',
+        youtube_link: initialData.youtube_link || '',
         position: initialData.position || 'main_banner',
         display_order: initialData.display_order || 0,
         is_active: initialData.is_active ?? true,
@@ -172,6 +175,17 @@ export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) 
         </div>
 
         <div>
+          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">YouTube Link <span className="text-gray-300 normal-case">(optional)</span></label>
+          <input
+            type="url"
+            value={formData.youtube_link}
+            onChange={(e) => setFormData({ ...formData, youtube_link: e.target.value })}
+            className="w-full px-3 py-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+        </div>
+
+        <div>
           <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Link URL <span className="text-gray-300 normal-case">(optional)</span></label>
           <input
             type="url"
@@ -209,7 +223,7 @@ export function AdForm({ initialData = null, onSubmit, onCancel }: AdFormProps) 
           <button
             type="submit"
             className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all disabled:opacity-50"
-            disabled={uploading || !formData.image_url}
+            disabled={uploading || (!formData.image_url && !formData.youtube_link)}
           >
             {initialData ? 'Save' : 'Create'}
           </button>

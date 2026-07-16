@@ -102,8 +102,9 @@ export interface NewsItem {
 export interface Ad {
   id: string
   title: string
-  image_url: string
+  image_url: string | null
   link_url: string | null
+  youtube_link: string | null
   position: string
   is_active: boolean
   display_order: number

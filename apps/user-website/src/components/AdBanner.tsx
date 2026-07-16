@@ -49,7 +49,34 @@ export function AdBanner({ maxAds = 3, className = '', ads: passedAds }: AdBanne
   )
 }
 
+function getYouTubeEmbedUrl(url: string): string {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : ''
+}
+
 function AdBannerItem({ ad }: { ad: Ad }) {
+  if (ad.youtube_link) {
+    const embedUrl = getYouTubeEmbedUrl(ad.youtube_link)
+    if (embedUrl) {
+      return (
+        <div className="relative w-full rounded-lg overflow-hidden bg-surface-container aspect-video">
+          <iframe
+            src={embedUrl}
+            className="w-full h-full border-0 aspect-video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+          <span className="absolute top-1.5 right-1.5 text-[8px] font-medium uppercase tracking-wider bg-black/40 backdrop-blur-sm text-white/80 px-1.5 py-0.5 rounded pointer-events-none z-10">
+            Sponsored
+          </span>
+        </div>
+      )
+    }
+  }
+
+  if (!ad.image_url) return null
+
   const content = (
     <div className="relative w-full rounded-lg overflow-hidden bg-surface-container group">
       <img
