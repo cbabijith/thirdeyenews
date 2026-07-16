@@ -96,10 +96,14 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
     notFound()
   }
 
-  const [_, relatedNews] = await Promise.all([
+  const [_, relatedNews, adjacentNews] = await Promise.all([
     Promise.resolve(news),
-    fetchRelatedNews(id, news?.category_id)
+    fetchRelatedNews(id, news?.category_id),
+    api.getAdjacentNews(id).catch(err => {
+      console.error('Failed to fetch adjacent news:', err)
+      return { prev: null, next: null }
+    })
   ])
 
-  return <NewsDetailClient news={news} relatedNews={relatedNews} />
+  return <NewsDetailClient news={news} relatedNews={relatedNews} adjacentNews={adjacentNews} />
 }

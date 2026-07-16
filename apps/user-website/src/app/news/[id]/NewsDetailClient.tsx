@@ -26,6 +26,10 @@ interface RelatedNews {
 interface NewsDetailClientProps {
   news: NewsItem
   relatedNews: RelatedNews[]
+  adjacentNews: {
+    prev: NewsItem | null
+    next: NewsItem | null
+  }
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
@@ -55,7 +59,7 @@ function getContentWithAd(content: string, adImageUrl?: string | null, adLinkUrl
   return content.slice(0, insertPosition) + renderAdHtml(adImageUrl, adLinkUrl) + content.slice(insertPosition)
 }
 
-export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated }: NewsDetailClientProps) {
+export function NewsDetailClient({ news: initialNews, relatedNews: initialRelated, adjacentNews }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
   const news = initialNews
@@ -267,6 +271,47 @@ export function NewsDetailClient({ news: initialNews, relatedNews: initialRelate
         <div className="w-full pt-2">
           <AdBanner maxAds={3} />
         </div>
+
+        {/* Adjacent News Navigation */}
+        {adjacentNews && (adjacentNews.prev || adjacentNews.next) && (
+          <section className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border mt-2">
+            {adjacentNews.prev ? (
+              <Link
+                href={`/news/${adjacentNews.prev.slug || adjacentNews.prev.id}`}
+                prefetch={false}
+                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[90px]"
+              >
+                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-2">
+                  <span className="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                  മുൻപത്തെ വാർത്ത
+                </div>
+                <h4 className="text-[13px] md:text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                  {adjacentNews.prev.title}
+                </h4>
+              </Link>
+            ) : (
+              <div className="hidden sm:block" />
+            )}
+
+            {adjacentNews.next ? (
+              <Link
+                href={`/news/${adjacentNews.next.slug || adjacentNews.next.id}`}
+                prefetch={false}
+                className="group flex flex-col justify-between p-4 rounded-xl border border-border bg-surface-container hover:bg-surface-container-high transition-all duration-300 min-h-[90px] text-right items-end"
+              >
+                <div className="flex items-center gap-1.5 text-on-surface-variant text-[11px] font-semibold uppercase tracking-wider mb-2">
+                  അടുത്ത വാർത്ത
+                  <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </div>
+                <h4 className="text-[13px] md:text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                  {adjacentNews.next.title}
+                </h4>
+              </Link>
+            ) : (
+              <div className="hidden sm:block" />
+            )}
+          </section>
+        )}
 
         {/* Related Articles */}
         {relatedNews && relatedNews.length > 0 && (

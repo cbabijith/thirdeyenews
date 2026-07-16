@@ -319,6 +319,74 @@ export const newsRepository = {
     return !!result
   },
 
+  async findAdjacentPublished(newsId: string): Promise<{ prev: News | null; next: News | null }> {
+    const current = await this.findById(newsId, false)
+    if (!current) {
+      return { prev: null, next: null }
+    }
+
+    const currentPublishedAt = current.published_at ? new Date(current.published_at) : null
+    const currentCreatedAt = current.created_at ? new Date(current.created_at) : new Date()
+
+    let prevCondition
+    let nextCondition
+
+    if (currentPublishedAt) {
+      prevCondition = and(
+        eq(news.is_published, true),
+        or(
+          sql`${news.published_at} < ${currentPublishedAt}`,
+          and(
+            sql`${news.published_at} = ${currentPublishedAt}`,
+            sql`${news.created_at} < ${currentCreatedAt}`
+          )
+        )
+      )
+
+      nextCondition = and(
+        eq(news.is_published, true),
+        or(
+          sql`${news.published_at} > ${currentPublishedAt}`,
+          and(
+            sql`${news.published_at} = ${currentPublishedAt}`,
+            sql`${news.created_at} > ${currentCreatedAt}`
+          )
+        )
+      )
+    } else {
+      prevCondition = and(
+        eq(news.is_published, true),
+        sql`${news.created_at} < ${currentCreatedAt}`
+      )
+
+      nextCondition = and(
+        eq(news.is_published, true),
+        sql`${news.created_at} > ${currentCreatedAt}`
+      )
+    }
+
+    const prevResult = await db.query.news.findFirst({
+      where: prevCondition,
+      columns: {
+        content: false,
+      },
+      orderBy: [desc(news.published_at), desc(news.created_at)],
+    })
+
+    const nextResult = await db.query.news.findFirst({
+      where: nextCondition,
+      columns: {
+        content: false,
+      },
+      orderBy: [asc(news.published_at), asc(news.created_at)],
+    })
+
+    return {
+      prev: prevResult as unknown as News | null,
+      next: nextResult as unknown as News | null,
+    }
+  },
+
   async incrementViewCount(id: string): Promise<void> {
     await db
       .update(news)

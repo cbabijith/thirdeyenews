@@ -161,6 +161,10 @@ export const api = {
     return apiFetch<NewsItem[]>(`/api/news/${id}/related?limit=${limit}`)
   },
 
+  async getAdjacentNews(id: string): Promise<{ prev: NewsItem | null; next: NewsItem | null }> {
+    return apiFetch<{ prev: NewsItem | null; next: NewsItem | null }>(`/api/news/${id}/adjacent`)
+  },
+
   async incrementView(id: string): Promise<void> {
     try {
       await apiPost(`/api/news/${id}/view`)
