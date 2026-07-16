@@ -8,6 +8,10 @@ export function useDashboard() {
     publishedCount: 0,
     draftCount: 0,
     totalViews: 0,
+    viewsToday: 0,
+    viewsYesterday: 0,
+    viewsThisWeek: 0,
+    viewsThisMonth: 0,
     totalCategories: 0,
     topViewed: [],
   })

@@ -47,6 +47,10 @@ export function Dashboard() {
         publishedCount={stats.publishedCount}
         draftCount={stats.draftCount}
         totalViews={stats.totalViews}
+        viewsToday={stats.viewsToday}
+        viewsYesterday={stats.viewsYesterday}
+        viewsThisWeek={stats.viewsThisWeek}
+        viewsThisMonth={stats.viewsThisMonth}
         totalCategories={stats.totalCategories}
       />
 

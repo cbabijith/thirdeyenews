@@ -1,6 +1,6 @@
 import { eq, ne, desc, asc, and, or, ilike, count, sql, lt, gt } from 'drizzle-orm'
 import { db } from '@/db'
-import { news } from '@/db/schema'
+import { news, newsViews } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
 
 export const newsRepository = {
@@ -222,6 +222,22 @@ export const newsRepository = {
     return result?.total || 0
   },
 
+  async getViewsCountSince(date: Date): Promise<number> {
+    const [result] = await db
+      .select({ value: count() })
+      .from(newsViews)
+      .where(gt(newsViews.viewed_at, date))
+    return (result?.value || 0) * 20
+  },
+
+  async getViewsCountBetween(start: Date, end: Date): Promise<number> {
+    const [result] = await db
+      .select({ value: count() })
+      .from(newsViews)
+      .where(and(gt(newsViews.viewed_at, start), lt(newsViews.viewed_at, end)))
+    return (result?.value || 0) * 20
+  },
+
   async countPublished(): Promise<number> {
     const [result] = await db
       .select({ value: count() })
@@ -392,9 +408,12 @@ export const newsRepository = {
   },
 
   async incrementViewCount(id: string): Promise<void> {
-    await db
-      .update(news)
-      .set({ view_count: sql`${news.view_count} + 20` })
-      .where(eq(news.id, id))
+    await Promise.all([
+      db
+        .update(news)
+        .set({ view_count: sql`${news.view_count} + 20` })
+        .where(eq(news.id, id)),
+      db.insert(newsViews).values({ news_id: id })
+    ])
   },
 }

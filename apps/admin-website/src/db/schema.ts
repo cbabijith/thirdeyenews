@@ -83,6 +83,12 @@ export const ads = pgTable('ads', {
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
+export const newsViews = pgTable('news_views', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  news_id: uuid('news_id').references(() => news.id, { onDelete: 'cascade' }).notNull(),
+  viewed_at: timestamp('viewed_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
 export const newsRelations = relations(news, ({ one }) => ({
   categories: one(categories, { fields: [news.category_id], references: [categories.id] }),
   subcategories: one(subcategories, { fields: [news.subcategory_id], references: [subcategories.id] }),
