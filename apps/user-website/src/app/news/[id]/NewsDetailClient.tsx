@@ -300,7 +300,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
 
         {/* Ad Banners */}
         <div className="w-full pt-2">
-          <AdBanner maxAds={3} ads={ads} />
+          <AdBanner maxAds={3} ads={ads?.filter(ad => !ad.youtube_link)} />
         </div>
 
         {/* Adjacent News Navigation */}
