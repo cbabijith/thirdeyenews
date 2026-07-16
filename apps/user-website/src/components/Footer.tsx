@@ -5,10 +5,10 @@ import Link from 'next/link'
 export function Footer() {
   return (
     <footer className="bg-surface-container-lowest border-t border-border/40 w-full mt-auto">
-      <div className="max-w-[1240px] mx-auto px-6 md:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 pb-12 border-b border-border/30">
+      <div className="max-w-[1240px] mx-auto px-5 md:px-8 py-8 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-12 pb-12 border-b border-border/30">
           {/* Brand Column (Col Span 5) */}
-          <div className="md:col-span-5 flex flex-col gap-4">
+          <div className="md:col-span-5 flex flex-col gap-4 mb-4 md:mb-0">
             <Link href="/" prefetch={false} className="inline-block hover:opacity-90 transition-opacity">
               <img src="/thirdeye.svg" alt="ThirdEye News" className="h-9 w-auto" />
             </Link>
@@ -45,11 +45,11 @@ export function Footer() {
           </div>
 
           {/* Quick Links Column (Col Span 2) */}
-          <div className="md:col-span-2 flex flex-col gap-4">
+          <div className="md:col-span-2 flex flex-col gap-4 rounded-2xl border border-border/40 bg-surface-container-low p-5 md:border-0 md:bg-transparent md:p-0 md:rounded-none">
             <h4 className="text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant/40">
               Navigation
             </h4>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-row md:flex-col gap-x-5 gap-y-2 md:gap-3 flex-wrap md:flex-nowrap">
               <li>
                 <Link href="/" prefetch={false} className="text-on-surface-variant/80 hover:text-primary text-[13px] transition-colors duration-200">
                   ഹോം (Home)
@@ -69,7 +69,7 @@ export function Footer() {
           </div>
 
           {/* Contact Column (Col Span 3) */}
-          <div className="md:col-span-3 flex flex-col gap-4">
+          <div className="md:col-span-3 flex flex-col gap-4 rounded-2xl border border-border/40 bg-surface-container-low p-5 md:border-0 md:bg-transparent md:p-0 md:rounded-none">
             <h4 className="text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant/40">
               Address
             </h4>
@@ -97,7 +97,7 @@ export function Footer() {
           </div>
 
           {/* Legal / Meta Column (Col Span 2) */}
-          <div className="md:col-span-2 flex flex-col gap-4">
+          <div className="md:col-span-2 flex flex-col gap-4 rounded-2xl border border-border/40 bg-surface-container-low p-5 md:border-0 md:bg-transparent md:p-0 md:rounded-none">
             <h4 className="text-[10.5px] font-extrabold uppercase tracking-[0.2em] text-on-surface-variant/40">
               Legal
             </h4>
@@ -123,7 +123,7 @@ export function Footer() {
         </div>
 
         {/* Bottom copyright segment */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between pt-8 gap-4 text-[12px] text-on-surface-variant/60">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between pt-6 md:pt-8 gap-4 text-[12px] text-on-surface-variant/60">
           <p>© 2026 ThirdEye News. All rights reserved.</p>
           <p className="flex items-center gap-1.5">
             <span>Made with precision by</span>
@@ -141,3 +141,4 @@ export function Footer() {
     </footer>
   )
 }
+
