@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'edge'
 
 const newsCache = new Map<string, { data: any; ts: number }>()
-const NEWS_CACHE_TTL = 15_000 // 15 seconds cache for active feeds
+const NEWS_CACHE_TTL = 60_000 // 60 seconds cache
 
 export async function GET(req: NextRequest) {
   try {
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     newsCache.set(path, { data: json, ts: Date.now() })
     return NextResponse.json(json, {
       headers: {
-        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
       },
     })
   } catch (err) {

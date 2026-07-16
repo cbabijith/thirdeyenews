@@ -3,7 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   allowedDevOrigins: ['192.168.1.40', 'http://192.168.1.40:3001'],
   images: {
-    unoptimized: true,
+    unoptimized: false,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

@@ -237,7 +237,7 @@ export function HomeContent({
             {/* Hero Story Card - Featured/Pinned News */}
             {featuredNews && (
               <section className="px-4 pt-4">
-                <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} prefetch={false} className="block group">
+                <Link key={featuredNews.id} href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
                   <div className="relative overflow-hidden rounded-2xl aspect-[16/10] shadow-md bg-surface-container-lowest border border-border/40">
                     {featuredNews.image_url ? (
                       <>
@@ -296,7 +296,7 @@ export function HomeContent({
                 </div>
                 <div className="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth snap-x px-4 pb-2">
                   {latestNews.slice(0, 8).map((item) => (
-                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="flex flex-col shrink-0 snap-start bg-surface-container/20 border border-border/40 rounded-xl overflow-hidden p-2" style={{ width: 140 }}>
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="flex flex-col shrink-0 snap-start bg-surface-container/20 border border-border/40 rounded-xl overflow-hidden p-2" style={{ width: 140 }}>
                       <div className="relative rounded-lg overflow-hidden shrink-0 aspect-[16/10] bg-surface-container">
                         {item.image_url ? (
                           <Image src={item.image_url} alt={item.title} fill sizes="140px" className="object-cover" />
@@ -338,7 +338,7 @@ export function HomeContent({
                 </h3>
                 <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
                   {trendingNews.slice(0, 5).map((item, index) => (
-                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                       <div className="flex items-center gap-3 p-3 hover:bg-surface-container/20 transition-colors">
                         <div className="text-xl font-black text-outline/30 group-hover:text-primary/60 transition-colors w-6 h-6 flex items-center justify-center shrink-0">
                           {index + 1}
@@ -378,7 +378,7 @@ export function HomeContent({
               <div className="flex flex-col bg-surface-container/10 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/30">
                 {latestNews.length > 0 ? (
                   latestNews.map((item, index) => (
-                    <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                    <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                       <div className="flex gap-3 p-3 hover:bg-surface-container/20 transition-colors">
                         {item.image_url && (
                           <div className="relative flex-shrink-0 w-20 aspect-[4/3] rounded-lg overflow-hidden bg-surface-container">
@@ -441,7 +441,7 @@ export function HomeContent({
               </div>
               <div className="flex flex-col gap-4 max-h-[850px] overflow-y-auto pr-2 no-scrollbar">
                 {latestNews.map((item, index) => (
-                  <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                  <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                     <div className="flex gap-3 items-start p-2 rounded-lg hover:bg-surface-container/40 transition-all duration-300">
                       <div className="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-surface-container">
                         {item.image_url ? (
@@ -478,7 +478,7 @@ export function HomeContent({
               {featuredNews && (
                 <div className="flex flex-col gap-6">
                   {/* Main Hero Card */}
-                  <Link href={`/news/${featuredNews.slug || featuredNews.id}`} prefetch={false} className="block group">
+                  <Link href={`/news/${featuredNews.slug || featuredNews.id}`} className="block group">
                     <div className="flex flex-col gap-4 bg-surface-container/10 p-3 rounded-2xl border border-border/20 hover:border-border/60 hover:bg-surface-container/30 transition-all duration-300">
                       {/* Hero Image Container */}
                       <div className="relative rounded-xl overflow-hidden aspect-[16/10] bg-surface-container">
@@ -536,7 +536,7 @@ export function HomeContent({
                     </h3>
                     <div className="grid grid-cols-2 gap-5">
                       {latestNews.slice(0, 4).map((item) => (
-                        <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                        <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                           <div className="flex flex-col h-full bg-surface-container/20 rounded-xl overflow-hidden hover:bg-surface-container/50 transition-colors duration-300 border border-border/40">
                             <div className="relative aspect-[16/10] bg-surface-container">
                               {item.image_url ? (
@@ -587,7 +587,7 @@ export function HomeContent({
               </h3>
               <div className="flex flex-col gap-4">
                 {trendingNews.slice(0, 5).map((item, index) => (
-                  <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
+                  <Link key={item.id} href={`/news/${item.slug || item.id}`} className="block group">
                     <div className="flex items-center gap-3 py-2 border-b border-border/60 group-hover:border-primary/40 transition-colors">
                       <div className="text-2xl font-black text-outline/40 group-hover:text-primary/60 transition-colors w-8 h-8 flex items-center justify-center shrink-0">
                         {index + 1}
