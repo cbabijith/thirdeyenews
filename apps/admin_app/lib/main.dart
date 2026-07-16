@@ -18,6 +18,13 @@ void main() async {
     publishableKey: SupabaseConfig.anonKey,
   );
 
+  // Print configuration to debug console
+  print('=============================================');
+  print('🚀 INITIALIZING APP');
+  print('🔗 Supabase URL: ${SupabaseConfig.url}');
+  print('🔗 Admin API URL: ${SupabaseConfig.adminApiBaseUrl}');
+  print('=============================================');
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
