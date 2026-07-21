@@ -27,7 +27,8 @@ const fetchNews = cache(async (id: string): Promise<NewsItem | null> => {
   }
   const data = await api.getNewsById(id)
   if (!data || !data.is_published) {
-    newsCache.set(id, { data: null, ts: Date.now() })
+    // Do not cache null/unpublished news so deleted items trigger instant 404 upon revalidation
+    newsCache.delete(id)
     return null
   }
   newsCache.set(id, { data, ts: Date.now() })
