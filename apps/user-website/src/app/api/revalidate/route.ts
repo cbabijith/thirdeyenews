@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url)
-    const path = searchParams.get('path')
-    const token = searchParams.get('token')
-
 const VALID_TOKENS = new Set([
   process.env.REVALIDATION_TOKEN,
   process.env.API_ACCESS_TOKEN,
