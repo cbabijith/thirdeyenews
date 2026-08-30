@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20260830T120038825Z-10296-c3a2060ac016",
+  "runId": "20260830T120038825Z-10296-c3a2060ac016",
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": []
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "34784c5de8a2551622b64b1887cbe04d02dbbaab",
+  "diffHash": "57d9c21f2d40fa8b2d16cc3992c6a832ff468879c49f9d87fad11247633cb9de",
+  "rulesVersion": "unavailable",
+  "sessionHash": "95c2c665a033a84423786cdce74d6bb4526dc4095326cd32e199950621f7d1c2",
+  "reportRef": ".mimosa/reports/task-review-sess_432e6902-7089-4dd1-a952-47fefcc0e4f6-20260830T120038825Z-10296-c3a2060ac016.json",
+  "events": [],
+  "observedFindingIds": [],
+  "verifiedFiles": [
+    {
+      "file": "apps/user-website/src/app/news/[id]/NewsDetailClient.tsx",
+      "direct": "complete",
+      "projectContext": "partial"
+    }
+  ],
+  "recordedAt": "2026-08-30T12:00:39.354Z"
+}

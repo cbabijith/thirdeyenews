@@ -1,0 +1,72 @@
+import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://thirdeyenewslive.com'),
+  title: 'ThirdEye News - User Website',
+  description: 'ThirdEye News User Portal',
+  icons: {
+    icon: '/logo.svg',
+    apple: '/logo.svg',
+  },
+  openGraph: {
+    siteName: 'ThirdEye News',
+    locale: 'ml_IN',
+    type: 'website',
+    images: ['/logo.svg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#cc0000',
+  viewportFit: 'cover',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-9913400627999649" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9913400627999649" crossOrigin="anonymous" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var theme = localStorage.getItem('theme');
+              if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+              }
+            } catch(e) {}
+            try {
+              var link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap';
+              document.head.appendChild(link);
+            } catch(e) {}
+          })();
+        ` }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pub-97fd80f978a242f6ad98240e478fe547.r2.dev" crossOrigin="anonymous" />
+      </head>
+      <body className={`${inter.variable} font-inter`}>{children}</body>
+    </html>
+  )
+}

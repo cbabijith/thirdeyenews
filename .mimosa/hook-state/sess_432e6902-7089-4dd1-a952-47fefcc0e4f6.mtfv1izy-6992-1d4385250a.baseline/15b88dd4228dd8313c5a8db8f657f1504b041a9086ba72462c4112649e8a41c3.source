@@ -1,0 +1,7 @@
+export { CategoryManager } from './components/CategoryManager'
+export { useCategories } from './hooks/useCategories'
+export { categoriesService } from './services/categories.service'
+export { subcategoriesService } from './services/subcategories.service'
+export { categoriesRepository } from './repositories/categories.repository'
+export { subcategoriesRepository } from './repositories/subcategories.repository'
+export type { Category, Subcategory } from './types'

@@ -1,0 +1,31 @@
+{
+  "name": "thirdeyenews-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for ThirdEye News - User/Admin Websites and Apps",
+  "workspaces": [
+    "packages/*",
+    "apps/user-website",
+    "apps/admin-website"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter user-website dev\" \"pnpm --filter admin-website dev\"",
+    "dev:user-web": "pnpm --filter user-website dev",
+    "dev:admin-web": "pnpm --filter admin-website dev",
+    "build": "pnpm --filter user-website build && pnpm --filter admin-website build",
+    "build:user-web": "pnpm --filter user-website build",
+    "build:admin-web": "pnpm --filter admin-website build",
+    "lint": "pnpm --filter user-website lint && pnpm --filter admin-website lint",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/.next apps/*/dist",
+    "typecheck": "pnpm --filter user-website typecheck && pnpm --filter admin-website typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

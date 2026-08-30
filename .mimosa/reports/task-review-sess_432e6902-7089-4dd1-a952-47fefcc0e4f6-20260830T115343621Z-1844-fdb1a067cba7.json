@@ -1,0 +1,1307 @@
+{
+  "schema_version": "mimosa-task-review/v2",
+  "run_id": "20260830T115343621Z-1844-fdb1a067cba7",
+  "run_status": "inconclusive",
+  "errors": [
+    {
+      "stage": "candidate-select",
+      "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t1.py",
+      "reason": "changed_file_unreadable: observed changed file no longer exists or cannot be read"
+    },
+    {
+      "stage": "candidate-select",
+      "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t2.py",
+      "reason": "changed_file_unreadable: observed changed file no longer exists or cannot be read"
+    },
+    {
+      "stage": "candidate-select",
+      "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t3.py",
+      "reason": "changed_file_unreadable: observed changed file no longer exists or cannot be read"
+    },
+    {
+      "stage": "candidate-select",
+      "target": "temp_update.py",
+      "reason": "changed_file_unreadable: observed changed file no longer exists or cannot be read"
+    },
+    {
+      "stage": "candidate-select",
+      "target": "update_theme.py",
+      "reason": "changed_file_unreadable: observed changed file no longer exists or cannot be read"
+    }
+  ],
+  "coverage": {
+    "schema_version": "mimosa-hook-coverage/v1",
+    "status": "partial",
+    "scope": "hook_observed_diff",
+    "baseline": {
+      "complete": true,
+      "captured_files": 176,
+      "candidate_limit": 5000,
+      "truncated": false,
+      "enumeration_error_count": 0,
+      "snapshot_error_count": 0,
+      "compensated_target_count": 18
+    },
+    "change_tracking": {
+      "touched_observed": 23,
+      "touched_retained": 23,
+      "truncated": false,
+      "bash_mutation": true,
+      "bash_discovered": 11,
+      "bash_discovery_limit": 80,
+      "bash_discovery_truncated": false
+    },
+    "candidates": {
+      "eligible_files": 18,
+      "selected_files": 18,
+      "limit": 20,
+      "truncated": false
+    },
+    "scanning": {
+      "required_files": 18,
+      "scanned_files": 18,
+      "skipped_files": 0,
+      "failed_files": 0,
+      "project_checks_required": 0,
+      "project_checks_completed": 0
+    },
+    "notification": {
+      "eligible_findings": 4,
+      "detailed_findings": 3,
+      "detail_limit": 3,
+      "truncated": true
+    },
+    "reason_counts": {
+      "changed_file_unreadable": 5,
+      "project_check_failed": 5
+    },
+    "reasons": [
+      {
+        "code": "changed_file_unreadable",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t1.py",
+        "detail": "observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "changed_file_unreadable",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t2.py",
+        "detail": "observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "changed_file_unreadable",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t3.py",
+        "detail": "observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "changed_file_unreadable",
+        "stage": "candidate-select",
+        "target": "temp_update.py",
+        "detail": "observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "changed_file_unreadable",
+        "stage": "candidate-select",
+        "target": "update_theme.py",
+        "detail": "observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t1.py",
+        "detail": "changed_file_unreadable: observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t2.py",
+        "detail": "changed_file_unreadable: observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "C:/Users/user/AppData/Local/Temp/mimosa-test/t3.py",
+        "detail": "changed_file_unreadable: observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "temp_update.py",
+        "detail": "changed_file_unreadable: observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "update_theme.py",
+        "detail": "changed_file_unreadable: observed changed file no longer exists or cannot be read",
+        "affects_completion": true
+      }
+    ],
+    "reasons_truncated": false
+  },
+  "generated_at": "2026-08-30T11:53:43.621Z",
+  "session_id": "sess_432e6902-7089-4dd1-a952-47fefcc0e4f6",
+  "target": ".",
+  "revision": "96b62454b49779acd1ebf9490e1523b7f4767226",
+  "rules_version": "unavailable",
+  "diff_hash": "dc88233f48615ceef90d45b7f711152aa253445cadea8dba3690214ee4be8f21",
+  "diff": {
+    "algorithm": "sha256",
+    "changed_file_count": 18,
+    "changed_files": [
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/admin-url.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 10
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "62775d8a3b13d2e69c735bb96f66209eafd261da5cc363c22f83be64d4edd278"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/literal_open.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 6
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "0b66c6d453661d3d0586007d811073224c1d68fd9beec423cb58c9158f7345d1"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-a.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 11
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "922ff3b2713a0e64d6ae290140317b41f9bd66b7def58b6bb15f50a9b12f386a"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-b.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 19
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "3f47aeedad60fcfc8050634391d68a479e458f89fa5e45784b57c86ee7e9e2ba"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-c.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 9
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "1ba67ca0550f85cca2526f32f5cd2ede7f98cc8f76943f38705fcd3501188ed3"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/xfile-route.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 10
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "3244532002a1ba4efbc8ed2d4ba6d292a3361d0c8f3039659f3a285552784897"
+      },
+      {
+        "file": "C:/Users/user/AppData/Local/Temp/mimosa-test/pattern-a.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 11
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "922ff3b2713a0e64d6ae290140317b41f9bd66b7def58b6bb15f50a9b12f386a"
+      },
+      {
+        "file": "apps/admin-website/src/lib/revalidate.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 18
+          },
+          {
+            "start": 24,
+            "end": 24
+          },
+          {
+            "start": 33,
+            "end": 33
+          }
+        ],
+        "before_hash": "1c8dfd217d8f8384550a1e46575deb1cd067db752c9962a88e13e5db7c340396",
+        "after_hash": "548840eb87f50a339342d3e6f01d8869a0ababbf73fad4d3997575e8fa81f3bc"
+      },
+      {
+        "file": "apps/user-website/src/app/api/ads/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 12,
+            "end": 12
+          }
+        ],
+        "before_hash": "9c8d081501e1360ba8c3b3047494795e50964a7de514e3c5014b1a97d6367564",
+        "after_hash": "704ed7cd24c87f67ac1746f21b04ff8c4c61c4df42d1e2133d0bdb4d57381ec2"
+      },
+      {
+        "file": "apps/user-website/src/app/api/categories/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 16,
+            "end": 16
+          }
+        ],
+        "before_hash": "eb339343d5d62a9c5551769e93ef09e6369bcd35e75a46f018f2e19cb1aaf655",
+        "after_hash": "0010dcdecc7c692c8f0da4b27a46d392220ba81c64736cb43de4aef37a19101f"
+      },
+      {
+        "file": "apps/user-website/src/app/api/news/[id]/adjacent/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 10,
+            "end": 10
+          }
+        ],
+        "before_hash": "556135280ce0b454baa4df27e2a5522b1132e54a99ce36cb7f6560b75be9d444",
+        "after_hash": "94c5846487c91013faa5d633d7df4024482ce5eeb12ec25acd9612e9f563ec5e"
+      },
+      {
+        "file": "apps/user-website/src/app/api/news/[id]/related/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 12,
+            "end": 12
+          }
+        ],
+        "before_hash": "bd1edbec57c05f5a654d7701b22d023be7020e3bc2fb163ab8b31d0d5d75a95f",
+        "after_hash": "4b6a0f13bf143fdfde0f85b060ea0dc2d792efe760f05629bf0caae913299c73"
+      },
+      {
+        "file": "apps/user-website/src/app/api/news/[id]/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 10,
+            "end": 10
+          }
+        ],
+        "before_hash": "b4f3aa0876eb6d88c93580231a079d84d4ce7a3e4301e0d8ab8ba854658c8401",
+        "after_hash": "9eae7775edc7c8e5ece3049fe807dad2d57dcae3c3d90ff98533e7ed4fb1cdb4"
+      },
+      {
+        "file": "apps/user-website/src/app/api/news/[id]/view/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 10,
+            "end": 10
+          }
+        ],
+        "before_hash": "9a88e8731307c25d0ead23568d060a3d2e9091d2632c985db78f0c7576653a34",
+        "after_hash": "74e6f8f4083cf21cabb96f30e80bafbfa7a4457232b2b4c0f2c347d234ad77e9"
+      },
+      {
+        "file": "apps/user-website/src/app/api/news/route.ts",
+        "ranges": [
+          {
+            "start": 2,
+            "end": 2
+          },
+          {
+            "start": 20,
+            "end": 20
+          }
+        ],
+        "before_hash": "4e9b99337d2374e661c8c994be86dbd3f929289e4ae3bbbb9a933b3651312ef7",
+        "after_hash": "e5f1dcd3b65dda4ec0dc6cb2b11433c2e398370262935f9dafcbebe179828330"
+      },
+      {
+        "file": "apps/user-website/src/app/news/[id]/NewsDetailClient.tsx",
+        "ranges": [
+          {
+            "start": 408,
+            "end": 408
+          }
+        ],
+        "before_hash": "f97307e106c28c11672c72e37d4e13eaeade21194f98e9f33493efd527fa59e3",
+        "after_hash": "83e21c5cdf9bba9003ad8a5e375c70874bec6ebc716eb2ddd76c56414fb54991"
+      },
+      {
+        "file": "apps/user-website/src/components/ShareButton.tsx",
+        "ranges": [
+          {
+            "start": 9,
+            "end": 9
+          },
+          {
+            "start": 13,
+            "end": 13
+          }
+        ],
+        "before_hash": "2817a3e3c65bcd2ace7660c1c4bda2941a15efd38b3ab786c2122e24110be695",
+        "after_hash": "fe5835533b53e4dba28e6e2450f8ade153a56da8889c16222a3ebd328d7cb15a"
+      },
+      {
+        "file": "apps/user-website/src/lib/adminUrl.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 18
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "1147e7096c51aa8160e37434ead8cfdfe4436ee97c1349bc9948a0c9e725713c"
+      }
+    ]
+  },
+  "timing": {
+    "started_at": "2026-08-30T11:53:41.802Z",
+    "completed_at": "2026-08-30T11:53:43.621Z",
+    "duration_ms": 1819,
+    "measurement": "hook_wall_clock"
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "model_calls": 0,
+    "measurement": "known-zero"
+  },
+  "telemetry": {
+    "schemaVersion": "mimosa-gate-telemetry/v1",
+    "profile": "gate",
+    "operation": "Stop",
+    "outcome": "partial/INCONCLUSIVE",
+    "latencyMs": 1819,
+    "peakMemoryBytes": 128507904,
+    "memoryMeasurement": "max-observed-process-rss",
+    "scannedFiles": 18,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "measurement": "not-applicable"
+    },
+    "denyCount": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0,
+      "modelCalls": 0,
+      "measurement": "known-zero"
+    }
+  },
+  "finding_count": 4,
+  "rewake_finding_count": 3,
+  "evidence_boundary": {
+    "scan": "candidate",
+    "static_fix_verification": "observed_static_only",
+    "runtime_verification": "not_performed"
+  },
+  "finding_events": [
+    {
+      "finding_id": "mimosa-65e6f535cfa99b74f7ec41c0",
+      "file": "apps/user-website/src/app/api/news/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:25.008Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "52c541fc1528b57632664d05f86e2c533abde2fbb0af96eeae8f3da00f119916",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-b5269771c616dbf870bd3f5b",
+      "file": "apps/user-website/src/app/api/news/[id]/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:26.381Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "41a04e71da64cbfb992a3fa072681473f01d1bad81c2ac843a048392487f10e7",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-230a41da010874add5e57ee3",
+      "file": "apps/user-website/src/app/api/news/[id]/view/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:27.746Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2199ddd71a83c0de96ae42f542a7cae92bce08e2d9d6db644f3d6883ab5ab76c",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-29726d1b8adca56aab267cd5",
+      "file": "apps/user-website/src/app/api/news/[id]/related/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:29.009Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "00a34556fac3abb650a83fe6aa6114934e90899c5a17e9e108eacd0182764309",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-cff516ee288af0cdcd1d91d5",
+      "file": "apps/user-website/src/app/api/news/[id]/adjacent/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:30.245Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2182d93cb830c6614cfb2bbac613bf59dd8710bfc2b6780b8732c346444af8e1",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-bf92a78c593049d3b3d033b3",
+      "file": "apps/user-website/src/app/api/categories/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:31.500Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2fa6237bcb3ce17778545e3446e7cc5fa7f51bd87143ef024aa6ef419f469135",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-82d804676e94fdb9df29f35e",
+      "file": "apps/user-website/src/app/api/ads/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:32.743Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "9fcfc7a6c785b2c76ff148da223670aea4c4249af47b578b58686ef431d559d0",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-fb1dce34f196add837b7c0ba",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 8,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:34.478Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-fb1dce34f196add837b7c0ba",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 8,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:34.478Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-75360bb17398535a6375b969",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 17,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:36.197Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-75360bb17398535a6375b969",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 17,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "blocked",
+      "decision": "deny",
+      "at": "2026-08-30T11:44:36.197Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-65e6f535cfa99b74f7ec41c0",
+      "file": "apps/user-website/src/app/api/news/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:10.559Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "52c541fc1528b57632664d05f86e2c533abde2fbb0af96eeae8f3da00f119916",
+        "candidate_before_evidence_hash": "52c541fc1528b57632664d05f86e2c533abde2fbb0af96eeae8f3da00f119916",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-65e6f535cfa99b74f7ec41c0",
+      "file": "apps/user-website/src/app/api/news/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:10.559Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "52c541fc1528b57632664d05f86e2c533abde2fbb0af96eeae8f3da00f119916",
+        "candidate_before_evidence_hash": "52c541fc1528b57632664d05f86e2c533abde2fbb0af96eeae8f3da00f119916",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-b5269771c616dbf870bd3f5b",
+      "file": "apps/user-website/src/app/api/news/[id]/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:12.973Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "41a04e71da64cbfb992a3fa072681473f01d1bad81c2ac843a048392487f10e7",
+        "candidate_before_evidence_hash": "41a04e71da64cbfb992a3fa072681473f01d1bad81c2ac843a048392487f10e7",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-b5269771c616dbf870bd3f5b",
+      "file": "apps/user-website/src/app/api/news/[id]/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:12.973Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "41a04e71da64cbfb992a3fa072681473f01d1bad81c2ac843a048392487f10e7",
+        "candidate_before_evidence_hash": "41a04e71da64cbfb992a3fa072681473f01d1bad81c2ac843a048392487f10e7",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-230a41da010874add5e57ee3",
+      "file": "apps/user-website/src/app/api/news/[id]/view/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:15.448Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2199ddd71a83c0de96ae42f542a7cae92bce08e2d9d6db644f3d6883ab5ab76c",
+        "candidate_before_evidence_hash": "2199ddd71a83c0de96ae42f542a7cae92bce08e2d9d6db644f3d6883ab5ab76c",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-230a41da010874add5e57ee3",
+      "file": "apps/user-website/src/app/api/news/[id]/view/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:15.448Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2199ddd71a83c0de96ae42f542a7cae92bce08e2d9d6db644f3d6883ab5ab76c",
+        "candidate_before_evidence_hash": "2199ddd71a83c0de96ae42f542a7cae92bce08e2d9d6db644f3d6883ab5ab76c",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-29726d1b8adca56aab267cd5",
+      "file": "apps/user-website/src/app/api/news/[id]/related/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:17.859Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "00a34556fac3abb650a83fe6aa6114934e90899c5a17e9e108eacd0182764309",
+        "candidate_before_evidence_hash": "00a34556fac3abb650a83fe6aa6114934e90899c5a17e9e108eacd0182764309",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-29726d1b8adca56aab267cd5",
+      "file": "apps/user-website/src/app/api/news/[id]/related/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:17.859Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "00a34556fac3abb650a83fe6aa6114934e90899c5a17e9e108eacd0182764309",
+        "candidate_before_evidence_hash": "00a34556fac3abb650a83fe6aa6114934e90899c5a17e9e108eacd0182764309",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-cff516ee288af0cdcd1d91d5",
+      "file": "apps/user-website/src/app/api/news/[id]/adjacent/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:20.278Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2182d93cb830c6614cfb2bbac613bf59dd8710bfc2b6780b8732c346444af8e1",
+        "candidate_before_evidence_hash": "2182d93cb830c6614cfb2bbac613bf59dd8710bfc2b6780b8732c346444af8e1",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-cff516ee288af0cdcd1d91d5",
+      "file": "apps/user-website/src/app/api/news/[id]/adjacent/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:20.278Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2182d93cb830c6614cfb2bbac613bf59dd8710bfc2b6780b8732c346444af8e1",
+        "candidate_before_evidence_hash": "2182d93cb830c6614cfb2bbac613bf59dd8710bfc2b6780b8732c346444af8e1",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-bf92a78c593049d3b3d033b3",
+      "file": "apps/user-website/src/app/api/categories/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:22.699Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2fa6237bcb3ce17778545e3446e7cc5fa7f51bd87143ef024aa6ef419f469135",
+        "candidate_before_evidence_hash": "2fa6237bcb3ce17778545e3446e7cc5fa7f51bd87143ef024aa6ef419f469135",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-bf92a78c593049d3b3d033b3",
+      "file": "apps/user-website/src/app/api/categories/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:22.699Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2fa6237bcb3ce17778545e3446e7cc5fa7f51bd87143ef024aa6ef419f469135",
+        "candidate_before_evidence_hash": "2fa6237bcb3ce17778545e3446e7cc5fa7f51bd87143ef024aa6ef419f469135",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-82d804676e94fdb9df29f35e",
+      "file": "apps/user-website/src/app/api/ads/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:25.142Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "9fcfc7a6c785b2c76ff148da223670aea4c4249af47b578b58686ef431d559d0",
+        "candidate_before_evidence_hash": "9fcfc7a6c785b2c76ff148da223670aea4c4249af47b578b58686ef431d559d0",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-82d804676e94fdb9df29f35e",
+      "file": "apps/user-website/src/app/api/ads/route.ts",
+      "line": 3,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:25.142Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "9fcfc7a6c785b2c76ff148da223670aea4c4249af47b578b58686ef431d559d0",
+        "candidate_before_evidence_hash": "9fcfc7a6c785b2c76ff148da223670aea4c4249af47b578b58686ef431d559d0",
+        "post_change_evidence_hash_at_previous_location": "cdf4cf18af65628e09eb2284c37d101272a453c9d4c3faca7dc15c4a77580d87",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-fb1dce34f196add837b7c0ba",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 8,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:27.609Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "candidate_before_evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "post_change_evidence_hash_at_previous_location": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-fb1dce34f196add837b7c0ba",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 8,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:27.609Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "candidate_before_evidence_hash": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "post_change_evidence_hash_at_previous_location": "7df5a89314937c2e500aa4a7411bf185af1a6f315269fa283810016efd9b57a3",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-75360bb17398535a6375b969",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 17,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "fixed_candidate",
+      "decision": "repair_observed",
+      "at": "2026-08-30T11:45:30.070Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "candidate_before_evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "post_change_evidence_hash_at_previous_location": "4ef99a427d9a7c37ce80ed4e8a7f728e9214b8b6bb0b285a21f7d81135a70acf",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-75360bb17398535a6375b969",
+      "file": "apps/admin-website/src/lib/revalidate.ts",
+      "line": 17,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "服务端请求伪造",
+      "status": "static_verified",
+      "decision": "static_rescan_passed",
+      "at": "2026-08-30T11:45:30.070Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "observed",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "candidate_before_evidence_hash": "694309e0e063f66c2244a6ca4a282ba86a6c64bb0c1d0440224c9078cdaac6a9",
+        "post_change_evidence_hash_at_previous_location": "4ef99a427d9a7c37ce80ed4e8a7f728e9214b8b6bb0b285a21f7d81135a70acf",
+        "runtime_oracle": false,
+        "verification": {
+          "method": "mimosa-posttool-static-rescan",
+          "finding_absent": true,
+          "runtime_oracle": false
+        }
+      }
+    },
+    {
+      "finding_id": "mimosa-eee543fd79d1b38d790f2728",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-test/pattern-a.ts",
+      "line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "stop_rewake",
+      "at": "2026-08-30T11:53:43.621Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-0f1ed0dd84737fbf34bdcadd",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-a.ts",
+      "line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "stop_rewake",
+      "at": "2026-08-30T11:53:43.621Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-1f0e2a29cc022b45bf9510f9",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-c.ts",
+      "line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "status": "blocked",
+      "decision": "stop_rewake",
+      "at": "2026-08-30T11:53:43.621Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-acad42184fc67fa580b8b056",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/literal_open.py",
+      "line": 5,
+      "severity": "high",
+      "category": "路径穿越",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-08-30T11:53:43.621Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "2fcdaf5c08302caba616bdfcc8ccbd3c6ae331c820a25ed40e0c2a4b63f9f1ca",
+        "runtime_oracle": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "mimosa-eee543fd79d1b38d790f2728",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-test/pattern-a.ts",
+      "line": 5,
+      "end_line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "blocked",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "C:/Users/user/AppData/Local/Temp/mimosa-test/pattern-a.ts",
+          "line": 5,
+          "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": true
+    },
+    {
+      "finding_id": "mimosa-0f1ed0dd84737fbf34bdcadd",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-a.ts",
+      "line": 5,
+      "end_line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "blocked",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-a.ts",
+          "line": 5,
+          "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": true
+    },
+    {
+      "finding_id": "mimosa-1f0e2a29cc022b45bf9510f9",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-c.ts",
+      "line": 5,
+      "end_line": 5,
+      "severity": "high",
+      "category": "SSRF 服务端请求伪造",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "blocked",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/pattern-c.ts",
+          "line": 5,
+          "evidence_hash": "f4b1212a86c75ff3f1a43561abc3f7c622689c2fbe83ed5cc8549b43a98f20f7",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": true
+    },
+    {
+      "finding_id": "mimosa-acad42184fc67fa580b8b056",
+      "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/literal_open.py",
+      "line": 5,
+      "end_line": 5,
+      "severity": "high",
+      "category": "路径穿越",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "C:/Users/user/AppData/Local/Temp/mimosa-audit-test/literal_open.py",
+          "line": 5,
+          "evidence_hash": "2fcdaf5c08302caba616bdfcc8ccbd3c6ae331c820a25ed40e0c2a4b63f9f1ca",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    }
+  ],
+  "artifacts": {
+    "immutable_report": ".mimosa/reports/task-review-sess_432e6902-7089-4dd1-a952-47fefcc0e4f6-20260830T115343621Z-1844-fdb1a067cba7.json",
+    "latest_report": ".mimosa/reports/task-review-sess_432e6902-7089-4dd1-a952-47fefcc0e4f6.json",
+    "history_summary": ".mimosa/history/run-20260830T115343621Z-1844-fdb1a067cba7.json"
+  }
+}
