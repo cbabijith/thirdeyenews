@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { toAdminUrl } from '@/lib/adminUrl'
 
 export const runtime = 'edge'
 
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
     const position = searchParams.get('position') || 'main_banner'
     const limit = searchParams.get('limit') || '3'
     const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(`${process.env.ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'}/api/public/ads?position=${position}&limit=${limit}`, {
+    const res = await fetch(toAdminUrl(`/api/public/ads?position=${position}&limit=${limit}`), {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

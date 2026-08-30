@@ -7,7 +7,6 @@ import { api, NewsItem, Category, Ad } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
-import { FloatingVideoAd } from '@/components/FloatingVideoAd'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
 import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
@@ -406,12 +405,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
         )}
       </main>
 
-      <ShareButton
-        onShare={handleShare}
-        positionClass="bottom-[13.75rem] right-3 md:bottom-[19rem] md:right-6"
-      />
-
-      <FloatingVideoAd />
+      <ShareButton onShare={handleShare} />
 
       <Footer />
     </div>

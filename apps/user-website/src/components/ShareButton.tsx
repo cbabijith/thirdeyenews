@@ -4,14 +4,13 @@ import { useState } from 'react'
 
 interface ShareButtonProps {
   onShare: () => void
-  positionClass?: string
 }
 
-export function ShareButton({ onShare, positionClass = 'bottom-6 right-4' }: ShareButtonProps) {
+export function ShareButton({ onShare }: ShareButtonProps) {
   const [showLabel, setShowLabel] = useState(false)
 
   return (
-    <div className={`fixed z-50 ${positionClass}`}>
+    <div className="fixed bottom-6 right-4 z-50">
       <button
         onClick={onShare}
         onMouseEnter={() => setShowLabel(true)}
