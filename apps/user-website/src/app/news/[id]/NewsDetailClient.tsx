@@ -39,6 +39,9 @@ const getYouTubeEmbedUrl = (url: string) => {
   return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : ''
 }
 
+// News in these categories renders without any ads on the detail page.
+const AD_FREE_CATEGORY_SLUGS = ['classified', 'obituary']
+
 function renderAdHtml(ad: { image_url?: string | null; link_url?: string | null; youtube_link?: string | null }): string {
   if (ad.youtube_link) {
     const embedUrl = getYouTubeEmbedUrl(ad.youtube_link)
@@ -183,6 +186,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
 
   const authorName = news.profiles?.full_name || 'സ്റ്റാഫ് റിപ്പോർട്ടർ'
   const formatDateShort = (date: string) => formatShortDate(date)
+  const isAdFreeCategory = AD_FREE_CATEGORY_SLUGS.includes((news.categories?.slug || '').toLowerCase())
 
 
   return (
@@ -290,18 +294,20 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
                   color: #93c5fd !important;
                 }
               ` }} />
-              <div 
-                className="news-content-area leading-relaxed text-[16px] md:text-[17px]" 
-                dangerouslySetInnerHTML={{ __html: getContentWithAds(news.content, news.ad_image_url, news.ad_link_url, ads) }} 
+              <div
+                className="news-content-area leading-relaxed text-[16px] md:text-[17px]"
+                dangerouslySetInnerHTML={{ __html: isAdFreeCategory ? news.content : getContentWithAds(news.content, news.ad_image_url, news.ad_link_url, ads) }}
               />
             </>
           )}
         </article>
 
         {/* Ad Banners */}
-        <div className="w-full pt-2">
-          <AdBanner maxAds={3} ads={ads?.filter(ad => !ad.youtube_link)} />
-        </div>
+        {!isAdFreeCategory && (
+          <div className="w-full pt-2">
+            <AdBanner maxAds={3} ads={ads?.filter(ad => !ad.youtube_link)} />
+          </div>
+        )}
 
         {/* Adjacent News Navigation */}
         {adjacentNews && (adjacentNews.prev || adjacentNews.next) && (
