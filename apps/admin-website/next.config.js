@@ -3,7 +3,12 @@ const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ['sharp'],
   outputFileTracingIncludes: {
-    '/api/upload': ['../../node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/**/*', '../../node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/**/*', '../../node_modules/.pnpm/sharp@*/node_modules/sharp/**/*'],
+    '/api/upload': [
+      '../../node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-linux-x64/lib/*.node',
+      '../../node_modules/.pnpm/@img+sharp-linux-x64@*/node_modules/@img/sharp-linux-x64/package.json',
+      '../../node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64/lib/*',
+      '../../node_modules/.pnpm/@img+sharp-libvips-linux-x64@*/node_modules/@img/sharp-libvips-linux-x64/package.json',
+    ],
   },
   images: {
     unoptimized: false,
