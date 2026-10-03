@@ -44,9 +44,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </header>
 
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${
+        className={`min-w-0 flex-1 transition-all duration-300 ease-in-out ${
           sidebarOpen ? 'md:ml-64' : 'md:ml-20'
-        } ml-0 pb-20 md:pb-0`}
+        } ml-0 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0`}
       >
         <div className="p-4 sm:p-6 lg:p-8">
           {shouldBlock ? (

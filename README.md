@@ -246,3 +246,26 @@ flutter build ios  # iOS
 ## License
 
 MIT
+
+## Admin team management
+
+The admin website has a responsive `/team` screen in the desktop sidebar and mobile bottom navigation. Admins manage staff and readers; superadmins also manage admins. Superadmin accounts and the signed-in account cannot be deleted or demoted from this screen. Each manager can change their own password after verifying the current password.
+
+Before deploying this feature:
+
+1. Apply `supabase/migrations/011_team_management.sql` to the same Supabase project used for authentication. It closes the old profile role-editing and public promotion-function loopholes, and synchronizes Auth account creation, name/email/role updates and deletion with profiles in one transaction. The Team API fails closed until this migration is present. The SQL is idempotent; it is not applied by the Drizzle migration command.
+2. Set `SUPABASE_SERVICE_ROLE_KEY` **only on the admin server**, alongside the existing `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. All three must belong to the same project. Never use a `NEXT_PUBLIC_` prefix for the service key. The example file contains a placeholder rather than a usable service key.
+3. Deploy the admin app, then verify a real staff account can be created, signed in, edited, reset and deleted. Deleting an account preserves its news articles, removes its profile and cascades comments/likes.
+
+New accounts are confirmed by the administrator. Password resets set a new password directly; they do not send email or expose the previous password. Managers can generate a random password, reveal it with the eye control and copy it before saving. Share credentials securely. Passwords are cleared when the dialog closes and are never stored in profiles or returned by the Team API.
+
+Validation commands:
+
+```sh
+pnpm --filter admin-website typecheck
+pnpm --filter admin-website test:team
+pnpm --filter admin-website exec playwright install chromium
+pnpm --filter admin-website test:team:e2e
+```
+
+The browser tests start an isolated Auth/PostgREST fixture on port 54329 and Next.js on 3100, and never access a real Supabase project. `apps/admin-website/tests/team-database.sql` additionally verifies the migration against PostgreSQL; run it with `psql -v ON_ERROR_STOP=1 -f ...` only on a disposable, empty database. It creates test Auth tables and roles and checks role escalation protection, atomic profile synchronization, migration repeatability and preservation of published content on account deletion.
