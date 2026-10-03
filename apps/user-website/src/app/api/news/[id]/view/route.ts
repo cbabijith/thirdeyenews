@@ -1,22 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { toAdminUrl } from '@/lib/adminUrl'
-
-export const runtime = 'edge'
+import { NextRequest } from 'next/server'
+import { publicProxy } from '@/lib/publicProxy'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const { id } = await params
-    const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(toAdminUrl(`/api/public/news/${id}/view`), {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-    const json = await res.json()
-    return NextResponse.json(json)
-  } catch (err) {
-    console.error('View increment proxy error:', err)
-    return NextResponse.json({ success: false })
-  }
+  const { id } = await params
+  return publicProxy(`/news/${encodeURIComponent(id)}/view${req.nextUrl.search}`, 'POST')
 }

@@ -1,36 +1,22 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, type ReactNode } from 'react'
+import { readStorage, writeStorage } from '@/lib/browserStorage'
 import Link from 'next/link'
-import Image from 'next/image'
+import { NewsImage as Image } from '@/components/NewsImage'
 import { api, NewsItem, Category, Ad } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { ShareButton } from '@/components/ShareButton'
 import { AdBanner } from '@/components/AdBanner'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
-import { formatMalayalamDate, formatShortDate } from '@/lib/dateFormat'
-
-interface RelatedNews {
-  id: string
-  title: string
-  slug?: string | null
-  image_url?: string | null
-  published_at?: string | null
-  categories?: {
-    name: string
-  }
-}
+import { articleUrl, mediaUrl } from '@/lib/site'
+import { formatMalayalamDate } from '@/lib/dateFormat'
 
 interface NewsDetailClientProps {
   news: NewsItem
-  relatedNews: RelatedNews[]
-  adjacentNews: {
-    prev: NewsItem | null
-    next: NewsItem | null
-  }
   categories?: Category[]
-  ads?: Ad[]
+  children?: ReactNode
 }
 
 const getYouTubeEmbedUrl = (url: string) => {
@@ -50,7 +36,7 @@ function renderAdHtml(ad: { image_url?: string | null; link_url?: string | null;
     }
   }
   if (ad.image_url) {
-    const imgHtml = `<img src="${ad.image_url}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
+    const imgHtml = `<img src="${mediaUrl(ad.image_url)}" alt="Advertisement" class="w-full h-auto rounded-xl my-4 block object-cover max-h-[300px]" style="border-radius: 0.75rem; margin-top: 1rem; margin-bottom: 1rem; display: block; width: 100%; height: auto; object-fit: cover; max-height: 300px;" />`
     if (ad.link_url) {
       return `<a href="${ad.link_url}" target="_blank" rel="noopener noreferrer" style="display: block; width: 100%;">${imgHtml}</a>`
     }
@@ -102,18 +88,29 @@ function getContentWithAds(
   return result
 }
 
-export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacentNews, categories, ads }: NewsDetailClientProps) {
+export function NewsDetailClient({ news: initialNews, categories, children }: NewsDetailClientProps) {
   const { colors } = useThemeStore()
   const news = initialNews
   const viewCountedRef = useRef(false)
+  const [ads, setAds] = useState<Ad[]>([])
+  const isAdFreeCategory = AD_FREE_CATEGORY_SLUGS.includes((news.categories?.slug || '').toLowerCase())
+
+  useEffect(() => {
+    if (isAdFreeCategory) return
+    let active = true
+    void api.getAds('main_banner', 3).then(data => {
+      if (active && Array.isArray(data)) setAds(data)
+    }).catch(error => console.error('Optional article ads unavailable', error))
+    return () => { active = false }
+  }, [isAdFreeCategory, news.id])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !viewCountedRef.current) {
       viewCountedRef.current = true
       const storageKey = `viewed_${initialNews.id}`
-      const hasViewed = sessionStorage.getItem(storageKey)
+      const hasViewed = readStorage('sessionStorage', storageKey)
       if (!hasViewed) {
-        sessionStorage.setItem(storageKey, 'true')
+        writeStorage('sessionStorage', storageKey, 'true')
         api.incrementView(initialNews.id)
       }
     }
@@ -122,7 +119,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
   const handleShare = async () => {
     if (typeof window === 'undefined' || !news) return
 
-    const newsUrl = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
+    const newsUrl = articleUrl(news)
 
     const normalizeMalayalam = (text: string) => {
       if (!text) return text
@@ -152,7 +149,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
 
     if (canShareFiles && news.image_url) {
       try {
-        const response = await fetch(news.image_url)
+        const response = await fetch(mediaUrl(news.image_url))
         const blob = await response.blob()
         const file = new File([blob], 'thirdeyenews.jpg', { type: blob.type || 'image/jpeg' })
 
@@ -185,8 +182,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
     : ''
 
   const authorName = news.profiles?.full_name || 'സ്റ്റാഫ് റിപ്പോർട്ടർ'
-  const formatDateShort = (date: string) => formatShortDate(date)
-  const isAdFreeCategory = AD_FREE_CATEGORY_SLUGS.includes((news.categories?.slug || '').toLowerCase())
+
 
 
   return (
@@ -234,11 +230,14 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
         {/* Featured Image */}
         {news.image_url && (
           <div className="w-full rounded-xl overflow-hidden bg-surface-container mt-1">
-            <img
+            <Image
+              width={1200}
+              height={675}
+              sizes="(max-width: 700px) 100vw, 700px"
+              priority
               src={news.image_url}
               alt={news.title}
               className="w-full h-auto block"
-              loading="eager"
             />
           </div>
         )}
@@ -309,106 +308,7 @@ export function NewsDetailClient({ news: initialNews, relatedNews = [], adjacent
           </div>
         )}
 
-        {/* Adjacent News Navigation */}
-        {adjacentNews && (adjacentNews.prev || adjacentNews.next) && (
-          <section className="w-full flex flex-col gap-3 pt-6 border-t border-border mt-2">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant/40 mb-1">
-              Continue Reading
-            </h3>
-
-            {adjacentNews.next && (
-              <Link
-                href={`/news/${adjacentNews.next.slug || adjacentNews.next.id}`}
-                prefetch={false}
-                className="group flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-container hover:border-[#cc0000]/30 hover:bg-surface-container-high transition-all duration-300"
-              >
-                {adjacentNews.next.image_url && (
-                  <img
-                    src={adjacentNews.next.image_url}
-                    alt={adjacentNews.next.title}
-                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                    loading="lazy"
-                  />
-                )}
-                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 text-[#cc0000]">
-                    <span className="font-bold text-[11px] uppercase tracking-wider">അടുത്ത വാർത്ത</span>
-                    <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                  </div>
-                  <h4 className="text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                    {adjacentNews.next.title}
-                  </h4>
-                </div>
-              </Link>
-            )}
-
-            {adjacentNews.prev && (
-              <Link
-                href={`/news/${adjacentNews.prev.slug || adjacentNews.prev.id}`}
-                prefetch={false}
-                className="group flex items-center gap-3 p-3 rounded-xl border border-border bg-surface-container hover:border-[#cc0000]/30 hover:bg-surface-container-high transition-all duration-300"
-              >
-                <div className="flex flex-col gap-1 min-w-0 flex-1 items-end text-right">
-                  <div className="flex items-center gap-1.5 text-[#cc0000]">
-                    <span className="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                    <span className="font-bold text-[11px] uppercase tracking-wider">മുൻപത്തെ വാർത്ത</span>
-                  </div>
-                  <h4 className="text-[14px] font-bold text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                    {adjacentNews.prev.title}
-                  </h4>
-                </div>
-                {adjacentNews.prev.image_url && (
-                  <img
-                    src={adjacentNews.prev.image_url}
-                    alt={adjacentNews.prev.title}
-                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-                    loading="lazy"
-                  />
-                )}
-              </Link>
-            )}
-          </section>
-        )}
-
-        {/* Related Articles */}
-        {relatedNews && relatedNews.length > 0 && (
-          <section className="w-full pt-4">
-            <h3 className="text-on-surface text-[14px] font-bold mb-3 flex items-center gap-2">
-              <span className="w-1 h-4 bg-primary rounded-full"></span>
-              ബന്ധപ്പെട്ട വാർത്തകൾ
-            </h3>
-            <div className="flex flex-col">
-              {relatedNews.map((item, index) => (
-                <Link key={item.id} href={`/news/${item.slug || item.id}`} prefetch={false} className="block group">
-                  <div className={`flex gap-3 py-2.5 ${index !== relatedNews.length - 1 ? 'border-b border-border' : ''}`}>
-                    {item.image_url && (
-                      <div className="relative w-14 h-14 flex-shrink-0">
-                        <Image
-                          src={item.image_url}
-                          alt={item.title}
-                          fill
-                          sizes="56px"
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    )}
-                    <div className="flex flex-col justify-center flex-1 min-w-0 gap-1">
-                      <h4 className="text-[13px] font-medium text-on-surface line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h4>
-                      {item.published_at && (
-                        <span className="text-on-surface-variant text-[10px] flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[11px]">schedule</span>
-                          {formatDateShort(item.published_at)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {children}
       </main>
 
       <ShareButton onShare={handleShare} />

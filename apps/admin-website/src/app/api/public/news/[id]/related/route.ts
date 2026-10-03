@@ -25,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ data: related }, {
       headers: {
         ...corsHeaders,
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+        'Cache-Control': 'no-store',
       }
     })
   } catch (error) {

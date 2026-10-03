@@ -1,11 +1,14 @@
 'use client'
 
+import { readStorage, writeStorage } from '@/lib/browserStorage'
 import { useState, useEffect } from 'react'
 import { useThemeStore } from '@/store/themeStore'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api, Category } from '@/lib/api'
 
+const EMPTY_CATEGORIES: Category[] = []
+const EMPTY_NEWS: NewsItem[] = []
 type ThemeMode = 'light' | 'dark'
 
 function applyTheme(mode: ThemeMode) {
@@ -28,7 +31,7 @@ interface HeaderProps {
   categories?: Category[]
 }
 
-export function Header({ pinnedNews = [], categories: propCategories = [] }: HeaderProps) {
+export function Header({ pinnedNews = EMPTY_NEWS, categories: propCategories = EMPTY_CATEGORIES }: HeaderProps) {
   const { colors } = useThemeStore()
   const router = useRouter()
   const [categories, setCategories] = useState<Category[]>(propCategories)
@@ -37,7 +40,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
   const [darkMode, setDarkMode] = useState<ThemeMode>('light')
 
   useEffect(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') as ThemeMode | null : null
+    const stored = readStorage('localStorage', 'theme') as ThemeMode | null
     if (stored) {
       setDarkMode(stored)
       applyTheme(stored)
@@ -48,7 +51,7 @@ export function Header({ pinnedNews = [], categories: propCategories = [] }: Hea
     const next = darkMode === 'light' ? 'dark' : 'light'
     setDarkMode(next)
     applyTheme(next)
-    if (typeof window !== 'undefined') localStorage.setItem('theme', next)
+    writeStorage('localStorage', 'theme', next)
   }
 
   useEffect(() => {

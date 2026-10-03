@@ -1,46 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { toAdminUrl } from '@/lib/adminUrl'
-
-export const runtime = 'edge'
-
-const newsCache = new Map<string, { data: any; ts: number }>()
-const NEWS_CACHE_TTL = 60_000 // 60 seconds cache
+import { NextRequest } from 'next/server'
+import { publicProxy } from '@/lib/publicProxy'
 
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url)
-    const path = searchParams.toString()
-
-    const cached = newsCache.get(path)
-    if (cached && Date.now() - cached.ts < NEWS_CACHE_TTL) {
-      return NextResponse.json(cached.data)
-    }
-
-    const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''
-    const res = await fetch(toAdminUrl(`/api/public/news?${path}`), {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-    const json = await res.json()
-    newsCache.set(path, { data: json, ts: Date.now() })
-    return NextResponse.json(json, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
-      },
-    })
-  } catch (err) {
-    console.error('News proxy error:', err)
-    const { searchParams } = new URL(req.url)
-    const path = searchParams.toString()
-    const cached = newsCache.get(path)
-    if (cached) {
-      return NextResponse.json(cached.data, {
-        headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
-        },
-      })
-    }
-    return NextResponse.json({ data: [] })
-  }
+  return publicProxy('/news' + req.nextUrl.search)
 }

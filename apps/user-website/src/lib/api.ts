@@ -1,71 +1,20 @@
-function getBaseUrl(): string {
-  if (typeof window !== 'undefined') {
-    return ''
-  }
-  return process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
-}
-
-function getHeaders(): Record<string, string> {
-  if (typeof window !== 'undefined') {
-    return { 'Content-Type': 'application/json' }
-  }
-  const token = process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  }
-}
-
-function mapPath(path: string): string {
-  if (typeof window !== 'undefined') {
-    return path
-  }
-  return path.replace(/^\/api\//, '/api/public/')
-}
+import { ApiError, fetchJson } from './http'
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const baseUrl = getBaseUrl()
-  const fullPath = mapPath(path)
-  const res = await fetch(`${baseUrl}${fullPath}`, {
+  const server = typeof window === 'undefined'
+  const base = server ? (process.env.ADMIN_API_URL || 'https://admin.thirdeyenewslive.com') : ''
+  const fullPath = server ? path.replace(/^\/api\//, '/api/public/') : path
+  const json = await fetchJson<{ data: T; error?: string }>(`${base}${fullPath}`, {
     ...options,
-    headers: {
-      ...getHeaders(),
-      ...options?.headers,
-    },
-    next: {
-      revalidate: 300,
-      ...options?.next,
-    },
+    headers: server ? { Authorization: `Bearer ${process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || ''}` } : undefined,
+    ...(server ? { next: { revalidate: 60, tags: ['public-content'] } } : { cache: 'no-store' }),
   })
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`)
-  }
-
-  const json = await res.json()
-  if (json.error) {
-    throw new Error(json.error)
-  }
-  if (json.data === undefined || json.data === null) {
-    return [] as unknown as T
-  }
-  return json.data as T
+  if (json.error || !('data' in json)) throw new ApiError('Invalid content service response', 502)
+  return json.data
 }
 
-async function apiPost<T>(path: string): Promise<T> {
-  const baseUrl = getBaseUrl()
-  const fullPath = mapPath(path)
-  const res = await fetch(`${baseUrl}${fullPath}`, {
-    method: 'POST',
-    headers: getHeaders(),
-  })
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`)
-  }
-
-  const json = await res.json()
-  return json as T
+async function apiPost(path: string): Promise<unknown> {
+  return fetchJson(path, { method: 'POST', cache: 'no-store' })
 }
 
 export interface Category {
@@ -81,6 +30,8 @@ export interface NewsItem {
   description?: string | null
   image_url?: string | null
   youtube_link?: string | null
+  created_at?: string | null
+  updated_at?: string | null
   published_at?: string | null
   is_pinned?: boolean
   is_published?: boolean
@@ -110,22 +61,12 @@ export interface Ad {
   display_order: number
 }
 
-const memoryCache = new Map<string, { data: any; ts: number }>()
-const DEFAULT_CACHE_TTL = 300_000 // 5 minutes cache
-
-async function cachedFetch<T>(key: string, fetchFn: () => Promise<T>, ttl = DEFAULT_CACHE_TTL): Promise<T> {
-  const cached = memoryCache.get(key)
-  if (cached && Date.now() - cached.ts < ttl) {
-    return cached.data
-  }
-  const data = await fetchFn()
-  memoryCache.set(key, { data, ts: Date.now() })
-  return data
-}
-
 export const api = {
+  async getSitemapPage(page: number): Promise<{ articles: { id: string; slug: string | null; updated_at: string }[]; total: number; categories: { id: string }[] }> {
+    return apiFetch(`/api/sitemap?page=${page}`)
+  },
   async getCategories(): Promise<Category[]> {
-    return cachedFetch('categories', () => apiFetch<Category[]>('/api/categories'))
+    return apiFetch<Category[]>('/api/categories')
   },
 
   async getPinnedNews(categoryId?: string, limit: number = 5): Promise<NewsItem[]> {
@@ -152,30 +93,30 @@ export const api = {
 
   async getNewsById(id: string): Promise<NewsItem | null> {
     try {
-      return await apiFetch<NewsItem>(`/api/news/${id}`)
-    } catch {
+      return await apiFetch<NewsItem>(`/api/news/${encodeURIComponent(id)}`)
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 404) throw error
       return null
     }
   },
 
   async getRelatedNews(id: string, limit: number = 4): Promise<NewsItem[]> {
-    return apiFetch<NewsItem[]>(`/api/news/${id}/related?limit=${limit}`)
+    return apiFetch<NewsItem[]>(`/api/news/${encodeURIComponent(id)}/related?limit=${limit}`)
   },
 
   async getAdjacentNews(id: string): Promise<{ prev: NewsItem | null; next: NewsItem | null }> {
-    return apiFetch<{ prev: NewsItem | null; next: NewsItem | null }>(`/api/news/${id}/adjacent`)
+    return apiFetch<{ prev: NewsItem | null; next: NewsItem | null }>(`/api/news/${encodeURIComponent(id)}/adjacent`)
   },
 
   async incrementView(id: string): Promise<void> {
     try {
-      await apiPost(`/api/news/${id}/view`)
+      await apiPost(`/api/news/${encodeURIComponent(id)}/view`)
     } catch (err) {
       console.error('Failed to increment view:', err)
     }
   },
 
   async getAds(position: string = 'main_banner', limit: number = 3): Promise<Ad[]> {
-    const key = `ads_${position}_${limit}`
-    return cachedFetch(key, () => apiFetch<Ad[]>(`/api/ads?position=${position}&limit=${limit}`))
+    return apiFetch<Ad[]>(`/api/ads?position=${encodeURIComponent(position)}&limit=${limit}`)
   },
 }

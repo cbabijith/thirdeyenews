@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -11,8 +12,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://thirdeyenewslive.com'),
-  title: 'ThirdEye News - User Website',
-  description: 'ThirdEye News User Portal',
+  title: 'ThirdEye News | മലയാളം വാർത്തകൾ',
+  description: 'കോട്ടയം, കേരളം, ഇന്ത്യ, ലോകം എന്നിവിടങ്ങളിലെ ഏറ്റവും പുതിയ മലയാളം വാർത്തകൾ. ThirdEye News.',
   icons: {
     icon: '/logo.svg',
     apple: '/logo.svg',
@@ -42,10 +43,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="ml">
       <head>
         <meta name="google-adsense-account" content="ca-pub-9913400627999649" />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9913400627999649" crossOrigin="anonymous" />
+        <Script strategy="lazyOnload" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9913400627999649" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             try {

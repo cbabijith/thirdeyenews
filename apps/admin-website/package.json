@@ -11,7 +11,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test:team": "tsx --test tests/team-policy.test.ts",
+    "test:team:e2e": "playwright test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.0.0",
@@ -19,9 +21,9 @@
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/extension-link": "^3.23.6",
     "@tiptap/react": "^3.23.6",
     "@tiptap/starter-kit": "^3.23.6",
-    "@tiptap/extension-link": "^3.23.6",
     "autoprefixer": "^10.4.17",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -42,12 +44,14 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "drizzle-kit": "^0.31.1",
     "eslint": "^8.56.0",
     "eslint-config-next": "16.2.6",
+    "tsx": "^4.23.15",
     "typescript": "^5.3.3"
   }
 }

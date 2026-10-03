@@ -1,126 +1,62 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
-import { cache } from 'react'
-import { api, NewsItem } from '@/lib/api'
+import { cache, Suspense } from 'react'
+import { api } from '@/lib/api'
+import { ApiError } from '@/lib/http'
+import { articlePath, articleUrl, mediaUrl, SITE_URL } from '@/lib/site'
 import { NewsDetailClient } from './NewsDetailClient'
+import { ArticleRecommendations } from './ArticleRecommendations'
 
-export const revalidate = 3600
+export const revalidate = 60
 
-interface RelatedNews {
-  id: string
-  title: string
-  slug?: string | null
-  image_url?: string | null
-  published_at?: string | null
-  categories?: {
-    name: string
+const fetchNews = cache(async (id: string) => {
+  const news = await api.getNewsById(id)
+  if (!news || !news.is_published) return null
+  if (typeof news.id !== 'string' || typeof news.title !== 'string' ||
+      (news.content != null && typeof news.content !== 'string')) {
+    throw new ApiError('Invalid article response', 502)
   }
-}
-
-const newsCache = new Map<string, { data: NewsItem | null; ts: number }>()
-const CACHE_TTL = 60_000
-
-const fetchNews = cache(async (id: string): Promise<NewsItem | null> => {
-  const cached = newsCache.get(id)
-  if (cached && Date.now() - cached.ts < CACHE_TTL) {
-    return cached.data
-  }
-  const data = await api.getNewsById(id)
-  if (!data || !data.is_published) {
-    // Do not cache null/unpublished news so deleted items trigger instant 404 upon revalidation
-    newsCache.delete(id)
-    return null
-  }
-  newsCache.set(id, { data, ts: Date.now() })
-  return data
+  return news
 })
 
-async function fetchRelatedNews(newsId: string): Promise<RelatedNews[]> {
-  try {
-    const data = await api.getRelatedNews(newsId, 4)
-    return Array.isArray(data) ? (data as unknown as RelatedNews[]) : []
-  } catch (err) {
-    console.error('Failed to fetch related news:', err)
-    return []
-  }
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params
-  const news = await fetchNews(id)
-
-  if (!news) {
-    return {
-      title: 'ThirdEye News',
-      description: 'Malayalam News Portal',
-    }
-  }
-
-  const title = news.title || 'ThirdEye News'
-  const description = news.description || news.content?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Malayalam News Portal'
-  const image = news.image_url || '/logo.svg'
-  const url = `https://thirdeyenewslive.com/news/${news.slug || news.id}`
-
+  const news = await fetchNews((await params).id)
+  if (!news) return { title: 'വാർത്ത കണ്ടെത്താനായില്ല', robots: { index: false, follow: true } }
+  const description = news.description || news.content?.replace(/<[^>]*>/g, '').slice(0, 160) || news.title
+  const image = mediaUrl(news.image_url)
   return {
-    title,
+    title: news.title,
     description,
+    alternates: { canonical: articleUrl(news) },
     openGraph: {
-      title,
-      description,
-      url,
-      siteName: 'ThirdEye News',
-      locale: 'ml_IN',
-      type: 'article',
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-      publishedTime: news.published_at || undefined,
+      title: news.title, description, url: articleUrl(news), siteName: 'ThirdEye News',
+      locale: 'ml_IN', type: 'article', images: [{ url: image, alt: news.title }],
+      publishedTime: news.published_at || undefined, modifiedTime: news.updated_at || undefined,
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [image],
-    },
+    twitter: { card: 'summary_large_image', title: news.title, description, images: [image] },
   }
 }
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-
-  // Start fetching all data concurrently to prevent waterfalls
-  const newsPromise = fetchNews(id)
-  const relatedNewsPromise = fetchRelatedNews(id).catch(() => [])
-  const adjacentNewsPromise = api.getAdjacentNews(id).catch(() => ({ prev: null, next: null }))
-  const categoriesPromise = api.getCategories().catch(() => [])
-  const adsPromise = api.getAds('main_banner', 3).catch(() => [])
-
-  const [news, relatedNews, adjacentNews, categories, ads] = await Promise.all([
-    newsPromise,
-    relatedNewsPromise,
-    adjacentNewsPromise,
-    categoriesPromise,
-    adsPromise
-  ])
-
-  if (!news) {
-    notFound()
+  const news = await fetchNews(id)
+  if (!news) notFound()
+  if (id !== (news.slug || news.id)) permanentRedirect(articlePath(news))
+  const structuredData = {
+    '@context': 'https://schema.org', '@type': 'NewsArticle',
+    headline: news.title,
+    description: news.description || undefined,
+    image: news.image_url ? [mediaUrl(news.image_url)] : undefined,
+    datePublished: news.published_at || undefined,
+    dateModified: news.updated_at || undefined,
+    inLanguage: 'ml', mainEntityOfPage: articleUrl(news),
+    author: news.profiles?.full_name ? { '@type': 'Person', name: news.profiles.full_name } : { '@type': 'Organization', name: 'ThirdEye News', url: SITE_URL },
+    publisher: { '@type': 'Organization', name: 'ThirdEye News', url: SITE_URL, logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.svg` } },
   }
-
-  return (
-    <NewsDetailClient
-      key={news.id}
-      news={news}
-      relatedNews={relatedNews}
-      adjacentNews={adjacentNews}
-      categories={categories}
-      ads={ads}
-    />
-  )
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
+    <NewsDetailClient key={news.id} news={news}>
+      <Suspense fallback={null}><ArticleRecommendations id={news.id} /></Suspense>
+    </NewsDetailClient>
+  </>
 }
-

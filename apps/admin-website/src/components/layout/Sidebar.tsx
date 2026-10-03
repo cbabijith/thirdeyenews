@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useNavigationStore } from '@/store/navigationStore'
-import { LayoutDashboard, Newspaper, Folder, Megaphone, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
+import { LayoutDashboard, Newspaper, Folder, Megaphone, ChevronLeft, ChevronRight, LogOut, Users } from 'lucide-react'
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -18,6 +18,7 @@ export function Sidebar() {
     { href: '/content/news', label: 'News', icon: Newspaper },
     { href: '/content/categories', label: 'Categories', icon: Folder },
     { href: '/content/ads', label: 'Ads', icon: Megaphone },
+    ...(hasRole(['superadmin', 'admin']) ? [{ href: '/team', label: 'Team', icon: Users }] : []),
   ]
 
   const handleNavClick = (href: string) => {
@@ -69,6 +70,7 @@ export function Sidebar() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     onClick={() => handleNavClick(item.href)}
                     className={`flex items-center rounded-lg transition-all duration-200 ${
                       sidebarOpen ? 'px-3 py-2 gap-3' : 'p-2.5 justify-center'
@@ -136,7 +138,7 @@ export function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around z-40 md:hidden pb-safe shadow-lg">
+      <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-bottom))] bg-white border-t border-gray-200 flex items-center justify-around z-40 md:hidden pb-[env(safe-area-inset-bottom)] shadow-lg">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           const Icon = item.icon
@@ -144,8 +146,9 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? 'page' : undefined}
               onClick={() => handleNavClick(item.href)}
-              className={`flex flex-col items-center justify-center flex-1 h-full py-1.5 text-xs transition-colors ${
+              className={`flex min-w-0 flex-col items-center justify-center flex-1 h-full py-1.5 text-[10px] sm:text-xs transition-colors ${
                 isActive ? 'text-gray-900 font-semibold' : 'text-gray-400 hover:text-gray-900'
               }`}
             >

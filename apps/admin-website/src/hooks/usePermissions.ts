@@ -67,7 +67,7 @@ export function usePermissions() {
   const isAdmin = () => hasRole('admin')
   const isStaff = () => hasRole('staff')
   const isUser = () => hasRole('user')
-  const canManageUsers = () => isSuperAdmin()
+  const canManageUsers = () => hasRole(['superadmin', 'admin'])
   const canDeleteContent = () => isSuperAdmin()
   const canCreateContent = () => hasRole(['superadmin', 'admin', 'staff'])
   const canEditContent = () => hasRole(['superadmin', 'admin', 'staff'])

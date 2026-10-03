@@ -1,3 +1,4 @@
+import { triggerRevalidation } from '@/lib/revalidate'
 import { NextRequest, NextResponse } from 'next/server'
 import { categoriesService } from '@/features/category'
 
@@ -21,6 +22,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 400 })
   }
+  await triggerRevalidation()
   return NextResponse.json({ data: result.data })
 }
 
@@ -47,5 +49,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
+  await triggerRevalidation()
   return NextResponse.json({ success: true })
 }

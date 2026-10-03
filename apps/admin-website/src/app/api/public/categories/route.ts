@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data: categories }, {
       headers: {
         ...corsHeaders,
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
+        'Cache-Control': 'no-store',
       }
     })
   } catch (error) {
