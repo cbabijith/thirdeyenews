@@ -1,6 +1,7 @@
+import { publicationDate } from '../publication'
 import { eq, ne, desc, asc, and, or, ilike, count, sql, lt, gt } from 'drizzle-orm'
 import { db } from '@/db'
-import { news, newsViews, categories, profiles } from '@/db/schema'
+import { news, newsViews, newsSlugAliases, categories, profiles } from '@/db/schema'
 import { News, NewsSearchParams, NewsSearchResult } from '../types'
 
 export const newsRepository = {
@@ -19,7 +20,7 @@ export const newsRepository = {
 
   async findById(id: string, includeCategory = true): Promise<News | null> {
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
-    const condition = isUUID ? eq(news.id, id) : eq(news.slug, id)
+    const condition = isUUID ? eq(news.id, id) : or(eq(news.slug, id), eq(news.id, sql`(select news_id from news_slug_aliases where slug = ${id})`))
     const result = includeCategory
       ? await db.query.news.findFirst({
           where: condition,
@@ -140,49 +141,61 @@ export const newsRepository = {
   },
 
   async create(data: Omit<News, 'id' | 'created_at' | 'updated_at'>): Promise<News> {
-    const [result] = await db
-      .insert(news)
-      .values({
-        title: data.title,
-        content: data.content || '',
-        description: data.description || null,
-        image_url: data.image_url || null,
-        youtube_link: data.youtube_link || null,
-        category_id: data.category_id || null,
-        subcategory_id: data.subcategory_id || null,
-        created_by: data.created_by || null,
-        is_published: data.is_published || false,
-        is_pinned: data.is_pinned || false,
-        published_at: data.published_at ? new Date(data.published_at) : null,
-        view_count: data.view_count || 0,
-        slug: data.slug || null,
-        ad_image_url: data.ad_image_url || null,
-        ad_link_url: data.ad_link_url || null,
+    return db.transaction(async tx => {
+      const [result] = await tx
+        .insert(news)
+        .values({
+          title: data.title,
+          content: data.content || '',
+          description: data.description || null,
+          image_url: data.image_url || null,
+          youtube_link: data.youtube_link || null,
+          category_id: data.category_id || null,
+          subcategory_id: data.subcategory_id || null,
+          created_by: data.created_by || null,
+          is_published: data.is_published || false,
+          is_pinned: data.is_pinned || false,
+          published_at: publicationDate(null, !!data.is_published),
+          view_count: data.view_count || 0,
+          slug: data.slug || null,
+          ad_image_url: data.ad_image_url || null,
+          ad_link_url: data.ad_link_url || null,
       })
       .returning()
+    if (result.slug) await tx.insert(newsSlugAliases).values({ slug: result.slug, news_id: result.id })
     return result as unknown as News
+    })
   },
 
   async update(id: string, updates: Partial<News>): Promise<News | null> {
-    const updateData: Record<string, unknown> = {}
-    if (updates.title !== undefined) updateData.title = updates.title
-    if (updates.description !== undefined) updateData.description = updates.description
-    if (updates.content !== undefined) updateData.content = updates.content
-    if (updates.image_url !== undefined) updateData.image_url = updates.image_url
-    if (updates.youtube_link !== undefined) updateData.youtube_link = updates.youtube_link
-    if (updates.category_id !== undefined) updateData.category_id = updates.category_id || null
-    if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id || null
-    if (updates.is_published !== undefined) updateData.is_published = updates.is_published
-    if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
-    if (updates.published_at !== undefined)
-      updateData.published_at = updates.published_at ? new Date(updates.published_at) : null
-    if (updates.slug !== undefined) updateData.slug = updates.slug || null
-    if (updates.ad_image_url !== undefined) updateData.ad_image_url = updates.ad_image_url || null
-    if (updates.ad_link_url !== undefined) updateData.ad_link_url = updates.ad_link_url || null
-    updateData.updated_at = new Date()
+    return db.transaction(async tx => {
+      const [current] = await tx.select().from(news).where(eq(news.id, id)).for('update')
+      if (!current) return null
+      const updateData: Record<string, unknown> = {}
+      if (updates.title !== undefined) updateData.title = updates.title
+      if (updates.description !== undefined) updateData.description = updates.description
+      if (updates.content !== undefined) updateData.content = updates.content
+      if (updates.image_url !== undefined) updateData.image_url = updates.image_url
+      if (updates.youtube_link !== undefined) updateData.youtube_link = updates.youtube_link
+      if (updates.category_id !== undefined) updateData.category_id = updates.category_id || null
+      if (updates.subcategory_id !== undefined) updateData.subcategory_id = updates.subcategory_id || null
+      if (updates.is_published !== undefined) updateData.is_published = updates.is_published
+      if (updates.is_pinned !== undefined) updateData.is_pinned = updates.is_pinned
+      updateData.published_at = publicationDate(current, updates.is_published ?? current.is_published)
+      if (updates.slug !== undefined) updateData.slug = updates.slug || null
+      if (updates.ad_image_url !== undefined) updateData.ad_image_url = updates.ad_image_url || null
+      if (updates.ad_link_url !== undefined) updateData.ad_link_url = updates.ad_link_url || null
+      updateData.updated_at = new Date()
 
-    const [result] = await db.update(news).set(updateData).where(eq(news.id, id)).returning()
-    return result as unknown as News | null
+      // Keep every previously shared slug and claim a new one before the update commits.
+      for (const slug of new Set([current.slug, updates.slug].filter((value): value is string => !!value))) {
+        const [alias] = await tx.select().from(newsSlugAliases).where(eq(newsSlugAliases.slug, slug))
+        if (alias && alias.news_id !== id) throw new Error('This slug belongs to another article')
+        if (!alias) await tx.insert(newsSlugAliases).values({ slug, news_id: id })
+      }
+      const [result] = await tx.update(news).set(updateData).where(eq(news.id, id)).returning()
+      return result as unknown as News | null
+    })
   },
 
   async delete(id: string): Promise<void> {
@@ -190,16 +203,7 @@ export const newsRepository = {
   },
 
   async updatePublishStatus(id: string, isPublished: boolean): Promise<News | null> {
-    const [result] = await db
-      .update(news)
-      .set({
-        is_published: isPublished,
-        published_at: isPublished ? new Date() : null,
-        updated_at: new Date(),
-      })
-      .where(eq(news.id, id))
-      .returning()
-    return result as unknown as News | null
+    return this.update(id, { is_published: isPublished })
   },
 
   async findTopViewed(limit: number = 5): Promise<News[]> {
@@ -327,17 +331,12 @@ export const newsRepository = {
   },
 
   async isSlugExists(slug: string, excludeId?: string): Promise<boolean> {
-    const conditions = excludeId 
-      ? and(eq(news.slug, slug), ne(news.id, excludeId))
-      : eq(news.slug, slug)
-    
-    const [result] = await db
-      .select({ id: news.id })
-      .from(news)
-      .where(conditions)
-      .limit(1)
-    
-    return !!result
+    const [current] = await db.select({ id: news.id }).from(news)
+      .where(excludeId ? and(eq(news.slug, slug), ne(news.id, excludeId)) : eq(news.slug, slug)).limit(1)
+    if (current) return true
+    const [alias] = await db.select({ id: newsSlugAliases.news_id }).from(newsSlugAliases)
+      .where(excludeId ? and(eq(newsSlugAliases.slug, slug), ne(newsSlugAliases.news_id, excludeId)) : eq(newsSlugAliases.slug, slug)).limit(1)
+    return !!alias
   },
 
   async findAdjacentPublished(current: News): Promise<{ prev: News | null; next: News | null }> {
@@ -385,21 +384,18 @@ export const newsRepository = {
       )
     }
 
-    const prevResult = await db.query.news.findFirst({
-      where: prevCondition,
-      columns: {
-        content: false,
-      },
-      orderBy: [desc(news.published_at), desc(news.created_at)],
-    })
-
-    const nextResult = await db.query.news.findFirst({
-      where: nextCondition,
-      columns: {
-        content: false,
-      },
-      orderBy: [asc(news.published_at), asc(news.created_at)],
-    })
+    const [prevResult, nextResult] = await Promise.all([
+      db.query.news.findFirst({
+        where: prevCondition,
+        columns: { content: false },
+        orderBy: [desc(news.published_at), desc(news.created_at)],
+      }),
+      db.query.news.findFirst({
+        where: nextCondition,
+        columns: { content: false },
+        orderBy: [asc(news.published_at), asc(news.created_at)],
+      }),
+    ])
 
     return {
       prev: prevResult as unknown as News | null,

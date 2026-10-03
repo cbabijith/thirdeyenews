@@ -1,21 +1,20 @@
 'use client'
 
-import { useEffect, useState, useRef, Suspense } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
+import { NewsImage as Image } from '@/components/NewsImage'
 import { api, Category, NewsItem } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { BreakingNewsTicker } from '@/components/BreakingNewsTicker'
 import { CategoryBar } from '@/components/CategoryBar'
 import { WhatsAppButton } from '@/components/WhatsAppButton'
 import { AdBanner } from '@/components/AdBanner'
-import { ShimmerBox } from '@/components/Shimmer'
 import { Footer } from '@/components/Footer'
 import { useThemeStore } from '@/store/themeStore'
 import { formatShortDate as fmtShort, formatTime, getTimeAgo as timeAgo } from '@/lib/dateFormat'
 
 interface HomeContentProps {
+  initialCategory: string | null
   initialCategories: Category[]
   initialPinnedNews: NewsItem[]
   initialTrendingNews: NewsItem[]
@@ -34,24 +33,21 @@ function withTimeout<T>(promise: Promise<T>, ms = 8000): Promise<T> {
 }
 
 export function HomeContent({
+  initialCategory,
   initialCategories,
   initialPinnedNews,
   initialTrendingNews,
   initialRecentNews,
 }: HomeContentProps) {
   const { colors } = useThemeStore()
-  const searchParams = useSearchParams()
   const [categories, setCategories] = useState<Category[]>(initialCategories)
   const [pinnedNews, setPinnedNews] = useState<NewsItem[]>(initialPinnedNews)
   const [trendingNews, setTrendingNews] = useState<NewsItem[]>(initialTrendingNews)
   const [recentNews, setRecentNews] = useState<NewsItem[]>(initialRecentNews)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('category'))
-  const [loading, setLoading] = useState(false)
+  const selectedCategory = initialCategory
   const [error, setError] = useState<string | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [retryTrigger, setRetryTrigger] = useState(0)
-  const skipFilterRef = useRef(true)
 
   const [currentSlide, setCurrentSlide] = useState(0)
 
@@ -63,42 +59,10 @@ export function HomeContent({
     return () => clearInterval(timer)
   }, [pinnedNews])
 
-  useEffect(() => {
-    const cat = searchParams.get('category')
-    setSelectedCategory(cat)
-  }, [searchParams])
-
-  useEffect(() => {
-    if (skipFilterRef.current) {
-      skipFilterRef.current = false
-      return
-    }
-
-    async function fetchFilteredNews() {
-      setLoading(true)
-      setError(null)
-      try {
-        const [pinnedData, recentData] = await Promise.all([
-          withTimeout(api.getPinnedNews(selectedCategory || undefined, 5), 8000),
-          withTimeout(api.getRecentNews(selectedCategory || undefined, PAGE_SIZE, 0), 8000),
-        ])
-
-        setPinnedNews(pinnedData || [])
-        setRecentNews(recentData || [])
-        setHasMore((recentData || []).length === PAGE_SIZE)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load data')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchFilteredNews()
-  }, [selectedCategory, retryTrigger])
-
   const loadMore = async () => {
     if (loadingMore || !hasMore) return
     setLoadingMore(true)
+    setError(null)
     try {
       const offset = recentNews.length
       const newsData = await withTimeout(
@@ -110,105 +74,10 @@ export function HomeContent({
       setHasMore((newsData || []).length === PAGE_SIZE)
     } catch (err) {
       console.error('Failed to load more:', err)
+      setError('കൂടുതൽ വാർത്തകൾ ലോഡ് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.')
     } finally {
       setLoadingMore(false)
     }
-  }
-
-  const renderMobileShimmer = () => (
-    <div className="flex flex-col gap-4 px-4 py-4 animate-pulse">
-      <div className="w-full aspect-[16/9] bg-surface-container rounded-xl" />
-      <div className="space-y-2">
-        <div className="h-5 bg-surface-container rounded w-3/4" />
-        <div className="h-3 bg-surface-container rounded w-1/2" />
-      </div>
-      <div className="flex flex-col gap-3 mt-4">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex gap-3">
-            <div className="w-20 h-20 bg-surface-container rounded-lg shrink-0" />
-            <div className="flex-1 space-y-2 py-1">
-              <div className="h-3 bg-surface-container rounded w-1/4" />
-              <div className="h-4 bg-surface-container rounded w-full" />
-              <div className="h-3 bg-surface-container rounded w-1/3" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderDesktopShimmer = () => (
-    <div className="grid grid-cols-12 gap-8 animate-pulse">
-      {/* Left Column Shimmer */}
-      <div className="col-span-3 border-r border-border/60 pr-6">
-        <div className="h-5 bg-surface-container rounded w-1/2 mb-5" />
-        <div className="flex flex-col gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="flex gap-3 items-start">
-              <div className="w-14 h-14 bg-surface-container rounded-md shrink-0" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3.5 bg-surface-container rounded w-3/4" />
-                <div className="h-3 bg-surface-container rounded w-1/2" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Middle Column Shimmer */}
-      <div className="col-span-6">
-        <div className="w-full h-[400px] bg-surface-container rounded-2xl mb-6" />
-        <div className="h-5 bg-surface-container rounded w-1/3 mb-4" />
-        <div className="grid grid-cols-2 gap-5">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="flex flex-col bg-surface-container/20 rounded-xl overflow-hidden border border-border/40">
-              <div className="w-full aspect-[16/10] bg-surface-container" />
-              <div className="p-3 space-y-2">
-                <div className="h-3 bg-surface-container rounded w-1/4" />
-                <div className="h-4 bg-surface-container rounded w-full" />
-                <div className="h-3 bg-surface-container rounded w-1/3" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Right Column Shimmer */}
-      <div className="col-span-3 border-l border-border/60 pl-6">
-        <div className="h-5 bg-surface-container rounded w-1/2 mb-5" />
-        <div className="flex flex-col gap-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 border-b border-border/60">
-              <div className="w-8 h-8 bg-surface-container rounded shrink-0" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3 bg-surface-container rounded w-1/4" />
-                <div className="h-3.5 bg-surface-container rounded w-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-
-  if (error) {
-    return (
-      <div className={`min-h-screen ${colors.background}`}>
-        <Header pinnedNews={pinnedNews} categories={categories} />
-        <BreakingNewsTicker pinnedNews={pinnedNews} latestNews={recentNews} />
-        <CategoryBar categories={categories} selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
-        <div className="flex flex-col items-center justify-center p-12 text-center gap-4">
-          <span className="material-symbols-outlined text-6xl text-on-surface-variant opacity-40">error_outline</span>
-          <p className="text-on-surface-variant max-w-md text-sm">{error}</p>
-          <button
-            onClick={() => setRetryTrigger(prev => prev + 1)}
-            className="px-5 py-2.5 bg-primary text-on-primary rounded-lg font-medium hover:bg-button-hover transition-all text-sm"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    )
   }
 
   const featuredNews = pinnedNews.length > 0 
@@ -228,11 +97,13 @@ export function HomeContent({
     <div className={`min-h-screen ${colors.background}`}>
       <Header pinnedNews={pinnedNews} categories={categories} />
       <BreakingNewsTicker pinnedNews={pinnedNews} latestNews={recentNews} />
-      <CategoryBar categories={categories} selectedCategory={selectedCategory} onCategorySelect={setSelectedCategory} />
+      <CategoryBar categories={categories} selectedCategory={selectedCategory} />
+      <h1 className="sr-only">ThirdEye News — മലയാളം വാർത്തകൾ</h1>
+      {error && <p role="alert" className="px-4 py-2 text-center text-red-700">{error}</p>}
 
       {/* Mobile Layout */}
       <main className="md:hidden">
-        {loading ? renderMobileShimmer() : (
+        {(
           <div className="flex flex-col gap-6 pb-8">
             {/* Hero Story Card - Featured/Pinned News */}
             {featuredNews && (
@@ -429,7 +300,7 @@ export function HomeContent({
 
       {/* Desktop Layout - 3 Column */}
       <main className="hidden md:block max-w-[1240px] mx-auto px-6 py-8">
-        {loading ? renderDesktopShimmer() : (
+        {(
           <div className="grid grid-cols-12 gap-8">
             {/* Left Column - Live Stream Timeline (3 cols) */}
             <div className="col-span-3 border-r border-border/60 pr-6">

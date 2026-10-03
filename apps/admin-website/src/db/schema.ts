@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, boolean, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, boolean, integer, timestamp, pgEnum, index } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 export const userRoleEnum = pgEnum('user_role', ['superadmin', 'admin', 'staff', 'user'])
@@ -53,6 +53,11 @@ export const news = pgTable('news', {
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 })
+
+export const newsSlugAliases = pgTable('news_slug_aliases', {
+  slug: text('slug').primaryKey(),
+  news_id: uuid('news_id').references(() => news.id, { onDelete: 'cascade' }).notNull(),
+}, table => [index('news_slug_aliases_news_id_idx').on(table.news_id)])
 
 export const comments = pgTable('comments', {
   id: uuid('id').defaultRandom().primaryKey(),

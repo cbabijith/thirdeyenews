@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data: ads.slice(0, limit) }, {
       headers: {
         ...corsHeaders,
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=30',
+        'Cache-Control': 'no-store',
       }
     })
   } catch (error) {

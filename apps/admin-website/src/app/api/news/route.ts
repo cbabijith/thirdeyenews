@@ -51,8 +51,6 @@ export async function POST(req: NextRequest) {
     console.error('Error in POST /api/news:', result.error)
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
-  if (result.data) {
-    triggerRevalidation(result.data.slug || result.data.id).catch(console.error)
-  }
-  return NextResponse.json({ data: result.data })
+  const cacheRevalidated = result.data?.is_published ? await triggerRevalidation(result.data.slug || result.data.id) : true
+  return NextResponse.json({ data: result.data, cacheRevalidated })
 }

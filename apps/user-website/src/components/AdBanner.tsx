@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { mediaUrl } from '@/lib/site'
 import { api, Ad } from '@/lib/api'
 
 interface AdBannerProps {
@@ -80,7 +81,7 @@ function AdBannerItem({ ad }: { ad: Ad }) {
   const content = (
     <div className="relative w-full rounded-lg overflow-hidden bg-surface-container group">
       <img
-        src={ad.image_url}
+        src={mediaUrl(ad.image_url)}
         alt={ad.title}
         className="w-full h-auto object-cover"
         loading="lazy"

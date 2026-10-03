@@ -53,6 +53,9 @@ export function NewsForm({
   const [submitting, setSubmitting] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [isAutosaving, setIsAutosaving] = useState(false)
+  const [cacheRefreshPending, setCacheRefreshPending] = useState(false)
+  const pendingSaveRef = useRef<Promise<void>>(Promise.resolve())
+  const submittingRef = useRef(false)
   const [autosaveError, setAutosaveError] = useState<string | null>(null)
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -163,27 +166,33 @@ export function NewsForm({
     const hasChanged = JSON.stringify(formData) !== JSON.stringify(lastSavedDataRef.current)
     if (!hasChanged) return
 
-    const delayDebounce = setTimeout(async () => {
-      setIsAutosaving(true)
-      setAutosaveError(null)
-      try {
-        const res = await fetch(`/api/news/${activeId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        })
-        const json = await res.json()
-        if (json.error) {
-          setAutosaveError(json.error)
-        } else {
-          lastSavedDataRef.current = { ...formData }
-          setLastSavedTime(new Date())
+    const delayDebounce = setTimeout(() => {
+      if (submittingRef.current) return
+      pendingSaveRef.current = pendingSaveRef.current.then(async () => {
+        setIsAutosaving(true)
+        setAutosaveError(null)
+        try {
+          const { is_published, published_at: _date, ...editorialFields } = formData
+          const publicationChanged = is_published !== lastSavedDataRef.current?.is_published
+          const res = await fetch(`/api/news/${activeId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...editorialFields, ...(publicationChanged ? { is_published } : {}) }),
+          })
+          const json = await res.json()
+          if (!res.ok || json.error) {
+            setAutosaveError(json.error || 'Failed to autosave')
+          } else {
+            setCacheRefreshPending(json.cacheRevalidated === false)
+            lastSavedDataRef.current = { ...formData }
+            setLastSavedTime(new Date())
+          }
+        } catch {
+          setAutosaveError('Failed to autosave')
+        } finally {
+          setIsAutosaving(false)
         }
-      } catch (err) {
-        setAutosaveError('Failed to autosave')
-      } finally {
-        setIsAutosaving(false)
-      }
+      })
     }, 1500)
 
     return () => clearTimeout(delayDebounce)
@@ -193,10 +202,6 @@ export function NewsForm({
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    if (formData.image_url) {
-      await deleteImage(formData.image_url)
-    }
 
     const result = await uploadImage(file, 'news')
     if (result) {
@@ -215,10 +220,6 @@ export function NewsForm({
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (formData.ad_image_url) {
-      await deleteImage(formData.ad_image_url)
-    }
-
     const result = await uploadImage(file, 'news')
     if (result) {
       setFormData(prev => ({ ...prev, ad_image_url: result }))
@@ -235,8 +236,10 @@ export function NewsForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (submitting) return
+    submittingRef.current = true
     setSubmitting(true)
     try {
+      await pendingSaveRef.current
       if (activeId && !initialData) {
         const res = await fetch(`/api/news/${activeId}`, {
           method: 'PATCH',
@@ -260,6 +263,7 @@ export function NewsForm({
       console.error(err)
     } finally {
       setSubmitting(false)
+      submittingRef.current = false
     }
   }
 
@@ -600,6 +604,7 @@ export function NewsForm({
               <ArrowLeft className="w-4 h-4" />
               Cancel
             </button>
+            {cacheRefreshPending && <p role="status" className="text-xs text-amber-700">Changes saved. Readers may see the previous version briefly.</p>}
             {isAutosaving && (
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <Loader2 className="w-3.5 h-3.5 text-gray-400 animate-spin" />
@@ -609,7 +614,7 @@ export function NewsForm({
             {!isAutosaving && lastSavedTime && !autosaveError && (
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                Saved draft to database ({lastSavedTime.toLocaleTimeString()})
+                Changes saved to database ({lastSavedTime.toLocaleTimeString()})
               </span>
             )}
             {!isAutosaving && !lastSavedTime && !autosaveError && initialData && (

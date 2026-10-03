@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data: results }, {
         headers: {
           ...corsHeaders,
-          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
+          'Cache-Control': 'no-store',
         }
       })
     }
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data }, {
         headers: {
           ...corsHeaders,
-          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+          'Cache-Control': 'no-store',
         }
       })
     }
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ data }, {
         headers: {
           ...corsHeaders,
-          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=15',
+          'Cache-Control': 'no-store',
         }
       })
     }
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ data }, {
       headers: {
         ...corsHeaders,
-        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=10',
+        'Cache-Control': 'no-store',
       }
     })
   } catch (error) {

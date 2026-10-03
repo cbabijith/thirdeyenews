@@ -1,76 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { publicProxy } from '@/lib/publicProxy'
 
-function getAdminBaseUrl(): string {
-  return process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'https://thirdeyenews-admin-website.vercel.app'
+type Params = { params: Promise<{ path: string[] }> }
+async function proxy(req: NextRequest, { params }: Params) {
+  const { path: original } = await params
+  const parts = original[0] === 'public' ? original.slice(1) : original
+  const validId = parts[1] && !['.', '..'].includes(parts[1])
+  const read = parts.length === 1 && ['news', 'categories', 'ads'].includes(parts[0]) ||
+    parts[0] === 'news' && validId && (parts.length === 2 || parts.length === 3 && ['related', 'adjacent'].includes(parts[2]))
+  const view = parts[0] === 'news' && validId && parts.length === 3 && parts[2] === 'view'
+  if (!(req.method === 'GET' && read || req.method === 'POST' && view)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  const response = await publicProxy('/' + parts.map(encodeURIComponent).join('/') + req.nextUrl.search, req.method)
+  response.headers.set('Access-Control-Allow-Origin', '*')
+  return response
 }
-
-function getToken(): string {
-  return process.env.ADMIN_API_TOKEN || process.env.API_ACCESS_TOKEN || process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || ''
-}
-
-async function proxyRequest(req: NextRequest, pathSegments: string[]): Promise<NextResponse> {
-  const path = '/' + pathSegments.join('/')
-  const url = new URL(req.url)
-  let targetUrl = `${getAdminBaseUrl()}/api/public${path}${url.search}`
-  if (path.startsWith('/public/')) {
-    targetUrl = `${getAdminBaseUrl()}/api${path}${url.search}`
-  }
-
-  const token = getToken()
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  }
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
-
-  try {
-    const res = await fetch(targetUrl, {
-      method: req.method,
-      headers,
-      ...(req.method !== 'GET' && req.method !== 'HEAD' ? { body: await req.text() } : {}),
-    })
-
-    const data = await res.text()
-    const responseHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    }
-    if (req.method === 'GET') {
-      responseHeaders['Cache-Control'] = 'public, s-maxage=60, stale-while-revalidate=30'
-    }
-    return new NextResponse(data, {
-      status: res.status,
-      headers: responseHeaders,
-    })
-  } catch (error) {
-    console.error('API proxy error:', error)
-    return NextResponse.json(
-      { error: 'Failed to reach API server' },
-      { status: 502 }
-    )
-  }
-}
-
-export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params
-  return proxyRequest(req, path)
-}
-
-export async function POST(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  const { path } = await params
-  return proxyRequest(req, path)
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  })
+export const GET = proxy
+export const POST = proxy
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: {
+    'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  } })
 }

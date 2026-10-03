@@ -1,3 +1,4 @@
+import { triggerRevalidation } from '@/lib/revalidate'
 import { NextRequest, NextResponse } from 'next/server'
 import { categoriesService } from '@/features/category'
 
@@ -15,5 +16,6 @@ export async function POST(req: NextRequest) {
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 400 })
   }
+  await triggerRevalidation()
   return NextResponse.json({ data: result.data }, { status: 201 })
 }

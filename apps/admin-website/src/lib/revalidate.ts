@@ -1,43 +1,24 @@
-// Revalidation may only target these user-website origins; anything else is
-// rejected before a network call is made.
-const ALLOWED_USER_ORIGINS = [
-  'http://localhost:3001',
-  'http://localhost:3000',
-  'https://thirdeyenewslive.com',
-  'https://www.thirdeyenewslive.com',
-]
+const ALLOWED_USER_ORIGINS = ['http://localhost:3001', 'http://localhost:3000', 'https://thirdeyenewslive.com', 'https://www.thirdeyenewslive.com']
 
-function toUserWebsiteUrl(pathAndQuery: string): URL {
-  const base = process.env.USER_WEBSITE_URL || process.env.NEXT_PUBLIC_USER_WEBSITE_URL || ALLOWED_USER_ORIGINS[0]
-  const url = new URL(pathAndQuery, base)
-  if (!ALLOWED_USER_ORIGINS.includes(url.origin)) {
-    throw new Error('Blocked untrusted user website origin: ' + url.origin)
-  }
-  return url
-}
-
-export async function triggerRevalidation(slugOrId: string) {
+export async function triggerRevalidation(slugOrId?: string): Promise<boolean> {
   try {
-    const token = process.env.API_ACCESS_TOKEN || 'thirdeye_secure_token_9f8e7d6c5b4a3a2b1'
-
-    // Revalidate the specific news page
-    const resDetail = await fetch(toUserWebsiteUrl('/api/revalidate'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: `/news/${slugOrId}`, token }),
-    })
-    const jsonDetail = await resDetail.json()
-    console.log(`Revalidation response for /news/${slugOrId}:`, jsonDetail)
-
-    // Revalidate the home page to update listing feeds
-    const resHome = await fetch(toUserWebsiteUrl('/api/revalidate'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: '/', token }),
-    })
-    const jsonHome = await resHome.json()
-    console.log('Revalidation response for /:', jsonHome)
-  } catch (err) {
-    console.error('Failed to trigger revalidation:', err)
-  }
+    const url = new URL('/api/revalidate', process.env.USER_WEBSITE_URL || 'https://thirdeyenewslive.com')
+    if (!ALLOWED_USER_ORIGINS.includes(url.origin)) throw new Error('Invalid reader website origin')
+    const token = process.env.REVALIDATION_TOKEN || process.env.API_ACCESS_TOKEN
+    if (!token) throw new Error('Revalidation token is not configured')
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: slugOrId ? `/news/${encodeURIComponent(slugOrId)}` : '/', token }),
+          signal: AbortSignal.timeout(3000), cache: 'no-store',
+        })
+        if (!response.ok) throw new Error(`Revalidation returned ${response.status}`)
+        const result = await response.json()
+        if (!result.revalidated) throw new Error('Revalidation was not acknowledged')
+        return true
+      } catch (error) { if (attempt === 1) throw error }
+    }
+  } catch (error) { console.error('Public cache refresh failed', error) }
+  return false
 }

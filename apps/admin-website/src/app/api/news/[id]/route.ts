@@ -24,26 +24,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
-  if (result.data) {
-    triggerRevalidation(result.data.slug || result.data.id).catch(console.error)
-  }
-  return NextResponse.json({ data: result.data })
+  const refreshRequired = result.data && (result.data.is_published || body.is_published === false)
+  const cacheRevalidated = refreshRequired ? await triggerRevalidation(result.data!.slug || id) : true
+  return NextResponse.json({ data: result.data, cacheRevalidated })
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const { id } = await params
-  // Fetch news before deletion to retrieve its slug for cache revalidation
-  const existing = await newsService.getNewsById(id, false)
-  const slug = existing.data?.slug
-
   const result = await newsService.deleteNews(id)
   if (result.error) {
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
-  // Trigger cache revalidation on user website for both ID and slug paths
-  triggerRevalidation(id).catch(console.error)
-  if (slug) {
-    triggerRevalidation(slug).catch(console.error)
-  }
+  // The shared content tag covers ID, canonical, and historical URL reads.
+  await triggerRevalidation(id)
   return NextResponse.json({ data: null })
 }

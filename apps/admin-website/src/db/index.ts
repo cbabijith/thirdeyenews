@@ -7,15 +7,19 @@ const connectionString = process.env.DATABASE_URL!
 const globalForDb = globalThis as unknown as { db: ReturnType<typeof createDb> }
 
 function createDb() {
-  // Use a small but safe pool size in production (max: 15) to prevent
-  // connection starvation during parallel queries (Promise.all) while keeping
-  // the overall footprint low.
-  const isProd = process.env.NODE_ENV === 'production'
+  // Each serverless instance owns a pool. Keep the total connection footprint small.
+  const poolSize = Number(process.env.DB_POOL_MAX || 5)
   const client = postgres(connectionString, {
-    max: isProd ? 15 : 10,
+    max: Number.isInteger(poolSize) && poolSize > 0 && poolSize <= 20 ? poolSize : 5,
     prepare: false,
     idle_timeout: 20,
-    connect_timeout: 10,
+    connect_timeout: 5,
+    max_lifetime: 300,
+    connection: {
+      application_name: 'thirdeyenews-admin',
+      statement_timeout: 10000,
+      lock_timeout: 3000,
+    },
   })
   return drizzle(client, { schema })
 }
